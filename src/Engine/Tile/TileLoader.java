@@ -34,6 +34,20 @@ public class TileLoader {
                         if (tile.getId() == 5) {
                             loadExtraWaterTextures(tile);
                         }
+                        // Load ancient textures
+                        if (tile.getId() == 22) {
+                            loadAncientBlueTextures(tile);
+                        }
+                        if (tile.getId() == 23) {
+                            loadAncientRedTextures(tile);
+                        }
+                        // Load tower textures
+                        if (tile.getId() == 20) {
+                            loadTowerBlueTextures(tile);
+                        }
+                        if (tile.getId() == 21) {
+                            loadTowerRedTextures(tile);
+                        }
                     }
                 }
             }
@@ -56,6 +70,54 @@ public class TileLoader {
         }
     }
 
+    private void loadAncientBlueTextures(Tile tile) {
+        String[] extras = {"src/Resource/Tiles/Ancient_Blue.png"};
+        for (String path : extras) {
+            try {
+                BufferedImage img = ImageIO.read(new File(path));
+                tile.addImage(img);
+            } catch (IOException e) {
+                System.err.println("Could not load ancient blue texture: " + path);
+            }
+        }
+    }
+
+    private void loadAncientRedTextures(Tile tile) {
+        String[] extras = {"src/Resource/Tiles/Ancient_Red.png"};
+        for (String path : extras) {
+            try {
+                BufferedImage img = ImageIO.read(new File(path));
+                tile.addImage(img);
+            } catch (IOException e) {
+                System.err.println("Could not load ancient red texture: " + path);
+            }
+        }
+    }
+
+    private void loadTowerBlueTextures(Tile tile) {
+        String[] extras = {"src/Resource/Tiles/Tower_Blue.png"};
+        for (String path : extras) {
+            try {
+                BufferedImage img = ImageIO.read(new File(path));
+                tile.addImage(img);
+            } catch (IOException e) {
+                System.err.println("Could not load tower blue texture: " + path);
+            }
+        }
+    }
+
+    private void loadTowerRedTextures(Tile tile) {
+        String[] extras = {"src/Resource/Tiles/Tower_Red.png"};
+        for (String path : extras) {
+            try {
+                BufferedImage img = ImageIO.read(new File(path));
+                tile.addImage(img);
+            } catch (IOException e) {
+                System.err.println("Could not load tower red texture: " + path);
+            }
+        }
+    }
+
     public boolean[] buildCollisionTable(Tile[] tiles) {
         boolean[] collision = new boolean[tiles.length];
         for (int i = 0; i < tiles.length; i++) {
@@ -67,7 +129,7 @@ public class TileLoader {
 
     private Tile parseTileLine(String line) {
         String[] parts = line.split(":");
-        if (parts.length < 4) return null;
+        if (parts.length < 3) return null;
 
         try {
             int tileId = Integer.parseInt(parts[0]);

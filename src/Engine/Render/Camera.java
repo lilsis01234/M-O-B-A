@@ -26,6 +26,14 @@ public class Camera {
         updateDynamicMinZoom();
     }
 
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
     private void updateDynamicMinZoom() {
         if (worldWidth > 0 && worldHeight > 0 && viewportWidth > 0 && viewportHeight > 0) {
             float zoomX = (float) viewportWidth / worldWidth;
@@ -131,6 +139,22 @@ public class Camera {
 
     public float getZoom() {
         return zoom;
+    }
+
+    public int getWorldWidth() {
+        return worldWidth;
+    }
+
+    public int getWorldHeight() {
+        return worldHeight;
+    }
+
+    public int getViewportWidth() {
+        return viewportWidth;
+    }
+
+    public int getViewportHeight() {
+        return viewportHeight;
     }
 
     public int screenToWorldX(int screenX) {

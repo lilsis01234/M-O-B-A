@@ -51,6 +51,10 @@ public class GamePanel extends JPanel implements Runnable {
         MapParser.MapData mapData = mapParser.parse(EngineConfig.getMapFilePath());
         TileMap tileMap = new TileMap(mapData.tileNumbers(), mapData.columns(), mapData.rows());
         camera.setWorldSize(tileMap.getColumns() * Config.getTileSize(), tileMap.getRows() * Config.getTileSize());
+        
+        // Initialize camera at bottom-left
+        camera.setX(0);
+        camera.setY((float) (camera.getWorldHeight() - camera.getViewportHeight() / camera.getZoom()));
 
         TileLoader tileLoader = new TileLoader();
         Tile[] tiles = tileLoader.load(EngineConfig.getMapFilePath(), EngineConfig.getMaxTiles());
@@ -77,6 +81,7 @@ public class GamePanel extends JPanel implements Runnable {
         player = new Player(keyHandler, mouseHandler, tileMap, collisionTable, arena);
         playerRenderer = new PlayerRenderer(new PlayerSprites());
         towerRenderer = new TowerRenderer();
+        towerRenderer.setTiles(tiles);
         
         addKeyListener(keyHandler);
         addMouseListener(mouseHandler);

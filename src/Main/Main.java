@@ -15,6 +15,7 @@ public class Main {
         
         window.pack();
         window.setLocationRelativeTo(null);
+        window.setExtendedState(JFrame.MAXIMIZED_BOTH);
         window.setVisible(true);
         
         gamePanel.requestFocusInWindow();
