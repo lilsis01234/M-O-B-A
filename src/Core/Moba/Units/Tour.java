@@ -6,20 +6,26 @@ import Core.Moba.World.Vec2;
 import Core.Moba.Combat.Stats;
 import Core.Moba.World.Voie;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tour extends Unite {
-    private final Equipe equipe;
     private int tier;
     private Voie lane;
     private int width = 1;
     private int height = 1;
     private int portee;
+    private TowerAI ai;
+    private final List<TowerProjectile> projectiles;
 
     public Tour(Equipe equipe, Vec2 position, int hp, int armure, int attaque, int portee) {
         super(position, new Stats(hp, 0, attaque, armure, 0.0));
-        this.equipe = equipe;
+        setEquipe(equipe);
         this.portee = portee;
         this.tier = 3;
         this.lane = Voie.MID;
+        this.projectiles = new ArrayList<>();
+        this.ai = new TowerAI(this);
     }
 
     public Tour(Equipe equipe, Vec2 position, int hp, int armure, int attaque, int portee, int tier, Voie lane, int w, int h) {
@@ -62,10 +68,6 @@ public class Tour extends Unite {
         this.portee = portee;
     }
 
-    public Equipe equipe() {
-        return equipe;
-    }
-
     public int tier() {
         return tier;
     }
@@ -93,6 +95,25 @@ public class Tour extends Unite {
     public void setSize(int w, int h) {
         this.width = w;
         this.height = h;
+    }
+
+    public TowerAI ai() {
+        return ai;
+    }
+
+    public List<TowerProjectile> projectiles() {
+        return projectiles;
+    }
+
+    public void ajouterProjectile(TowerProjectile projectile) {
+        projectiles.add(projectile);
+    }
+
+    public void mettreAJourProjectiles(double deltaSeconds) {
+        projectiles.removeIf(p -> {
+            p.mettreAJour(deltaSeconds);
+            return p.aFini();
+        });
     }
 }
 

@@ -32,6 +32,7 @@ public class GamePanel extends JPanel {
     private final TileRenderer tileRenderer;
     private final PlayerRenderer playerRenderer;
     private final TowerRenderer towerRenderer;
+    private final ProjectileRenderer projectileRenderer;
     private final Camera camera;
     private final Arena arena;
     private final GameEngine gameEngine;
@@ -64,6 +65,7 @@ public class GamePanel extends JPanel {
         player = createPlayer(tileMap, collisionTable, arena);
         playerRenderer = new PlayerRenderer(new PlayerSprites());
         towerRenderer = createTowerRenderer(tiles);
+        projectileRenderer = new ProjectileRenderer();
         
         setupInputListeners();
         setupResizeListener();
@@ -113,7 +115,9 @@ public class GamePanel extends JPanel {
     }
 
     private Player createPlayer(TileMap tileMap, CollisionTable collisionTable, Arena arena) {
-        return new Player(keyHandler, mouseHandler, tileMap, collisionTable, arena);
+        Player player = new Player(keyHandler, mouseHandler, tileMap, collisionTable, arena);
+        arena.ajouterUnite(player);
+        return player;
     }
 
     private TowerRenderer createTowerRenderer(Tile[] tiles) {
@@ -190,8 +194,11 @@ public class GamePanel extends JPanel {
         tileRenderer.draw(g2, camera, getWidth(), getHeight());
         drawTowers(g2);
         drawAncients(g2);
+        drawProjectiles(g2);
         drawClickEffects(g2);
-        playerRenderer.draw(g2, player);
+        if (player.isAlive()) {
+            playerRenderer.draw(g2, player);
+        }
 
         g2.setTransform(oldTransform);
     }
@@ -208,8 +215,14 @@ public class GamePanel extends JPanel {
         }
     }
 
+    private void drawProjectiles(Graphics2D g2) {
+        for (var projectile : java.util.List.copyOf(gameEngine.getProjectiles())) {
+            projectileRenderer.draw(g2, projectile, camera);
+        }
+    }
+
     private void drawClickEffects(Graphics2D g2) {
-        for (ClickEffect effect : gameEngine.getClickEffects()) {
+        for (ClickEffect effect : java.util.List.copyOf(gameEngine.getClickEffects())) {
             effect.draw(g2);
         }
     }
@@ -217,5 +230,16 @@ public class GamePanel extends JPanel {
     private void drawUI(Graphics2D g2) {
         g2.setColor(Color.white);
         g2.drawString("FPS: " + (int) (1_000_000_000.0 / Config.getNanosecondsPerFrame()), 10, 20);
+        
+        if (!player.isAlive()) {
+            double timeLeft = player.getRespawnTimeRemaining();
+            g2.setColor(Color.RED);
+            g2.drawString(String.format("Respawn in: %.1f s", timeLeft), 10, 40);
+        }
+        
+        if (player.isInFountain()) {
+            g2.setColor(Color.CYAN);
+            g2.drawString("In Fountain - Healing/Mana Regen", 10, 80);
+        }
     }
 }

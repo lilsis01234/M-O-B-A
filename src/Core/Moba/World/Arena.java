@@ -2,6 +2,7 @@ package Core.Moba.World;
 
 import Core.Moba.Units.Tour;
 import Core.Moba.Units.Ancient;
+import Core.Moba.Units.Unite;
 import Core.Tile.TileMap;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -13,6 +14,7 @@ public final class Arena {
     private final List<Vec2> jungleCampPositions;
     private final List<Tour> tours;
     private final List<Ancient> ancients;
+    private final List<Object> unites;
     private Vec2 blueAncientPos;
     private Vec2 redAncientPos;
 
@@ -24,6 +26,7 @@ public final class Arena {
         jungleCampPositions = new ArrayList<>();
         tours = new ArrayList<>();
         ancients = new ArrayList<>();
+        unites = new ArrayList<>();
     }
 
     public void initializeFromMap(TileMap map, Equipe blueTeam, Equipe redTeam) {
@@ -66,12 +69,12 @@ public final class Arena {
 
                 Vec2 pos = new Vec2(col, row);
                 switch (tileId) {
-                    case 20 -> { // Blue Tower
-                        addTour(new Tour(blueTeam, pos, 1000, 50, 20, 150, 3, determineLane(pos, true), w, h));
-                    }
-                    case 21 -> { // Red Tower
-                        addTour(new Tour(redTeam, pos, 1000, 50, 20, 150, 3, determineLane(pos, false), w, h));
-                    }
+                         case 20 -> { // Blue Tower
+                             addTour(new Tour(blueTeam, pos, 1000, 50, 20, 450, 3, determineLane(pos, true), w, h));
+                         }
+                         case 21 -> { // Red Tower
+                             addTour(new Tour(redTeam, pos, 1000, 50, 20, 450, 3, determineLane(pos, false), w, h));
+                         }
                     case 22 -> { // Blue Ancient
                         blueAncientPos = pos;
                         ancients.add(new Ancient(blueTeam, pos, 5000, 100, w, h));
@@ -141,6 +144,18 @@ public final class Arena {
 
     public void addTour(Tour tour) {
         tours.add(tour);
+    }
+
+    public List<Object> unites() {
+        return unites;
+    }
+
+    public void ajouterUnite(Object unite) {
+        unites.add(unite);
+    }
+
+    public void retirerUnite(Object unite) {
+        unites.remove(unite);
     }
 }
 

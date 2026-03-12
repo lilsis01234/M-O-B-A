@@ -1,6 +1,9 @@
 package Engine;
 
 import Core.Entity.Player;
+import Core.Moba.Units.Tour;
+import Core.Moba.Units.TowerProjectile;
+import Core.Moba.Units.Unite;
 import Core.Moba.World.Arena;
 import Core.Tile.CollisionTable;
 import Core.Tile.TileMap;
@@ -21,6 +24,7 @@ public class GameEngine {
     private final MouseHandler mouseHandler;
     private final Arena arena;
     private final List<ClickEffect> clickEffects = new ArrayList<>();
+    private final List<TowerProjectile> tousProjectiles = new ArrayList<>();
 
     private Thread gameThread;
     private boolean running = false;
@@ -60,9 +64,35 @@ public class GameEngine {
     }
 
     private void update() {
+        double deltaSeconds = 1.0 / 60.0;
+        
         updateCamera();
         updateClickEffects();
+        updateTowers(deltaSeconds);
         player.update();
+    }
+
+    private void updateTowers(double deltaSeconds) {
+        List<Object> unites = arena.unites();
+        
+        for (Tour tour : arena.tours()) {
+            tour.ai().mettreAJour(deltaSeconds, unites);
+            
+            if (tour.ai().doitAttaquer(deltaSeconds)) {
+                int degats = tour.ai().calculerDegats();
+                Object cible = tour.ai().cible();
+                if (cible != null) {
+                    System.out.println("Tour " + tour.equipe().couleur() + " at " + tour.position() + " firing at " + cible.getClass().getSimpleName());
+                    TowerProjectile projectile = new TowerProjectile(tour, cible, degats);
+                    tour.ajouterProjectile(projectile);
+                    tousProjectiles.add(projectile);
+                }
+            }
+            
+            tour.mettreAJourProjectiles(deltaSeconds);
+        }
+        
+        tousProjectiles.removeIf(p -> p.aFini());
     }
 
     private void updateCamera() {
@@ -88,5 +118,9 @@ public class GameEngine {
 
     public List<ClickEffect> getClickEffects() {
         return clickEffects;
+    }
+
+    public List<TowerProjectile> getProjectiles() {
+        return tousProjectiles;
     }
 }
