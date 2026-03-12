@@ -69,8 +69,8 @@ public class GamePanel extends JPanel {
         heroSelectionPanel = new HeroSelectionPanel(new Dimension(Config.getScreenWidth(), Config.getScreenHeight()));
         heroSelectionPanel.setBounds(0, 0, Config.getScreenWidth(), Config.getScreenHeight());
         heroSelectionPanel.setVisible(true);
-        heroSelectionPanel.setSelectionListener(selectedHero -> {
-            selectedHero = selectedHero;
+        heroSelectionPanel.setSelectionListener(hero -> {
+            selectedHero = hero;
             startGame();
         });
         add(heroSelectionPanel);
@@ -120,9 +120,8 @@ public class GamePanel extends JPanel {
     }
 
     private Player createPlayerWithHero(TileMap tileMap, CollisionTable collisionTable, Arena arena, Hero hero) {
-        Player player = new Player(keyHandler, mouseHandler, tileMap, collisionTable, arena);
+        Player player = new Player(keyHandler, mouseHandler, tileMap, collisionTable, arena, hero);
         arena.ajouterUnite(player);
-        // Store the hero info in player - may need to extend Player class to hold this
         return player;
     }
 
@@ -173,7 +172,7 @@ public class GamePanel extends JPanel {
             
             // Create player with selected hero
             player = createPlayerWithHero(tileMap, collisionTable, arena, selectedHero);
-            playerRenderer = new PlayerRenderer(new PlayerSprites());
+            playerRenderer = new PlayerRenderer(player);
             towerRenderer = createTowerRenderer(tiles);
             projectileRenderer = new ProjectileRenderer();
             
@@ -251,7 +250,12 @@ public class GamePanel extends JPanel {
 
         // Dessin du monde
         tileRenderer.draw(g2, camera, getWidth(), getHeight());
-        playerRenderer.draw(g2, player);
+        
+        // Only draw player if alive
+        if (player.isAlive()) {
+            playerRenderer.draw(g2, player);
+        }
+        
         drawTowers(g2);
         drawAncients(g2);
         drawProjectiles(g2);

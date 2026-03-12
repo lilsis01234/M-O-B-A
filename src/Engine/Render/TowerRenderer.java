@@ -81,20 +81,11 @@ public class TowerRenderer {
         int w = ancient.width() * tileSize;
         int h = ancient.height() * tileSize;
 
-        // Use tile color from Map.txt
-        if (tiles != null) {
-            int tileId = 22;
-            if (ancient.equipe().couleur() == TeamColor.RED) {
-                tileId = 23;
-            }
-            if (tileId >= 0 && tileId < tiles.length && tiles[tileId] != null) {
-                Tile tile = tiles[tileId];
-                Color color = tile.getColor();
-                if (color != null) {
-                    g2.setColor(color);
-                    g2.fillRect(x, y, w, h);
-                }
-            }
-        }
+        // Draw team-colored fill (no wood floor background)
+        Color teamColor = ancient.equipe().couleur() == TeamColor.BLUE 
+            ? new Color(0x42, 0x99, 0xe1) 
+            : new Color(0xf5, 0x65, 0x65);
+        g2.setColor(teamColor);
+        g2.fillRect(x, y, w, h);
     }
 }

@@ -35,6 +35,13 @@ public class Player extends Entity {
     private final TileMap tileMap;
     private int level = 1;
     
+    // Hero-specific data
+    private final Hero hero;
+    private final int characterRow;
+    private final int hairRow;
+    private final String outfitFile;
+    private final Integer suitRow;
+    
     // Death and respawn tracking
     private boolean isAlive = true;
     private long deathTimeNanos = 0;
@@ -52,16 +59,40 @@ public class Player extends Entity {
     
     public Player(MoveInput moveInput, TargetInput targetInput, 
                   TileMap tileMap, CollisionTable collisionTable, Arena arena) {
+        this(moveInput, targetInput, tileMap, collisionTable, arena, null);
+    }
+    
+    public Player(MoveInput moveInput, TargetInput targetInput, 
+                  TileMap tileMap, CollisionTable collisionTable, Arena arena, Hero hero) {
         this.moveInput = moveInput;
         this.targetInput = targetInput;
         this.arena = arena;
         this.tileMap = tileMap;
+        this.hero = hero;
+        
+        // Extract hero-specific rendering data
+        if (hero != null) {
+            this.characterRow = hero.getCharacterRow();
+            this.hairRow = hero.getHairRow();
+            this.outfitFile = hero.getOutfitFile();
+            this.suitRow = hero.getSuitRow();
+            this.heroId = hero.getId();
+            
+            // Use hero's base stats
+            this.stats = new Stats(hero.getMaxHp(), hero.getMaxMana(), hero.getAttack(), hero.getDefense(), hero.getAttackSpeed());
+        } else {
+            // Default values for when no hero is specified (shouldn't happen in normal gameplay)
+            this.characterRow = 0;
+            this.hairRow = 0;
+            this.outfitFile = "Outfit1.png";
+            this.suitRow = null;
+            this.heroId = 0;
+            this.stats = new Stats(250, 200, 15, 10, 200.0);
+        }
         
         this.collisionDetector = new CollisionDetector(tileMap, collisionTable, arena);
         this.pathFollower = new PathFollower(tileMap, collisionTable, arena);
         this.movement = new PlayerMovement(moveInput, targetInput, collisionDetector, pathFollower);
-        
-        this.stats = new Stats(250, 200, 15, 10, 200.0);
         
         setX(Config.getPlayerDefaultX());
         setY(Config.getPlayerDefaultY());
@@ -226,8 +257,8 @@ public class Player extends Entity {
                 throw new DatabaseException("Hero with ID " + heroId + " not found");
             }
             
-            // Construct the Player with dependencies
-            Player player = new Player(moveInput, targetInput, tileMap, collisionTable, arena);
+            // Construct the Player with dependencies and hero
+            Player player = new Player(moveInput, targetInput, tileMap, collisionTable, arena, hero);
             
             // Set database-related fields
             player.setDatabasePlayerId(dbPlayer.getId());
@@ -431,5 +462,26 @@ public class Player extends Entity {
         
         // Player is in fountain if within 1.5 tiles of fountain center
         return distance < tileSize * 1.5;
+    }
+    
+    // Getter methods for hero-specific data
+    public int getCharacterRow() {
+        return characterRow;
+    }
+    
+    public int getHairRow() {
+        return hairRow;
+    }
+    
+    public String getOutfitFile() {
+        return outfitFile;
+    }
+    
+    public Integer getSuitRow() {
+        return suitRow;
+    }
+    
+    public Hero getHero() {
+        return hero;
     }
 }

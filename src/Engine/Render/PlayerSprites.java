@@ -19,22 +19,30 @@ public class PlayerSprites {
     private static final int COL_NORTH = 12;  // Facing North (back)
     private static final int COL_WEST = 18;   // Facing West (left)
     
-    // Row 0: Masculine, Light skin tone
-    private static final int ROW = 0;
+    private final int characterRow;
 
-    public PlayerSprites() {
+    public PlayerSprites(int characterRow) {
+        this.characterRow = characterRow;
         String path = Config.getPlayerImagePath();
         sprites = new BufferedImage[4][FRAMES_PER_DIRECTION];
         
         try {
             BufferedImage sheet = ImageIO.read(new File(path + "Character Model.png"));
             
+            // Check if characterRow is valid
+            int maxRows = sheet.getHeight() / SPRITE_SIZE;
+            int safeRow = (characterRow >= 0 && characterRow < maxRows) ? characterRow : 0;
+            
+            if (safeRow != characterRow) {
+                System.err.println("Warning: characterRow " + characterRow + " out of bounds (0-" + (maxRows-1) + "), using row 0");
+            }
+            
             // Extract sprites for each direction
             // Directions: DOWN, RIGHT, UP, LEFT (matching game's Direction enum)
-            extractDirectionFrames(sheet, ROW, COL_SOUTH, 0);  // DOWN
-            extractDirectionFrames(sheet, ROW, COL_EAST, 1);   // RIGHT
-            extractDirectionFrames(sheet, ROW, COL_NORTH, 2); // UP
-            extractDirectionFrames(sheet, ROW, COL_WEST, 3);  // LEFT
+            extractDirectionFrames(sheet, safeRow, COL_SOUTH, 0);  // DOWN
+            extractDirectionFrames(sheet, safeRow, COL_EAST, 1);   // RIGHT
+            extractDirectionFrames(sheet, safeRow, COL_NORTH, 2); // UP
+            extractDirectionFrames(sheet, safeRow, COL_WEST, 3);  // LEFT
         } catch (IOException e) {
             throw new RuntimeException("Failed to load player spritesheet from " + path + "Character Model.png", e);
         }
