@@ -125,7 +125,6 @@ public class DatabaseInitializer {
                     spell.setDamage(spellObj.get("damage").getAsInt());
                     spell.setCooldown(spellObj.get("cooldown").getAsDouble());
                     spell.setManaCost(spellObj.get("manaCost").getAsInt());
-                    spell.setLevel(1);
                     spellDAO.create(spell);
                     System.out.println("    Spell: " + spell.getName() + " (dmg:" + spell.getDamage() + 
                                      ", cd:" + spell.getCooldown() + "s, mana:" + spell.getManaCost() + ")");

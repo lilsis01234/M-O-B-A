@@ -7,8 +7,7 @@ import Engine.Render.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -23,75 +22,95 @@ public class HeroSelectionPanel extends JPanel {
     }
     
     private SelectionListener listener;
-    private List<Hero> heroes;
+    private List<Hero> allHeroes;
+    private List<Hero> filteredHeroes;
     private Hero selectedHero;
     private int selectedIndex = -1;
     
-    private Font PIXEL_FONT;
-    // ... rest of fields stay the same
-    private final Color BACKGROUND_COLOR = new Color(30, 30, 45);
-    private final Color CARD_COLOR = new Color(50, 50, 75);
-    private final Color CARD_HOVER_COLOR = new Color(70, 70, 100);
-    private final Color CARD_SELECTED_COLOR = new Color(90, 120, 180);
-    private final Color CARD_SELECTED_BORDER = new Color(255, 215, 0); // Gold border for selected
-    private final Color TEXT_COLOR = new Color(240, 240, 240);
-    private final Color STAT_COLOR = new Color(120, 220, 120);
-    private final Color BORDER_COLOR = new Color(100, 100, 140);
-    private final Color BUTTON_COLOR = new Color(60, 150, 60);
-    private final Color BUTTON_BORDER = new Color(100, 230, 100);
-    private final Color BUTTON_TEXT = new Color(255, 255, 200);
+    // Category filtering
+    private String[] categories = {"All", "Force", "Agilité", "Intelligence"};
+    private String selectedCategory = "All";
+    private int categoryTabHeight = 40;
+    private int categoryTabWidth = 100;
     
-    // Responsive card dimensions - smaller to fit many heroes
-    private static final int CARD_WIDTH = 160;
-    private static final int CARD_HEIGHT = 100;
-    private static final int CARD_SPACING = 8;
-    private static final int SPRITE_SIZE = 40;
+    // Colors - pixel art theme
+    private final Color BACKGROUND = new Color(25, 25, 40);
+    private final Color PANEL_BG = new Color(35, 35, 55);
+    private final Color CARD_BG = new Color(50, 50, 75);
+    private final Color CARD_HOVER = new Color(70, 70, 100);
+    private final Color CARD_SELECTED = new Color(90, 130, 200);
+    private final Color CARD_BORDER = new Color(100, 100, 140);
+    private final Color SELECTED_BORDER = new Color(255, 215, 0); // Gold
+    private final Color TEXT_MAIN = new Color(240, 240, 240);
+    private final Color TEXT_SECONDARY = new Color(180, 180, 200);
+    private final Color STAT_POSITIVE = new Color(120, 230, 120);
+    private final Color STAT_NEUTRAL = new Color(200, 200, 120);
+    private final Color TAB_BG = new Color(45, 45, 65);
+    private final Color TAB_SELECTED = new Color(60, 90, 140);
+    private final Color TAB_HOVER = new Color(55, 55, 80);
+    
+    // Layout
+    private final int CARD_WIDTH = 200;
+    private final int CARD_HEIGHT = 140;
+    private final int CARD_SPACING = 12;
+    private final int SPRITE_SIZE = 56;
+    private final Font FONT_TITLE = new Font("Arial", Font.BOLD, 24);
+    private final Font FONT_CARD_NAME = new Font("Arial", Font.BOLD, 13);
+    private final Font FONT_STAT = new Font("Courier New", Font.BOLD, 11);
+    private final Font FONT_DESC = new Font("Arial", Font.PLAIN, 10);
+    private final Font FONT_TAB = new Font("Arial", Font.BOLD, 12);
     
     private HeroSpriteCache spriteCache;
     
     public HeroSelectionPanel(Dimension screenSize) {
-        // No longer storing fixed dimensions - use getWidth()/getHeight() dynamically
         setPreferredSize(screenSize);
-        setBackground(BACKGROUND_COLOR);
+        setBackground(BACKGROUND);
+        setFocusable(true);
         
-        // Create pixel-style font
-        PIXEL_FONT = new Font("Courier New", Font.BOLD, 14);
-        
-        // Load heroes from database
-        loadHeroes();
-        
-        // Create sprite cache
         spriteCache = new HeroSpriteCache();
+        loadHeroes();
+        filterHeroes();
         
-        // Setup mouse listener
-        setupMouseListener();
-    }
-    
-    public void setSelectionListener(SelectionListener listener) {
-        this.listener = listener;
-    }
-    
-    private void handleSelectionConfirm() {
-        if (selectedHero != null && listener != null) {
-            listener.onHeroSelected(selectedHero);
-        }
+        setupListeners();
     }
     
     private void loadHeroes() {
         try {
             HeroDAO heroDAO = new HeroDAO();
-            heroes = heroDAO.findAll();
+            allHeroes = heroDAO.findAll();
         } catch (Exception e) {
             e.printStackTrace();
-            heroes = new ArrayList<>();
+            allHeroes = new ArrayList<>();
         }
     }
     
-    private void setupMouseListener() {
+    private void filterHeroes() {
+        filteredHeroes = new ArrayList<>();
+        for (Hero hero : allHeroes) {
+            if (selectedCategory.equals("All")) {
+                filteredHeroes.add(hero);
+            } else {
+                // Map categoryId to name (simplified)
+                String heroCategory = switch (hero.getCategoryId()) {
+                    case 1 -> "Force";
+                    case 2 -> "Agilité";
+                    case 3 -> "Intelligence";
+                    default -> "Force";
+                };
+                if (heroCategory.equals(selectedCategory)) {
+                    filteredHeroes.add(hero);
+                }
+            }
+        }
+        selectedIndex = -1;
+        selectedHero = null;
+    }
+    
+    private void setupListeners() {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                handleMouseClick(e.getX(), e.getY());
+                handleClick(e.getX(), e.getY(), e.getButton());
             }
             
             @Override
@@ -100,327 +119,359 @@ public class HeroSelectionPanel extends JPanel {
             }
         });
         
-        // Keyboard navigation
-        setFocusable(true);
-        addKeyListener(new java.awt.event.KeyAdapter() {
+        addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(java.awt.event.KeyEvent e) {
-                handleKeyPress(e.getKeyCode());
+            public void keyPressed(KeyEvent e) {
+                handleKeyNav(e.getKeyCode());
             }
         });
     }
     
-    private void handleKeyPress(int keyCode) {
-        int cols = calculateColumns();
-        if (heroes.isEmpty()) return;
-        
-        switch (keyCode) {
-            case java.awt.event.KeyEvent.VK_UP:
-                if (selectedIndex >= cols) {
-                    selectedIndex -= cols;
-                    selectedHero = heroes.get(selectedIndex);
+    private void handleClick(int x, int y, int button) {
+        // Check category tabs first
+        if (y <= categoryTabHeight) {
+            int tabX = (getWidth() - categories.length * categoryTabWidth) / 2;
+            for (int i = 0; i < categories.length; i++) {
+                int tabLeft = tabX + i * categoryTabWidth;
+                if (x >= tabLeft && x <= tabLeft + categoryTabWidth) {
+                    selectedCategory = categories[i];
+                    filterHeroes();
                     repaint();
+                    return;
                 }
-                break;
-            case java.awt.event.KeyEvent.VK_DOWN:
-                if (selectedIndex < heroes.size() - cols) {
-                    selectedIndex += cols;
-                    selectedHero = heroes.get(selectedIndex);
-                    repaint();
-                }
-                break;
-            case java.awt.event.KeyEvent.VK_LEFT:
-                if (selectedIndex % cols > 0) {
-                    selectedIndex--;
-                    selectedHero = heroes.get(selectedIndex);
-                    repaint();
-                }
-                break;
-            case java.awt.event.KeyEvent.VK_RIGHT:
-                if (selectedIndex % cols < cols - 1 && selectedIndex < heroes.size() - 1) {
-                    selectedIndex++;
-                    selectedHero = heroes.get(selectedIndex);
-                    repaint();
-                }
-                break;
-            case java.awt.event.KeyEvent.VK_ENTER:
-                if (selectedHero != null) {
-                    handleSelectionConfirm();
-                }
-                break;
+            }
+            return;
         }
-    }
-    
-    private void handleMouseClick(int mouseX, int mouseY) {
-        int cols = calculateColumns();
-        int startX = (getWidth() - (cols * CARD_WIDTH + (cols - 1) * CARD_SPACING)) / 2;
-        int startY = 80;
         
-        for (int i = 0; i < heroes.size(); i++) {
-            int col = i % cols;
-            int row = i / cols;
-            int cardX = startX + col * (CARD_WIDTH + CARD_SPACING);
-            int cardY = startY + row * (CARD_HEIGHT + CARD_SPACING);
-            
-            if (mouseX >= cardX && mouseX <= cardX + CARD_WIDTH &&
-                mouseY >= cardY && mouseY <= cardY + CARD_HEIGHT) {
-                selectedIndex = i;
-                selectedHero = heroes.get(i);
+        // Check hero cards
+        int cols = calculateColumns();
+        int cardWidth = CARD_WIDTH;
+        int cardHeight = CARD_HEIGHT;
+        int spacing = CARD_SPACING;
+        
+        int totalWidth = cols * cardWidth + (cols - 1) * spacing;
+        int startX = (getWidth() - totalWidth) / 2;
+        int startY = categoryTabHeight + 60;
+        
+        int row = (y - startY) / (cardHeight + spacing);
+        int col = (x - startX) / (cardWidth + spacing);
+        
+        int index = row * cols + col;
+        if (index >= 0 && index < filteredHeroes.size()) {
+            // Left click to select
+            if (button == MouseEvent.BUTTON1) {
+                selectedIndex = index;
+                selectedHero = filteredHeroes.get(index);
                 repaint();
-                System.out.println("Selected hero: " + selectedHero.getName());
-                break;
             }
         }
     }
     
+    private void handleKeyNav(int keyCode) {
+        if (filteredHeroes.isEmpty()) return;
+        int cols = calculateColumns();
+        
+        switch (keyCode) {
+            case KeyEvent.VK_UP:
+                if (selectedIndex >= cols) {
+                    selectedIndex -= cols;
+                    selectedHero = filteredHeroes.get(selectedIndex);
+                    repaint();
+                }
+                break;
+            case KeyEvent.VK_DOWN:
+                if (selectedIndex < filteredHeroes.size() - cols) {
+                    selectedIndex += cols;
+                    selectedHero = filteredHeroes.get(selectedIndex);
+                    repaint();
+                }
+                break;
+            case KeyEvent.VK_LEFT:
+                if (selectedIndex % cols > 0) {
+                    selectedIndex--;
+                    selectedHero = filteredHeroes.get(selectedIndex);
+                    repaint();
+                }
+                break;
+            case KeyEvent.VK_RIGHT:
+                if ((selectedIndex % cols < cols - 1) && (selectedIndex < filteredHeroes.size() - 1)) {
+                    selectedIndex++;
+                    selectedHero = filteredHeroes.get(selectedIndex);
+                    repaint();
+                }
+                break;
+            case KeyEvent.VK_ENTER:
+                if (selectedHero != null && listener != null) {
+                    listener.onHeroSelected(selectedHero);
+                }
+                break;
+        }
+    }
+    
     private int calculateColumns() {
-        int width = getWidth();
-        return Math.max(1, width / (CARD_WIDTH + CARD_SPACING));
+        int availableWidth = getWidth() - 60; // margins
+        return Math.max(1, availableWidth / (CARD_WIDTH + CARD_SPACING));
     }
     
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        
-        // Enable antialiasing for cleaner text
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.setFont(PIXEL_FONT);
         
+        drawBackground(g2);
         drawTitle(g2);
-        drawHeroCards(g2);
+        drawCategoryTabs(g2);
+        drawHeroGrid(g2);
+        drawConfirmButton(g2);
+    }
+    
+    private void drawBackground(Graphics2D g2) {
+        // Gradient background
+        GradientPaint gradient = new GradientPaint(0, 0, BACKGROUND, 0, getHeight(), new Color(15, 15, 25));
+        g2.setPaint(gradient);
+        g2.fillRect(0, 0, getWidth(), getHeight());
         
-        if (selectedHero != null) {
-            drawSelectButton(g2);
+        // Subtle grid pattern
+        g2.setColor(new Color(40, 40, 60));
+        for (int i = 0; i < getWidth(); i += 40) {
+            g2.drawLine(i, 0, i, getHeight());
+        }
+        for (int i = 0; i < getHeight(); i += 40) {
+            g2.drawLine(0, i, getWidth(), i);
         }
     }
     
     private void drawTitle(Graphics2D g2) {
-        String title = "CHOOSE YOUR HERO";
-        g2.setColor(new Color(255, 215, 0)); // Gold
-        g2.setFont(PIXEL_FONT.deriveFont(Font.BOLD, 28));
-        
+        String title = "SELECT YOUR HERO";
+        g2.setFont(FONT_TITLE);
+        g2.setColor(TEXT_MAIN);
         FontMetrics fm = g2.getFontMetrics();
-        int titleWidth = fm.stringWidth(title);
-        int x = (getWidth() - titleWidth) / 2;
-        int y = 50;
+        int x = (getWidth() - fm.stringWidth(title)) / 2;
+        g2.drawString(title, x, 45);
         
-        // Draw title with shadow
-        g2.setColor(Color.BLACK);
-        g2.drawString(title, x + 2, y + 2);
-        g2.setColor(new Color(255, 215, 0));
-        g2.drawString(title, x, y);
+        // Underline
+        g2.setColor(SELECTED_BORDER);
+        g2.drawLine(x, 55, x + fm.stringWidth(title), 55);
+    }
+    
+    private void drawCategoryTabs(Graphics2D g2) {
+        int totalWidth = categories.length * categoryTabWidth;
+        int startX = (getWidth() - totalWidth) / 2;
+        int y = categoryTabHeight - 5;
         
-        // Draw instruction
-        if (selectedHero == null) {
-            g2.setColor(new Color(200, 200, 220));
-            g2.setFont(PIXEL_FONT.deriveFont(12));
-            FontMetrics fm2 = g2.getFontMetrics();
-            String instruction = "Click a hero or use arrow keys to select";
-            int instX = (getWidth() - fm2.stringWidth(instruction)) / 2;
-            g2.drawString(instruction, instX, y + 25);
-        } else {
-            g2.setColor(new Color(180, 255, 180));
-            g2.setFont(PIXEL_FONT.deriveFont(12));
-            FontMetrics fm2 = g2.getFontMetrics();
-            String selectedText = "Selected: " + selectedHero.getName();
-            int selX = (getWidth() - fm2.stringWidth(selectedText)) / 2;
-            g2.drawString(selectedText, selX, y + 25);
+        for (int i = 0; i < categories.length; i++) {
+            int x = startX + i * categoryTabWidth;
+            boolean isSelected = categories[i].equals(selectedCategory);
+            
+            // Tab background
+            g2.setColor(isSelected ? TAB_SELECTED : TAB_BG);
+            g2.fillRoundRect(x, 10, categoryTabWidth - 4, categoryTabHeight - 15, 8, 8);
+            
+            // Tab border
+            g2.setColor(isSelected ? SELECTED_BORDER : CARD_BORDER);
+            g2.setStroke(isSelected ? new BasicStroke(2) : new BasicStroke(1));
+            g2.drawRoundRect(x, 10, categoryTabWidth - 4, categoryTabHeight - 15, 8, 8);
+            
+            // Tab text
+            g2.setColor(TEXT_MAIN);
+            g2.setFont(FONT_TAB);
+            FontMetrics fm = g2.getFontMetrics();
+            String cat = categories[i];
+            int textX = x + (categoryTabWidth - 4 - fm.stringWidth(cat)) / 2;
+            g2.drawString(cat, textX, 30);
         }
     }
     
-    private void drawHeroCards(Graphics2D g2) {
-        int cols = calculateColumns();
-        int rows = (int) Math.ceil((double) heroes.size() / cols);
-        
-        // Calculate total grid height
-        int totalGridHeight = rows * (CARD_HEIGHT + CARD_SPACING) - CARD_SPACING;
-        
-        // Calculate startX to center horizontally
-        int startX = (getWidth() - (cols * CARD_WIDTH + (cols - 1) * CARD_SPACING)) / 2;
-        
-        // Calculate startY: try to center vertically, but leave room for title/button
-        int topMargin = 80;
-        int bottomMargin = 80;
-        int availableHeight = getHeight() - topMargin - bottomMargin;
-        int startY;
-        if (totalGridHeight <= availableHeight) {
-            // Center the grid
-            startY = topMargin + (availableHeight - totalGridHeight) / 2;
-        } else {
-            // Not enough space, start at topMargin
-            startY = topMargin;
+    private void drawHeroGrid(Graphics2D g2) {
+        if (filteredHeroes.isEmpty()) {
+            g2.setFont(FONT_CARD_NAME);
+            g2.setColor(TEXT_SECONDARY);
+            String msg = "No heroes in this category";
+            FontMetrics fm = g2.getFontMetrics();
+            int x = (getWidth() - fm.stringWidth(msg)) / 2;
+            g2.drawString(msg, x, getHeight() / 2);
+            return;
         }
         
-        for (int i = 0; i < heroes.size(); i++) {
-            Hero hero = heroes.get(i);
+        int cols = calculateColumns();
+        int cardW = CARD_WIDTH;
+        int cardH = CARD_HEIGHT;
+        int spacing = CARD_SPACING;
+        
+        int gridWidth = cols * cardW + (cols - 1) * spacing;
+        int startX = (getWidth() - gridWidth) / 2;
+        int startY = categoryTabHeight + 60;
+        
+        int rows = (int) Math.ceil((double) filteredHeroes.size() / cols);
+        int gridHeight = rows * (cardH + spacing) - spacing;
+        
+        // Center grid if fits
+        if (gridHeight < getHeight() - startY - 100) {
+            startY += (getHeight() - startY - 100 - gridHeight) / 2;
+        }
+        
+        for (int i = 0; i < filteredHeroes.size(); i++) {
+            Hero hero = filteredHeroes.get(i);
             int col = i % cols;
             int row = i / cols;
-            int cardX = startX + col * (CARD_WIDTH + CARD_SPACING);
-            int cardY = startY + row * (CARD_HEIGHT + CARD_SPACING);
+            int x = startX + col * (cardW + spacing);
+            int y = startY + row * (cardH + spacing);
             
-            drawCard(g2, hero, cardX, cardY, i == selectedIndex);
+            drawCard(g2, hero, x, y, i == selectedIndex);
         }
     }
     
-    private void drawCard(Graphics2D g2, Hero hero, int x, int y, boolean isSelected) {
-        // Card background with subtle gradient effect
-        if (isSelected) {
-            g2.setColor(CARD_SELECTED_COLOR);
-        } else {
-            g2.setColor(CARD_HOVER_COLOR);
-        }
-        g2.fillRect(x, y, CARD_WIDTH, CARD_HEIGHT);
+    private void drawCard(Graphics2D g2, Hero hero, int x, int y, boolean selected) {
+        // Card shadow
+        g2.setColor(new Color(0, 0, 0, 50));
+        g2.fillRoundRect(x + 3, y + 3, CARD_WIDTH, CARD_HEIGHT, 12, 12);
         
-        // Card border - thicker and gold for selected
-        if (isSelected) {
-            g2.setColor(CARD_SELECTED_BORDER);
+        // Card background
+        g2.setColor(selected ? CARD_SELECTED : CARD_HOVER);
+        g2.fillRoundRect(x, y, CARD_WIDTH, CARD_HEIGHT, 12, 12);
+        
+        // Card border
+        if (selected) {
+            g2.setColor(SELECTED_BORDER);
             g2.setStroke(new BasicStroke(3));
         } else {
-            g2.setColor(BORDER_COLOR);
+            g2.setColor(CARD_BORDER);
             g2.setStroke(new BasicStroke(1));
         }
-        g2.drawRect(x, y, CARD_WIDTH, CARD_HEIGHT);
+        g2.drawRoundRect(x, y, CARD_WIDTH, CARD_HEIGHT, 12, 12);
         
-        // Draw hero sprite
+        // Sprite
         BufferedImage sprite = spriteCache.getSprite(hero, Direction.DOWN, 1);
         if (sprite != null) {
-            int spriteSize = SPRITE_SIZE;
-            int spriteX = x + (CARD_WIDTH - spriteSize) / 2;
+            int spriteX = x + (CARD_WIDTH - SPRITE_SIZE) / 2;
             int spriteY = y + 8;
-            g2.drawImage(sprite, spriteX, spriteY, spriteSize, spriteSize, null);
+            g2.drawImage(sprite, spriteX, spriteY, SPRITE_SIZE, SPRITE_SIZE, null);
+            
+            // Sprite border
+            g2.setColor(selected ? SELECTED_BORDER : new Color(80, 80, 110));
+            g2.setStroke(new BasicStroke(2));
+            g2.drawRoundRect(spriteX - 2, spriteY - 2, SPRITE_SIZE + 4, SPRITE_SIZE + 4, 6, 6);
         }
         
-        // Draw hero name
+        // Name
         String name = hero.getName().toUpperCase();
-        g2.setColor(TEXT_COLOR);
-        g2.setFont(PIXEL_FONT.deriveFont(Font.BOLD, 11));
+        g2.setFont(FONT_CARD_NAME);
+        g2.setColor(TEXT_MAIN);
         FontMetrics fm = g2.getFontMetrics();
-        int nameWidth = fm.stringWidth(name);
-        int nameX = x + (CARD_WIDTH - nameWidth) / 2;
-        int nameY = y + SPRITE_SIZE + 14;
-        g2.drawString(name, nameX, nameY);
+        int nameW = fm.stringWidth(name);
+        int nameX = x + (CARD_WIDTH - nameW) / 2;
+        g2.drawString(name, nameX, y + SPRITE_SIZE + 22);
         
-        // Draw compact stats (HP, ATK, DEF only)
-        drawCompactStats(g2, hero, x + 10, nameY + 10);
+        // Stats horizontally (HP | ATK | DEF)
+        g2.setFont(FONT_STAT);
+        FontMetrics fmStat = g2.getFontMetrics();
+        String stats = String.format("HP:%d  ATK:%d  DEF:%d", 
+            hero.getMaxHp(), hero.getAttack(), hero.getDefense());
+        int statsW = fmStat.stringWidth(stats);
+        int statsX = x + (CARD_WIDTH - statsW) / 2;
+        g2.setColor(STAT_POSITIVE);
+        g2.drawString(stats, statsX, y + SPRITE_SIZE + 38);
         
-        // Draw short description (2 lines max)
-        drawShortDescription(g2, hero, x + 10, nameY + 24, CARD_WIDTH - 20);
+        // Class/Category indicator
+        String classText = getCategoryShort(hero.getCategoryId());
+        g2.setFont(FONT_DESC);
+        g2.setColor(TEXT_SECONDARY);
+        FontMetrics fmDesc = g2.getFontMetrics();
+        int classW = fmDesc.stringWidth(classText);
+        int classX = x + (CARD_WIDTH - classW) / 2;
+        g2.drawString(classText, classX, y + SPRITE_SIZE + 52);
         
-        // Draw selection indicator
-        if (isSelected) {
-            drawSelectionIndicator(g2, x, y);
+        // Short description (2 lines)
+        String desc = hero.getHistory();
+        if (desc.length() > 60) {
+            desc = desc.substring(0, 57) + "...";
         }
+        g2.setFont(FONT_DESC);
+        drawWrappedString(g2, desc, x + 10, y + SPRITE_SIZE + 62, CARD_WIDTH - 20, 11);
     }
     
-    private void drawSelectionIndicator(Graphics2D g2, int x, int y) {
-        // Draw a small gold star/check in top-right corner
-        int starSize = 8;
-        int starX = x + CARD_WIDTH - starSize - 4;
-        int starY = y + 4;
-        
-        g2.setColor(CARD_SELECTED_BORDER);
-        g2.fillOval(starX, starY, starSize, starSize);
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 6));
-        g2.drawString("✓", starX + 2, starY + 6);
+    private String getCategoryShort(int catId) {
+        return switch (catId) {
+            case 1 -> "[FORCE]";
+            case 2 -> "[AGILITE]";
+            case 3 -> "[INTELLIGENCE]";
+            default -> "[UNKNOWN]";
+        };
     }
     
-    private void drawCompactStats(Graphics2D g2, Hero hero, int x, int y) {
-        g2.setFont(PIXEL_FONT.deriveFont(10));
-        g2.setColor(STAT_COLOR);
-        // Line 1: HP and ATK
-        g2.drawString("HP:" + hero.getMaxHp(), x, y);
-        g2.drawString("ATK:" + hero.getAttack(), x + 70, y);
-        // Line 2: DEF
-        g2.drawString("DEF:" + hero.getDefense(), x, y + 12);
-    }
-    
-    private void drawShortDescription(Graphics2D g2, Hero hero, int x, int y, int maxWidth) {
-        g2.setColor(new Color(180, 180, 200));
-        g2.setFont(PIXEL_FONT.deriveFont(9));
-        String history = hero.getHistory();
-        // Truncate very long text
-        if (history.length() > 80) {
-            history = history.substring(0, 77) + "...";
-        }
-        
-        // Simple word wrap, max 2 lines
-        String[] words = history.split(" ");
+    private void drawWrappedString(Graphics2D g2, String text, int x, int y, int maxWidth, int lineHeight) {
+        String[] words = text.split(" ");
         StringBuilder line = new StringBuilder();
-        int lineHeight = 11;
-        int lines = 0;
+        int currentY = y;
         
         for (String word : words) {
-            if (lines >= 2) break;
-            String testLine = line.length() > 0 ? line + " " + word : word;
-            int lineWidth = g2.getFontMetrics().stringWidth(testLine);
-            if (lineWidth > maxWidth && line.length() > 0) {
-                g2.drawString(line.toString(), x, y + lines * lineHeight);
+            String test = line.length() > 0 ? line + " " + word : word;
+            int w = g2.getFontMetrics().stringWidth(test);
+            if (w > maxWidth && line.length() > 0) {
+                g2.drawString(line.toString(), x, currentY);
                 line = new StringBuilder(word);
-                lines++;
+                currentY += lineHeight;
             } else {
-                line = new StringBuilder(testLine);
+                line = new StringBuilder(test);
             }
         }
-        if (line.length() > 0 && lines < 2) {
-            g2.drawString(line.toString(), x, y + lines * lineHeight);
+        if (line.length() > 0) {
+            g2.drawString(line.toString(), x, currentY);
         }
     }
     
-    private void drawSelectButton(Graphics2D g2) {
-        String buttonText = "▶ START GAME";
-        g2.setFont(PIXEL_FONT.deriveFont(Font.BOLD, 16));
-        FontMetrics fm = g2.getFontMetrics();
-        int buttonWidth = fm.stringWidth(buttonText) + 50;
-        int buttonHeight = 36;
-        int buttonX = (getWidth() - buttonWidth) / 2;
-        int buttonY = getHeight() - 70;
+    private void drawConfirmButton(Graphics2D g2) {
+        if (selectedHero == null) return;
         
-        // Button background with gradient effect
-        g2.setColor(BUTTON_COLOR);
-        g2.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+        String text = "▶ START GAME WITH " + selectedHero.getName().toUpperCase();
+        g2.setFont(FONT_TAB.deriveFont(Font.BOLD, 14));
+        FontMetrics fm = g2.getFontMetrics();
+        int btnW = fm.stringWidth(text) + 40;
+        int btnH = 36;
+        int btnX = (getWidth() - btnW) / 2;
+        int btnY = getHeight() - 60;
+        
+        // Button shadow
+        g2.setColor(new Color(0, 0, 0, 100));
+        g2.fillRoundRect(btnX + 3, btnY + 3, btnW, btnH, 10, 10);
+        
+        // Button bg
+        GradientPaint btnGrad = new GradientPaint(btnX, btnY, new Color(50, 150, 50), 
+                                                  btnX, btnY + btnH, new Color(30, 100, 30));
+        g2.setPaint(btnGrad);
+        g2.fillRoundRect(btnX, btnY, btnW, btnH, 10, 10);
         
         // Button border
-        g2.setColor(BUTTON_BORDER);
+        g2.setColor(new Color(100, 230, 100));
         g2.setStroke(new BasicStroke(2));
-        g2.drawRect(buttonX, buttonY, buttonWidth, buttonHeight);
-        
-        // Button highlight (top line)
-        g2.setColor(new Color(150, 255, 150));
-        g2.drawLine(buttonX + 2, buttonY + 2, buttonX + buttonWidth - 3, buttonY + 2);
-        
-        // Button shadow (bottom line)
-        g2.setColor(new Color(40, 100, 40));
-        g2.drawLine(buttonX + 2, buttonY + buttonHeight - 2, buttonX + buttonWidth - 3, buttonY + buttonHeight - 2);
+        g2.drawRoundRect(btnX, btnY, btnW, btnH, 10, 10);
         
         // Button text
-        g2.setColor(BUTTON_TEXT);
-        int textX = buttonX + (buttonWidth - fm.stringWidth(buttonText)) / 2;
-        int textY = buttonY + (buttonHeight + fm.getAscent()) / 2 - 2;
-        g2.drawString(buttonText, textX, textY);
+        g2.setColor(new Color(255, 255, 200));
+        int textX = btnX + (btnW - fm.stringWidth(text)) / 2;
+        int textY = btnY + (btnH + fm.getAscent()) / 2 - 2;
+        g2.drawString(text, textX, textY);
     }
     
     public Hero getSelectedHero() {
         return selectedHero;
     }
     
-    public boolean isHeroSelected() {
-        return selectedHero != null;
+    public void setSelectionListener(SelectionListener listener) {
+        this.listener = listener;
     }
     
+    // Sprite cache with Outfit mapping
     private class HeroSpriteCache {
         private final java.util.Map<String, BufferedImage> cache = new java.util.HashMap<>();
         
         public BufferedImage getSprite(Hero hero, Direction direction, int frame) {
-            // Try to get from cache
             String key = hero.getId() + "_" + direction + "_" + frame;
             BufferedImage cached = cache.get(key);
-            if (cached != null) {
-                return cached;
-            }
+            if (cached != null) return cached;
             
-            // Compose sprite
             BufferedImage composite = composeHeroSprite(hero, direction, frame);
             if (composite != null) {
                 cache.put(key, composite);
@@ -430,49 +481,37 @@ public class HeroSelectionPanel extends JPanel {
         
         private BufferedImage composeHeroSprite(Hero hero, Direction direction, int frame) {
             try {
-                // Load base character
-                BufferedImage base = loadCharacterPart(
+                BufferedImage base = loadPart(
                     "src/Resource/Characters/MetroCity/CharacterModel/Character Model.png",
                     hero.getCharacterRow(), direction, frame
                 );
-                if (base == null) return null;
+                if (base == null) {
+                    base = loadPart(
+                        "src/Resource/Characters/MetroCity/CharacterModel/Character Model.png",
+                        0, direction, frame
+                    );
+                }
                 
-                // Load hair
-                BufferedImage hair = loadCharacterPart(
+                BufferedImage hair = loadPart(
                     "src/Resource/Characters/MetroCity/Hair/Hairs.png",
                     hero.getHairRow(), direction, frame
                 );
-                
-                // Determine if using suit or outfit
-                boolean useSuit = hero.getSuitRow() != null;
-                BufferedImage outfitOrSuit;
-                
-                if (useSuit) {
-                    outfitOrSuit = loadCharacterPart(
-                        "src/Resource/Characters/MetroCity/Outfits/Suit.png",
-                        hero.getSuitRow(), direction, frame
+                if (hair == null) {
+                    hair = loadPart(
+                        "src/Resource/Characters/MetroCity/Hair/Hairs.png",
+                        0, direction, frame
                     );
-                } else {
-                    outfitOrSuit = loadOutfit(hero.getOutfitFile(), direction, frame);
                 }
                 
-                // Composite images in order: base -> outfit/suit -> hair (if no headwear)
-                BufferedImage composite = new BufferedImage(
-                    base.getWidth(), base.getHeight(),
-                    BufferedImage.TYPE_INT_ARGB
-                );
+                String outfitFile = mapOutfit(hero.getOutfitFile());
+                BufferedImage outfit = loadOutfit(outfitFile, direction, frame);
+                if (outfit == null) outfit = loadOutfit("Outfit1.png", direction, frame);
+                
+                BufferedImage composite = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g = composite.createGraphics();
                 g.drawImage(base, 0, 0, null);
-                
-                if (outfitOrSuit != null) {
-                    g.drawImage(outfitOrSuit, 0, 0, null);
-                }
-                
-                // Draw hair only if suit doesn't have headwear
-                if (hair != null && (!useSuit || (useSuit && !suitHasHeadwear(hero.getSuitRow())))) {
-                    g.drawImage(hair, 0, 0, null);
-                }
-                
+                if (outfit != null) g.drawImage(outfit, 0, 0, null);
+                if (hair != null) g.drawImage(hair, 0, 0, null);
                 g.dispose();
                 return composite;
             } catch (Exception e) {
@@ -481,81 +520,34 @@ public class HeroSelectionPanel extends JPanel {
             }
         }
         
-        private BufferedImage loadCharacterPart(String path, int row, Direction direction, int frame) {
+        private BufferedImage loadPart(String path, int row, Direction direction, int frame) {
             try {
                 BufferedImage sheet = ImageIO.read(new File(path));
                 int spriteSize = 32;
-                
-                // Bounds checking
                 int maxRows = sheet.getHeight() / spriteSize;
-                if (row < 0 || row >= maxRows) {
-                    System.err.println("Warning: Row " + row + " out of bounds for " + path + " (max rows: " + maxRows + "), using row 0");
-                    row = 0; // clamp to 0
-                }
+                if (row < 0 || row >= maxRows) row = 0;
                 
                 int colStart = getColumnOffset(direction);
                 int x = (colStart + (frame - 1)) * spriteSize;
                 int y = row * spriteSize;
                 
-                // Additional check for x bounds
-                if (x + spriteSize > sheet.getWidth()) {
-                    System.err.println("Warning: Column out of bounds for " + path + " at row " + row + ", dir " + direction);
-                    return null;
-                }
-                
+                if (x + spriteSize > sheet.getWidth()) return null;
                 return sheet.getSubimage(x, y, spriteSize, spriteSize);
             } catch (IOException e) {
-                System.err.println("Failed to load: " + path + " row " + row);
                 return null;
             }
         }
         
         private BufferedImage loadOutfit(String outfitFile, Direction direction, int frame) {
             try {
-                // Map the old outfit name to one of the 6 available Outfit#.png files
-                String mappedOutfit = mapToAvailableOutfit(outfitFile);
-                String path = "src/Resource/Characters/MetroCity/Outfits/" + mappedOutfit;
-                BufferedImage sheet = ImageIO.read(new File(path));
+                BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/MetroCity/Outfits/" + outfitFile));
                 int spriteSize = 32;
-                
-                // Outfit files have all animations in row 0 (24 columns: 6 per direction)
                 int colStart = getColumnOffset(direction);
                 int x = (colStart + (frame - 1)) * spriteSize;
-                int y = 0;
-                
-                return sheet.getSubimage(x, y, spriteSize, spriteSize);
+                return sheet.getSubimage(x, 0, spriteSize, spriteSize);
             } catch (IOException e) {
-                System.err.println("Failed to load outfit: " + outfitFile + " (mapped to " + mapToAvailableOutfit(outfitFile) + ")");
-                // Fallback to Outfit1.png
-                try {
-                    BufferedImage defaultSheet = ImageIO.read(new File("src/Resource/Characters/MetroCity/Outfits/Outfit1.png"));
-                    int spriteSize = 32;
-                    int colStart = getColumnOffset(direction);
-                    int x = (colStart + (frame - 1)) * spriteSize;
-                    int y = 0;
-                    return defaultSheet.getSubimage(x, y, spriteSize, spriteSize);
-                } catch (IOException ex) {
-                    System.err.println("Failed to load default outfit");
-                    return null;
-                }
+                return null;
             }
-        }
-        
-        private String mapToAvailableOutfit(String outfitFile) {
-            // There are 6 outfit files: Outfit1.png to Outfit6.png
-            // We'll use deterministic hashing to assign each unique outfit name to one of the 6
-            if (outfitFile == null) return "Outfit1.png";
-            
-            // Clean the filename (remove .png if present)
-            String cleanName = outfitFile.replace(".png", "").toLowerCase();
-            
-            // Available outfits
-            String[] outfits = {"Outfit1.png", "Outfit2.png", "Outfit3.png", "Outfit4.png", "Outfit5.png", "Outfit6.png"};
-            
-            // Simple hash-based mapping to get consistent assignment
-            int hash = cleanName.hashCode();
-            int index = Math.abs(hash) % outfits.length;
-            return outfits[index];
         }
         
         private int getColumnOffset(Direction direction) {
@@ -567,9 +559,12 @@ public class HeroSelectionPanel extends JPanel {
             };
         }
         
-        private boolean suitHasHeadwear(int suitRow) {
-            // Rows 0,1,3 have headwear; row 2 (Formal Suit) doesn't
-            return suitRow != 2;
+        private String mapOutfit(String outfitFile) {
+            if (outfitFile == null) return "Outfit1.png";
+            String clean = outfitFile.replace(".png", "").toLowerCase();
+            String[] outfits = {"Outfit1.png","Outfit2.png","Outfit3.png","Outfit4.png","Outfit5.png","Outfit6.png"};
+            int hash = Math.abs(clean.hashCode());
+            return outfits[hash % outfits.length];
         }
     }
 }
