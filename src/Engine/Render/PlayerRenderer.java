@@ -19,15 +19,7 @@ public class PlayerRenderer {
         int tileSize = Config.getTileSize();
         g2.drawImage(image, (int) player.getX(), (int) player.getY(), tileSize, tileSize, null);
         
-        drawLevel(g2, player, tileSize);
         drawHealthManaBars(g2, player, tileSize);
-    }
-    
-    private void drawLevel(Graphics2D g2, Player player, int tileSize) {
-        int x = (int) player.getX() + 2;
-        int y = (int) player.getY() - 20;
-        g2.setColor(java.awt.Color.YELLOW);
-        g2.drawString("Lv " + player.level(), x, y);
     }
 
     private void drawHealthManaBars(Graphics2D g2, Player player, int tileSize) {
@@ -38,26 +30,22 @@ public class PlayerRenderer {
         
         Stats stats = player.stats();
         if (stats != null) {
-            // Health bar background: light grey
-            g2.setColor(java.awt.Color.LIGHT_GRAY);
+            g2.setColor(java.awt.Color.RED);
             g2.fillRect(x, y, barWidth, barHeight);
             
             double hpPercent = (double) stats.hp() / stats.maxHp();
             if (hpPercent > 0) {
-                // Health fill: green
                 g2.setColor(java.awt.Color.GREEN);
                 g2.fillRect(x, y, (int) (barWidth * hpPercent), barHeight);
             }
             
             if (stats.maxMana() > 0) {
                 int manaY = y + barHeight + 2;
-                // Mana bar background: light grey
-                g2.setColor(java.awt.Color.LIGHT_GRAY);
+                g2.setColor(java.awt.Color.BLUE);
                 g2.fillRect(x, manaY, barWidth, barHeight);
                 
                 double manaPercent = (double) stats.mana() / stats.maxMana();
                 if (manaPercent > 0) {
-                    // Mana fill: blue
                     g2.setColor(new java.awt.Color(100, 100, 255));
                     g2.fillRect(x, manaY, (int) (barWidth * manaPercent), barHeight);
                 }
