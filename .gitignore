@@ -28,5 +28,12 @@ bin/
 ### Java build artifacts ###
 *.class
 
+### Database artifacts ###
+*.db
+
+### Windows artifacts ###
+nul
+sources.txt
+
 ### Mac OS ###
 .DS_Store

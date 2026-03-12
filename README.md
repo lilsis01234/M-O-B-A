@@ -38,7 +38,14 @@ This project is a fully functional 2D MOBA game engine with smooth movement, A* 
   - Attack animation: Charge-up sequence with orb expansion
   - Projectile launch at midpoint of attack animation
 - **Bases**: Ancients (main structures)
-- **Extensible system**: Units, spells, equipment
+- **Hero System**: 48 unique heroes loaded from JSON with distinct appearances
+- **No external dependencies**: Pure Java standard library (no Gson, no database)
+
+### Recent Changes (v1.1.0)
+- ✅ Fixed hero rendering: Each hero now displays unique appearance based on characterRow, hairRow, and outfitFile
+- ✅ Removed Gson dependency: Replaced with custom JSON parser using only Java standard library
+- ✅ Simplified data layer: Removed database system, now using direct JSON file loading
+- ✅ Improved sprite caching: Cache key now includes visual attributes for proper hero differentiation
 
 ## Controls
 
@@ -82,6 +89,8 @@ src/
 │
 ├── Core/                    # Business logic (engine-independent)
 │   ├── Config.java         # Global game configuration
+│   ├── Database/           # Data loading (JSON-based, no external dependencies)
+│   │   └── JsonDataProvider.java  # Custom JSON parser for heroes & spells
 │   │
 │   ├── Entity/             # Entities and physics
 │   │   ├── Entity.java            # Base class
@@ -151,12 +160,13 @@ src/
     │   ├── PlayerRenderer.java # Player rendering
     │   ├── PlayerSprites.java  # Player sprite loading
     │   ├── TowerRenderer.java  # Tower rendering
+    │   ├── HeroSpriteCache.java # Hero sprite composition cache
     │   └── ClickEffect.java    # Click visual effect
     │
     └── Tile/                   # Tile loading
         ├── Tile.java           # Tile representation
         ├── TileLoader.java    # Tile loader
-        └── MapParser.java    # Map parser
+        └── MapParser.java      # Map parser
 ```
 
 ## Technical Architecture

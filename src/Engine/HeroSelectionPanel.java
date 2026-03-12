@@ -1,7 +1,7 @@
 package Engine;
 
 import Engine.Render.HeroSpriteCache;
-import Core.Database.dao.HeroDAO;
+import Core.Database.JsonDataProvider;
 import Core.Database.model.Hero;
 import Core.Entity.Direction;
 
@@ -10,11 +10,9 @@ import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
+import java.util.List;
 
 public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     
@@ -98,9 +96,9 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     
     private void loadHeroes() {
         try {
-            HeroDAO heroDAO = new HeroDAO();
-            allHeroes = heroDAO.findAll();
-        } catch (Exception e) {
+            JsonDataProvider dataProvider = JsonDataProvider.getInstance();
+            allHeroes = dataProvider.getAllHeroes();
+        } catch (IOException e) {
             e.printStackTrace();
             allHeroes = new ArrayList<>();
         }

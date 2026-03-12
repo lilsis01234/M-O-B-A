@@ -40,6 +40,10 @@ Business logic independent of graphics engine.
 #### `Core.Config`
 All game configuration constants.
 
+#### `Core.Database`
+Data loading system (JSON-based, no external dependencies).
+- `JsonDataProvider.java` : Custom JSON parser that loads heroes and spells from `src/Data/heroes.json`
+
 #### `Core.Entity`
 Entity and physics management.
 
@@ -52,8 +56,8 @@ Entity and physics management.
 | `CollisionDetector` | World collision detection |
 | `Direction` | Cardinal direction enum |
 | `MathUtils` | Math utility functions |
-| `HitboxUtils` | Collision box utilities |
-| `TileUtils` | Pixel-tile conversions |
+| `HitboxUtils` : Collision box utilities |
+| `TileUtils` : Pixel-tile conversions |
 
 #### `Core.Input`
 Input interfaces for decoupling.
@@ -150,6 +154,7 @@ Graphics rendering system.
 - `Camera` : View management (zoom, pan)
 - `TileRenderer` : Tile rendering with culling
 - `PlayerRenderer` : Player sprite rendering
+- `HeroSpriteCache` : Composes hero sprites from character, hair, and outfit components
 - `PlayerSprites` : Player image loading
 - `TowerRenderer` : Tower rendering with sprite animations (21 frames: idle 6-13, attack 14-20). Renders towers centered on 2x2 tile blocks, health bar positioned above tower (4px tall, 10px padding).
 - `ClickEffect` : Click ground visual effect

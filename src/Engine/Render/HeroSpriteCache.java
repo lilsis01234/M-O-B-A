@@ -10,7 +10,8 @@ public class HeroSpriteCache {
     private final java.util.Map<String, BufferedImage> cache = new java.util.HashMap<>();
 
     public BufferedImage getSprite(Hero hero, Direction direction, int frame) {
-        String key = hero.getId() + "_" + direction + "_" + frame;
+        String key = hero.getCharacterRow() + "_" + hero.getHairRow() + "_" + 
+                      hero.getOutfitFile() + "_" + direction + "_" + frame;
         BufferedImage cached = cache.get(key);
         if (cached != null) return cached;
 
@@ -110,10 +111,11 @@ public class HeroSpriteCache {
     }
 
     private String mapOutfit(String outfitFile) {
-        if (outfitFile == null) return "Outfit1.png";
-        String clean = outfitFile.replace(".png", "").toLowerCase();
+        // Always use the generic outfits, mapping based on outfitFile string to ensure
+        // different heroes get different outfits
         String[] outfits = {"Outfit1.png", "Outfit2.png", "Outfit3.png", "Outfit4.png", "Outfit5.png", "Outfit6.png"};
-        int hash = Math.abs(clean.hashCode());
+        if (outfitFile == null) return "Outfit1.png";
+        int hash = Math.abs(outfitFile.hashCode());
         return outfits[hash % outfits.length];
     }
 }
