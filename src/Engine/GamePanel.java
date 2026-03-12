@@ -197,7 +197,6 @@ public class GamePanel extends JPanel {
         drawAncients(g2);
         drawProjectiles(g2);
         drawClickEffects(g2);
-        }
 
         g2.setTransform(oldTransform);
     }
