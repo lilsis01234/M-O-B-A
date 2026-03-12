@@ -13,18 +13,18 @@ import Engine.Render.*;
 import Engine.Tile.MapParser;
 import Engine.Tile.Tile;
 import Engine.Tile.TileLoader;
-import Engine.Tile.TileRenderer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-public class GamePanel extends JPanel implements Runnable {
+/**
+ * Panel principal du jeu.
+ * Gère l'affichage (rendering) et initialise tous les composants.
+ */
+public class GamePanel extends JPanel {
     
     private final KeyHandler keyHandler;
     private final MouseHandler mouseHandler;
@@ -33,120 +33,141 @@ public class GamePanel extends JPanel implements Runnable {
     private final PlayerRenderer playerRenderer;
     private final TowerRenderer towerRenderer;
     private final Camera camera;
-    private final List<ClickEffect> clickEffects = new ArrayList<>();
     private final Arena arena;
-    private Thread gameThread;
+    private final GameEngine gameEngine;
     
     public GamePanel() {
-        setPreferredSize(new Dimension(EngineConfig.getScreenWidth(), EngineConfig.getScreenHeight()));
+        setPreferredSize(new Dimension(Config.getScreenWidth(), Config.getScreenHeight()));
         setBackground(Color.black);
         setDoubleBuffered(true);
         
+        // Initialisation des handlers d'input
         keyHandler = new KeyHandler();
         mouseHandler = new MouseHandler();
-        camera = new Camera(EngineConfig.getScreenWidth(), EngineConfig.getScreenHeight());
+        camera = new Camera(Config.getScreenWidth(), Config.getScreenHeight());
         mouseHandler.setCamera(camera);
 
-        MapParser mapParser = new MapParser();
-        MapParser.MapData mapData = mapParser.parse(EngineConfig.getMapFilePath());
-        TileMap tileMap = new TileMap(mapData.tileNumbers(), mapData.columns(), mapData.rows());
-        camera.setWorldSize(tileMap.getColumns() * Config.getTileSize(), tileMap.getRows() * Config.getTileSize());
+        // Chargement de la carte
+        TileMap tileMap = loadTileMap();
+        setupCamera(tileMap);
         
-        // Initialize camera at bottom-left
-        camera.setX(0);
-        camera.setY((float) (camera.getWorldHeight() - camera.getViewportHeight() / camera.getZoom()));
-
-        TileLoader tileLoader = new TileLoader();
-        Tile[] tiles = tileLoader.load(EngineConfig.getMapFilePath(), EngineConfig.getMaxTiles());
-        CollisionTable collisionTable = new CollisionTable(tileLoader.buildCollisionTable(tiles));
+        // Chargement des tuiles
+        Tile[] tiles = loadTiles();
+        CollisionTable collisionTable = new CollisionTable(buildCollisionTable(tiles));
 
         tileRenderer = new TileRenderer(tileMap, tiles);
         
-        // --- Initialize MOBA Elements ---
-        arena = new Arena();
+        // Création de l'arène (tours, bases)
+        arena = createArena(tileMap);
         
-        // Define Team 1 (Blue)
+        // Création du joueur
+        player = createPlayer(tileMap, collisionTable, arena);
+        playerRenderer = new PlayerRenderer(new PlayerSprites());
+        towerRenderer = createTowerRenderer(tiles);
+        
+        setupInputListeners();
+        setupResizeListener();
+        
+        // Initialisation du moteur de jeu
+        gameEngine = new GameEngine(player, camera, mouseHandler, arena);
+    }
+
+    private TileMap loadTileMap() {
+        MapParser mapParser = new MapParser();
+        MapParser.MapData mapData = mapParser.parse(Config.getMapFilePath());
+        return new TileMap(mapData.tileNumbers(), mapData.columns(), mapData.rows());
+    }
+
+    private void setupCamera(TileMap tileMap) {
+        camera.setWorldSize(tileMap.getColumns() * Config.getTileSize(), tileMap.getRows() * Config.getTileSize());
+        camera.setX(0);
+        camera.setY((float) (camera.getWorldHeight() - camera.getViewportHeight() / camera.getZoom()));
+    }
+
+    private Tile[] loadTiles() {
+        TileLoader tileLoader = new TileLoader();
+        return tileLoader.load(Config.getMapFilePath(), Config.getMaxTiles());
+    }
+
+    private boolean[] buildCollisionTable(Tile[] tiles) {
+        TileLoader tileLoader = new TileLoader();
+        return tileLoader.buildCollisionTable(tiles);
+    }
+
+    private Arena createArena(TileMap tileMap) {
+        Arena arena = new Arena();
+        
+        // Équipe bleue (Radiant)
         Base blueBase = new Base(5000);
         Fontaine blueFontaine = new Fontaine(new Vec2(5, 95), 100, 50);
         Equipe blueTeam = new Equipe("Radiant", TeamColor.BLUE, blueBase, blueFontaine);
         
-        // Define Team 2 (Red)
+        // Équipe rouge (Dire)
         Base redBase = new Base(5000);
         Fontaine redFontaine = new Fontaine(new Vec2(95, 5), 100, 50);
         Equipe redTeam = new Equipe("Dire", TeamColor.RED, redBase, redFontaine);
         
         arena.initializeFromMap(tileMap, blueTeam, redTeam);
         
-        // Player must be created AFTER arena is initialized
-        player = new Player(keyHandler, mouseHandler, tileMap, collisionTable, arena);
-        playerRenderer = new PlayerRenderer(new PlayerSprites());
-        towerRenderer = new TowerRenderer();
-        towerRenderer.setTiles(tiles);
-        
+        return arena;
+    }
+
+    private Player createPlayer(TileMap tileMap, CollisionTable collisionTable, Arena arena) {
+        return new Player(keyHandler, mouseHandler, tileMap, collisionTable, arena);
+    }
+
+    private TowerRenderer createTowerRenderer(Tile[] tiles) {
+        TowerRenderer renderer = new TowerRenderer();
+        renderer.setTiles(tiles);
+        return renderer;
+    }
+
+    private void setupInputListeners() {
         addKeyListener(keyHandler);
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
         addMouseWheelListener(mouseHandler);
         setFocusable(true);
-        
+    }
+
+    private void setupResizeListener() {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                int width = getWidth();
-                int height = getHeight();
-                
-                int cols = width / Config.getTileSize();
-                int rows = height / Config.getTileSize();
-                
-                EngineConfig.updateScreenSize(cols * Config.getTileSize(), rows * Config.getTileSize());
-                camera.setViewportSize(width, height);
-                
-                repaint();
+                handleResize();
             }
         });
     }
+
+    private void handleResize() {
+        int width = getWidth();
+        int height = getHeight();
+        
+        int cols = width / Config.getTileSize();
+        int rows = height / Config.getTileSize();
+        
+        Config.updateScreenSize(cols * Config.getTileSize(), rows * Config.getTileSize());
+        camera.setViewportSize(width, height);
+        
+        repaint();
+    }
     
     public void startGameThread() {
-        gameThread = new Thread(this);
-        gameThread.start();
+        gameEngine.start();
+        
+        Thread renderThread = new Thread(this::renderLoop);
+        renderThread.start();
     }
     
-    @Override
-    public void run() {
-        long lastTime = System.nanoTime();
-        
-        while (gameThread != null) {
-            long currentTime = System.nanoTime();
-            long elapsedTime = currentTime - lastTime;
-            
-            if (elapsedTime >= Config.getNanosecondsPerFrame()) {
-                lastTime = currentTime;
-                
-                update();
-                repaint();
+    private void renderLoop() {
+        while (true) {
+            repaint();
+            try {
+                Thread.sleep(16);
+            } catch (InterruptedException e) {
+                break;
             }
         }
-    }
-    
-    private void update() {
-        camera.update(mouseHandler.getCurrentX(), mouseHandler.getCurrentY());
-        camera.zoom(mouseHandler.getWheelRotation());
-        
-        if (mouseHandler.hasNewClick()) {
-            clickEffects.add(new ClickEffect(mouseHandler.getLastClickWorldX(), mouseHandler.getLastClickWorldY()));
-            mouseHandler.clearNewClick();
-        }
-
-        Iterator<ClickEffect> it = clickEffects.iterator();
-        while (it.hasNext()) {
-            ClickEffect effect = it.next();
-            effect.update();
-            if (effect.isDead()) {
-                it.remove();
-            }
-        }
-
-        player.update();
     }
     
     @Override
@@ -154,39 +175,47 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         
         Graphics2D g2 = (Graphics2D) g;
+        drawGameWorld(g2);
+        drawUI(g2);
+        g2.dispose();
+    }
 
-        // Apply camera transformations
+    private void drawGameWorld(Graphics2D g2) {
+        // Application des transformations caméra (zoom, pan)
         AffineTransform oldTransform = g2.getTransform();
         g2.scale(camera.getZoom(), camera.getZoom());
         g2.translate(-camera.getX(), -camera.getY());
 
-        // Draw tiles
+        // Dessin du monde
         tileRenderer.draw(g2, camera, getWidth(), getHeight());
-
-        // Draw towers
-        for (Tour tour : arena.tours()) {
-            towerRenderer.draw(g2, tour, camera);
-        }
-
-        // Draw ancients
-        for (Ancient ancient : arena.ancients()) {
-            towerRenderer.drawAncient(g2, ancient, camera);
-        }
-
-        // Draw click effects
-        for (ClickEffect effect : clickEffects) {
-            effect.draw(g2);
-        }
-
-        // Draw player
+        drawTowers(g2);
+        drawAncients(g2);
+        drawClickEffects(g2);
         playerRenderer.draw(g2, player);
 
         g2.setTransform(oldTransform);
-        
-        // UI overlay (untransformed)
+    }
+
+    private void drawTowers(Graphics2D g2) {
+        for (Tour tour : arena.tours()) {
+            towerRenderer.draw(g2, tour, camera);
+        }
+    }
+
+    private void drawAncients(Graphics2D g2) {
+        for (Ancient ancient : arena.ancients()) {
+            towerRenderer.drawAncient(g2, ancient, camera);
+        }
+    }
+
+    private void drawClickEffects(Graphics2D g2) {
+        for (ClickEffect effect : gameEngine.getClickEffects()) {
+            effect.draw(g2);
+        }
+    }
+
+    private void drawUI(Graphics2D g2) {
         g2.setColor(Color.white);
         g2.drawString("FPS: " + (int) (1_000_000_000.0 / Config.getNanosecondsPerFrame()), 10, 20);
-
-        g2.dispose();
     }
 }

@@ -1,5 +1,8 @@
 package Core;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 public class Config {
     
     private static final int ORIGINAL_TILE_SIZE = 16;
@@ -10,17 +13,31 @@ public class Config {
     private static final double NANOSECONDS_PER_FRAME = 1_000_000_000.0 / MAX_FPS;
     
     private static final int PLAYER_DEFAULT_SPEED = 4;
-    private static final int PLAYER_DEFAULT_X = 5 * TILE_SIZE; // Blue Base
-    private static final int PLAYER_DEFAULT_Y = 95 * TILE_SIZE; // Blue Base
+    private static final int PLAYER_DEFAULT_X = 5 * TILE_SIZE;
+    private static final int PLAYER_DEFAULT_Y = 95 * TILE_SIZE;
     
     private static final int SPRITE_ANIMATION_SPEED = 10;
     
-    // Camera settings
-    private static final int CAMERA_EDGE_THRESHOLD = 80; // pixels
+    private static final int CAMERA_EDGE_THRESHOLD = 80;
     private static final int CAMERA_SPEED = 20;
     private static final float MIN_ZOOM = 0.5f;
     private static final float MAX_ZOOM = 3.0f;
     private static final float ZOOM_STEP = 0.1f;
+
+    private static final String PLAYER_IMAGE_PATH = "src/Resource/Player/";
+    private static final String MAP_FILE_PATH = "src/Data/Map.txt";
+    private static final int MAX_TILES = 50;
+
+    private static int screenWidth;
+    private static int screenHeight;
+
+    static {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int maxScreenCol = screenSize.width / TILE_SIZE;
+        int maxScreenRow = screenSize.height / TILE_SIZE;
+        screenWidth = maxScreenCol * TILE_SIZE;
+        screenHeight = maxScreenRow * TILE_SIZE;
+    }
     
     public static int getTileSize() {
         return TILE_SIZE;
@@ -64,6 +81,33 @@ public class Config {
     
     public static float getZoomStep() {
         return ZOOM_STEP;
+    }
+
+    public static int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public static int getScreenHeight() {
+        return screenHeight;
+    }
+
+    public static void updateScreenSize(int width, int height) {
+        int maxScreenCol = width / TILE_SIZE;
+        int maxScreenRow = height / TILE_SIZE;
+        screenWidth = maxScreenCol * TILE_SIZE;
+        screenHeight = maxScreenRow * TILE_SIZE;
+    }
+
+    public static String getPlayerImagePath() {
+        return PLAYER_IMAGE_PATH;
+    }
+
+    public static String getMapFilePath() {
+        return MAP_FILE_PATH;
+    }
+
+    public static int getMaxTiles() {
+        return MAX_TILES;
     }
     
     private Config() {}

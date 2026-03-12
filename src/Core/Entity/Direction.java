@@ -1,5 +1,8 @@
 package Core.Entity;
 
+/**
+ * Directions cardinales du jeu.
+ */
 public enum Direction {
     UP("up"),
     DOWN("down"),

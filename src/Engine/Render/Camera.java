@@ -1,8 +1,10 @@
 package Engine.Render;
 
+import Core.Entity.MathUtils;
 import Core.Config;
 
 public class Camera {
+    
     private float x;
     private float y;
     private float zoom = 1.0f;
@@ -34,18 +36,22 @@ public class Camera {
         this.y = y;
     }
 
+    public void setPosition(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void setViewportSize(int width, int height) {
+        this.viewportWidth = width;
+        this.viewportHeight = height;
+        updateDynamicMinZoom();
+    }
+
     private void updateDynamicMinZoom() {
         if (worldWidth > 0 && worldHeight > 0 && viewportWidth > 0 && viewportHeight > 0) {
             float zoomX = (float) viewportWidth / worldWidth;
             float zoomY = (float) viewportHeight / worldHeight;
-            // The user wants to see the entire map at 1:1 scale (meaning fitting the map into the viewport)
-            // We use the maximum of the two ratios to ensure the map at least fills one dimension of the viewport
-            // Or the minimum if we want the ENTIRE map to be visible.
-            // Usually "scaled 1:1" in this context means fitting the map to the screen.
             dynamicMinZoom = Math.max(zoomX, zoomY);
-            
-            // If the map is smaller than the viewport, min zoom could be > 1.0. 
-            // We should probably allow at least 1.0 if the user prefers, but let's follow the requirement.
             
             if (zoom < dynamicMinZoom) {
                 zoom = dynamicMinZoom;
@@ -55,17 +61,34 @@ public class Camera {
     }
 
     public void update(int mouseX, int mouseY) {
-        // Do not update if the mouse is outside the component (usually indicated by -1 from MouseHandler)
-        if (mouseX < 0 || mouseY < 0 || mouseX > viewportWidth || mouseY > viewportHeight) {
+        if (!isMouseInBounds(mouseX, mouseY)) {
             return;
         }
 
+        float maxCameraX = getMaxCameraX();
+        float maxCameraY = getMaxCameraY();
+
+        handleEdgeScrolling(mouseX, mouseY, maxCameraX, maxCameraY);
+        clamp();
+    }
+
+    private boolean isMouseInBounds(int mouseX, int mouseY) {
+        return mouseX >= 0 && mouseY >= 0 && 
+               mouseX <= viewportWidth && mouseY <= viewportHeight;
+    }
+
+    private float getMaxCameraX() {
+        return Math.max(0, worldWidth - (viewportWidth / zoom));
+    }
+
+    private float getMaxCameraY() {
+        return Math.max(0, worldHeight - (viewportHeight / zoom));
+    }
+
+    private void handleEdgeScrolling(int mouseX, int mouseY, float maxCameraX, float maxCameraY) {
         float speed = Config.getCameraSpeed();
         float threshold = Config.getCameraEdgeThreshold();
-        float maxCameraX = Math.max(0, worldWidth - (viewportWidth / zoom));
-        float maxCameraY = Math.max(0, worldHeight - (viewportHeight / zoom));
 
-        // Edge scrolling logic with boundary checks
         if (mouseX < threshold && x > 0) {
             x -= speed;
         } else if (mouseX > viewportWidth - threshold && x < maxCameraX) {
@@ -77,84 +100,35 @@ public class Camera {
         } else if (mouseY > viewportHeight - threshold && y < maxCameraY) {
             y += speed;
         }
-
-        clamp();
     }
 
     private void clamp() {
-        float maxCameraX = Math.max(0, worldWidth - (viewportWidth / zoom));
-        float maxCameraY = Math.max(0, worldHeight - (viewportHeight / zoom));
-
-        if (x < 0) x = 0;
-        if (y < 0) y = 0;
-        if (x > maxCameraX) x = maxCameraX;
-        if (y > maxCameraY) y = maxCameraY;
+        x = MathUtils.clamp(x, 0, getMaxCameraX());
+        y = MathUtils.clamp(y, 0, getMaxCameraY());
     }
 
     public void zoom(int wheelRotation) {
+        if (wheelRotation == 0) return;
+
         float oldZoom = zoom;
-        if (wheelRotation < 0) {
-            zoom += Config.getZoomStep();
-        } else if (wheelRotation > 0) {
-            zoom -= Config.getZoomStep();
-        }
+        zoom += (wheelRotation < 0 ? 1 : -1) * Config.getZoomStep();
+        zoom = MathUtils.clamp(zoom, dynamicMinZoom, Config.getMaxZoom());
 
-        // Clamp zoom
-        if (zoom < dynamicMinZoom) {
-            zoom = dynamicMinZoom;
-        } else if (zoom > Config.getMaxZoom()) {
-            zoom = Config.getMaxZoom();
-        }
-
-        // Adjust x, y so we zoom towards the center of the viewport
         if (oldZoom != zoom) {
-            float viewportCenterX = viewportWidth / 2f;
-            float viewportCenterY = viewportHeight / 2f;
-
-            // Find world center before zoom
-            float worldCenterX = x + (viewportCenterX / oldZoom);
-            float worldCenterY = y + (viewportCenterY / oldZoom);
-
-            // Set x, y so that world center remains at the viewport center
-            x = worldCenterX - (viewportCenterX / zoom);
-            y = worldCenterY - (viewportCenterY / zoom);
-
+            adjustPositionForZoom(oldZoom);
             clamp();
         }
     }
 
-    public void setViewportSize(int width, int height) {
-        this.viewportWidth = width;
-        this.viewportHeight = height;
-        updateDynamicMinZoom();
-    }
+    private void adjustPositionForZoom(float oldZoom) {
+        float viewportCenterX = viewportWidth / 2f;
+        float viewportCenterY = viewportHeight / 2f;
 
-    public float getX() {
-        return x;
-    }
+        float worldCenterX = x + (viewportCenterX / oldZoom);
+        float worldCenterY = y + (viewportCenterY / oldZoom);
 
-    public float getY() {
-        return y;
-    }
-
-    public float getZoom() {
-        return zoom;
-    }
-
-    public int getWorldWidth() {
-        return worldWidth;
-    }
-
-    public int getWorldHeight() {
-        return worldHeight;
-    }
-
-    public int getViewportWidth() {
-        return viewportWidth;
-    }
-
-    public int getViewportHeight() {
-        return viewportHeight;
+        x = worldCenterX - (viewportCenterX / zoom);
+        y = worldCenterY - (viewportCenterY / zoom);
     }
 
     public int screenToWorldX(int screenX) {
@@ -164,4 +138,12 @@ public class Camera {
     public int screenToWorldY(int screenY) {
         return (int) (screenY / zoom + y);
     }
+
+    public float getX() { return x; }
+    public float getY() { return y; }
+    public float getZoom() { return zoom; }
+    public int getWorldWidth() { return worldWidth; }
+    public int getWorldHeight() { return worldHeight; }
+    public int getViewportWidth() { return viewportWidth; }
+    public int getViewportHeight() { return viewportHeight; }
 }

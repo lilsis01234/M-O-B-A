@@ -1,7 +1,7 @@
 package Engine.Render;
 
 import Core.Entity.Direction;
-import Engine.EngineConfig;
+import Core.Config;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -19,7 +19,7 @@ public class PlayerSprites {
     private final BufferedImage right2;
 
     public PlayerSprites() {
-        String path = EngineConfig.getPlayerImagePath();
+        String path = Config.getPlayerImagePath();
         try {
             up1 = ImageIO.read(new File(path + "boy_up_1.png"));
             up2 = ImageIO.read(new File(path + "boy_up_2.png"));
