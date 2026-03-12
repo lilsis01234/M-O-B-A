@@ -1,0 +1,1929 @@
+[
+  {
+    "name": "Goliath",
+    "history": "Un guerrier colossal dont la peau est aussi dure que le granit. Il défend ses alliés avec une détermination inébranlable.",
+    "category": "Force",
+    "baseHp": 900,
+    "maxHp": 900,
+    "attack": 55,
+    "defense": 75,
+    "attackSpeed": 0.7,
+    "maxMana": 200,
+    "characterRow": 2,
+    "hairRow": 3,
+    "outfitFile": "leather_armor.png",
+    "suitRow": 0,
+    "spells": [
+      {
+        "name": "Écraser",
+        "description": "Écrase le sol, infligeant 80 dégâts aux ennemis proches et les ralentit.",
+        "damage": 80,
+        "cooldown": 8.0,
+        "manaCost": 40,
+        "type": "dmg"
+      },
+      {
+        "name": "Bouclier",
+        "description": "Augmente sa défense de 30% pendant 5 secondes.",
+        "damage": 0,
+        "cooldown": 0.0,
+        "manaCost": 50,
+        "type": "SP"
+      },
+      {
+        "name": "Frappe du Titan",
+        "description": "Attaque puissante infligeant 150 dégâts à une cible unique.",
+        "damage": 150,
+        "cooldown": 12.0,
+        "manaCost": 70,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Titan",
+    "history": "Un colosse antique réveillé pour la bataille. Sa force massive terrasse ses ennemis en un seul coup.",
+    "category": "Force",
+    "baseHp": 950,
+    "maxHp": 950,
+    "attack": 50,
+    "defense": 80,
+    "attackSpeed": 0.6,
+    "maxMana": 180,
+    "characterRow": 4,
+    "hairRow": 5,
+    "outfitFile": "plate_armor.png",
+    "suitRow": 1,
+    "spells": [
+      {
+        "name": "Lancer de Roc",
+        "description": "Lance un rocher qui inflige 100 dégâts et étourdit 1 seconde.",
+        "damage": 100,
+        "cooldown": 6.0,
+        "manaCost": 45,
+        "type": "dmg"
+      },
+      {
+        "name": "Épiderme de Pierre",
+        "description": "Réduit tous les dégâts subis de 20% pendant 6 secondes.",
+        "damage": 0,
+        "cooldown": 0.0,
+        "manaCost": 60,
+        "type": "SP"
+      },
+      {
+        "name": "Cataclysme",
+        "description": "Frappe le sol créant une secousse qui inflige 200 dégâts sur une zone large.",
+        "damage": 200,
+        "cooldown": 15.0,
+        "manaCost": 100,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Boulder",
+    "history": "Une entité de pierre vivante qui roule sur le champ de bataille, écrasant tout sur son passage.",
+    "category": "Force",
+    "baseHp": 1000,
+    "maxHp": 1000,
+    "attack": 45,
+    "defense": 85,
+    "attackSpeed": 0.5,
+    "maxMana": 150,
+    "characterRow": 6,
+    "hairRow": 2,
+    "outfitFile": "stone_skin.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Roulement",
+        "description": "Se met à rouler, infligeant 120 dégâts et repoussant les ennemis.",
+        "damage": 120,
+        "cooldown": 10.0,
+        "manaCost": 55,
+        "type": "dmg"
+      },
+      {
+        "name": "Armure Naturelle",
+        "description": "Gagne une armure bonus équivalente à 50% de ses PV maximums pendant 4 secondes.",
+        "damage": 0,
+        "cooldown": 0.0,
+        "manaCost": 70,
+        "type": "SP"
+      },
+      {
+        "name": "Impact Sismique",
+        "description": "Écrasement final infligeant 180 dégâts et renversant les ennemis.",
+        "damage": 180,
+        "cooldown": 14.0,
+        "manaCost": 90,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Fortress",
+    "history": "Une forteresse ambulante impénétrable. Aucune arme ne peut percer ses défenses.",
+    "category": "Force",
+    "baseHp": 1050,
+    "maxHp": 1050,
+    "attack": 40,
+    "defense": 90,
+    "attackSpeed": 0.4,
+    "maxMana": 120,
+    "characterRow": 8,
+    "hairRow": 1,
+    "outfitFile": "fortress_armor.png",
+    "suitRow": 2,
+    "spells": [
+      {
+        "name": "Rempart",
+        "description": "Déploie un rempart temporaire qui bloque les projectiles et réduit les dégâts de 40%.",
+        "damage": 0,
+        "cooldown": 0.0,
+        "manaCost": 65,
+        "type": "SP"
+      },
+      {
+        "name": "Contre-attaque",
+        "description": "Renvoie 50% des dégâts subis aux attaquants pendant 5 secondes.",
+        "damage": 0,
+        "cooldown": 0.0,
+        "manaCost": 75,
+        "type": "SP"
+      },
+      {
+        "name": "Défense Ultime",
+        "description": "Devient invulnérable pendant 3 secondes mais ne peut pas attaquer.",
+        "damage": 0,
+        "cooldown": 0.0,
+        "manaCost": 100,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Ironclad",
+    "history": "Un chevalier dont l'armure est forgée dans l'acier le plus pur. Il résiste à toute attaque.",
+    "category": "Force",
+    "baseHp": 920,
+    "maxHp": 920,
+    "attack": 60,
+    "defense": 78,
+    "attackSpeed": 0.75,
+    "maxMana": 220,
+    "characterRow": 1,
+    "hairRow": 7,
+    "outfitFile": "knight_armor.png",
+    "suitRow": 3,
+    "spells": [
+      {
+        "name": "Muraille",
+        "description": "Crée une barrière qui bloque les projectiles ennemis pendant 6 secondes.",
+        "damage": 0,
+        "cooldown": 0.0,
+        "manaCost": 80,
+        "type": "SP"
+      },
+      {
+        "name": "Charge Protector",
+        "description": "Se précipite vers un allié, réduisant tous les dégâts qu'il subit de 40% pendant 3 secondes.",
+        "damage": 0,
+        "cooldown": 8.0,
+        "manaCost": 45,
+        "type": "CC"
+      },
+      {
+        "name": "Coup de Bouclier",
+        "description": "Attaque avec son bouclier, infligeant 90 dégâts et renversant la cible.",
+        "damage": 90,
+        "cooldown": 6.0,
+        "manaCost": 40,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Sentinel",
+    "history": "Le gardien éternel des portes sacrées. Sa vigilance ne faiblit jamais.",
+    "category": "Force",
+    "baseHp": 880,
+    "maxHp": 880,
+    "attack": 48,
+    "defense": 82,
+    "attackSpeed": 0.65,
+    "maxMana": 190,
+    "characterRow": 3,
+    "hairRow": 0,
+    "outfitFile": "sentry_armor.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Œil de la Vérité",
+        "description": "Révèle les ennemis invisibles dans une grande zone pendant 8 secondes.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 60,
+        "type": "SP"
+      },
+      {
+        "name": "Lien de Protection",
+        "description": "Lie sa vie à un allié, partageant 30% des dégâts qu'il subit.",
+        "damage": 0,
+        "cooldown": 20.0,
+        "manaCost": 90,
+        "type": "SP"
+      },
+      {
+        "name": "Projectile Répresseur",
+        "description": "Tire un projectile qui inflige 110 dégâts et silence l'ennemi pendant 2 secondes.",
+        "damage": 110,
+        "cooldown": 7.0,
+        "manaCost": 45,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Warden",
+    "history": "Le gardien des prisons infernales. Ses chaînes peuvent lier n'importe quel ennemi.",
+    "category": "Force",
+    "baseHp": 980,
+    "maxHp": 980,
+    "attack": 52,
+    "defense": 76,
+    "attackSpeed": 0.6,
+    "maxMana": 170,
+    "characterRow": 5,
+    "hairRow": 8,
+    "outfitFile": "prison_guard.png",
+    "suitRow": 1,
+    "spells": [
+      {
+        "name": "Chaînes du Destin",
+        "description": "Lance des chaînes qui immobilisent la cible pendant 3 secondes.",
+        "damage": 0,
+        "cooldown": 6.0,
+        "manaCost": 40,
+        "type": "CC"
+      },
+      {
+        "name": "Barrière Inversée",
+        "description": "Repousse tous les ennemis autour de lui et les inflige 60 dégâts.",
+        "damage": 60,
+        "cooldown": 9.0,
+        "manaCost": 50,
+        "type": "dmg"
+      },
+      {
+        "name": "Prison Magique",
+        "description": "Emprisonne un ennemi dans une faille spatiale pendant 4 secondes.",
+        "damage": 0,
+        "cooldown": 18.0,
+        "manaCost": 100,
+        "type": "CC"
+      }
+    ]
+  },
+  {
+    "name": "Bastion",
+    "history": "Une forteresse mobile qui peut se transformer en position défensive.",
+    "category": "Force",
+    "baseHp": 1100,
+    "maxHp": 1100,
+    "attack": 35,
+    "defense": 95,
+    "attackSpeed": 0.3,
+    "maxMana": 100,
+    "characterRow": 9,
+    "hairRow": 4,
+    "outfitFile": "bastion_armor.png",
+    "suitRow": 2,
+    "spells": [
+      {
+        "name": "Position Défensive",
+        "description": "Augmente l'armure de 60% mais ne peut pas se déplacer pendant 5 secondes.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 60,
+        "type": "SP"
+      },
+      {
+        "name": "Rempart Mobile",
+        "description": "Avance en protégeant les alliés derrière lui, réduisant les dégâts de zone de 50%.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 80,
+        "type": "SP"
+      },
+      {
+        "name": "Reconstruction",
+        "description": "Régénère 300 PV par seconde pendant 3 secondes.",
+        "damage": 0,
+        "cooldown": 20.0,
+        "manaCost": 100,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Crusader",
+    "history": "Un champion de la lumière dont la foi protège les faibles.",
+    "category": "Force",
+    "baseHp": 900,
+    "maxHp": 900,
+    "attack": 62,
+    "defense": 68,
+    "attackSpeed": 0.72,
+    "maxMana": 200,
+    "characterRow": 0,
+    "hairRow": 6,
+    "outfitFile": "crusader_armor.png",
+    "suitRow": 3,
+    "spells": [
+      {
+        "name": "Aura de Sacrifice",
+        "description": "Prend 50% des dégâts subis par un allié ciblé pendant 6 secondes.",
+        "damage": 0,
+        "cooldown": 12.0,
+        "manaCost": 70,
+        "type": "SP"
+      },
+      {
+        "name": "Jugement Divin",
+        "description": "Invoque un rayon de lumière qui inflige 150 dégâts et étourdit 1.5 secondes.",
+        "damage": 150,
+        "cooldown": 14.0,
+        "manaCost": 90,
+        "type": "dmg"
+      },
+      {
+        "name": "Soin Lumière",
+        "description": "Soigne un allié de 200 PV.",
+        "damage": 0,
+        "cooldown": 8.0,
+        "manaCost": 50,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Guardian",
+    "history": "Le protecteur des royaumes oubliés. Sa présence inspire le courage.",
+    "category": "Force",
+    "baseHp": 960,
+    "maxHp": 960,
+    "attack": 42,
+    "defense": 84,
+    "attackSpeed": 0.58,
+    "maxMana": 180,
+    "characterRow": 7,
+    "hairRow": 1,
+    "outfitFile": "guardian_armor.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Bouclier Divin",
+        "description": "Absorbe jusqu'à 300 dégâts pour un allié pendant 8 secondes.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 65,
+        "type": "SP"
+      },
+      {
+        "name": "Provocation",
+        "description": "Force tous les ennemis proches à l'attaquer pendant 4 secondes.",
+        "damage": 0,
+        "cooldown": 8.0,
+        "manaCost": 40,
+        "type": "CC"
+      },
+      {
+        "name": "Lien de Vie",
+        "description": "Partage sa régénération de PV avec un allié pendant 8 secondes.",
+        "damage": 0,
+        "cooldown": 12.0,
+        "manaCost": 60,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Juggernaut",
+    "history": "Une machine de guerre inarrêtable. Plus il subit de dégâts, plus il devient fort.",
+    "category": "Force",
+    "baseHp": 1050,
+    "maxHp": 1050,
+    "attack": 65,
+    "defense": 70,
+    "attackSpeed": 0.55,
+    "maxMana": 160,
+    "characterRow": 3,
+    "hairRow": 9,
+    "outfitFile": "juggernaut_armor.png",
+    "suitRow": 0,
+    "spells": [
+      {
+        "name": "Colère",
+        "description": "Gagne 1% d'augmentation de dégâts par point de PV manquant pendant 10 secondes.",
+        "damage": 0,
+        "cooldown": 12.0,
+        "manaCost": 75,
+        "type": "SP"
+      },
+      {
+        "name": "Déstabilisation",
+        "description": "Attaque qui ignore 50% de l'armure de la cible.",
+        "damage": 120,
+        "cooldown": 6.0,
+        "manaCost": 45,
+        "type": "dmg"
+      },
+      {
+        "name": "Imposant",
+        "description": "Gagne +1% de taille et +2% de PV par point d'armure pendant 8 secondes.",
+        "damage": 0,
+        "cooldown": 16.0,
+        "manaCost": 90,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Aegis",
+    "history": "Le bouclier vivant. Son corps peut résister aux attaques les plus puissantes.",
+    "category": "Force",
+    "baseHp": 1080,
+    "maxHp": 1080,
+    "attack": 38,
+    "defense": 88,
+    "attackSpeed": 0.48,
+    "maxMana": 140,
+    "characterRow": 2,
+    "hairRow": 5,
+    "outfitFile": "aegis_armor.png",
+    "suitRow": 1,
+    "spells": [
+      {
+        "name": "Réflexion",
+        "description": "Renvoie 80% des dégâts subis aux attaquants pendant 5 secondes.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 80,
+        "type": "SP"
+      },
+      {
+        "name": "Impact Piercing",
+        "description": "Attaque qui traverse les ennemis et ignore leur défense.",
+        "damage": 90,
+        "cooldown": 8.0,
+        "manaCost": 50,
+        "type": "dmg"
+      },
+      {
+        "name": "Absorption",
+        "description": "Absorbe jusqu'à 500 dégâts pendant 5 secondes.",
+        "damage": 0,
+        "cooldown": 20.0,
+        "manaCost": 100,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Paladin",
+    "history": "Un chevalier saint qui allie offense et défense avec équilibre.",
+    "category": "Force",
+    "baseHp": 900,
+    "maxHp": 900,
+    "attack": 58,
+    "defense": 72,
+    "attackSpeed": 0.68,
+    "maxMana": 200,
+    "characterRow": 1,
+    "hairRow": 3,
+    "outfitFile": "paladin_armor.png",
+    "suitRow": 2,
+    "spells": [
+      {
+        "name": "Bénédiction Sacrée",
+        "description": "Soigne un allié de 150 PV et lui accorde 20% de bonus de dégâts pendant 5 secondes.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 60,
+        "type": "SP"
+      },
+      {
+        "name": "Frappe du Croisé",
+        "description": "Attaque en zone qui inflige 120 dégâts et ralentit les ennemis de 30%.",
+        "damage": 120,
+        "cooldown": 8.0,
+        "manaCost": 55,
+        "type": "dmg"
+      },
+      {
+        "name": "Aura de Lumière",
+        "description": "Soigne les alliés proches à raison de 50 PV par seconde pendant 6 secondes.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 80,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Vanguard",
+    "history": "Le pionnier de l'avant-garde. Il ouvre la voie vers la victoire.",
+    "category": "Force",
+    "baseHp": 930,
+    "maxHp": 930,
+    "attack": 54,
+    "defense": 74,
+    "attackSpeed": 0.63,
+    "maxMana": 185,
+    "characterRow": 5,
+    "hairRow": 2,
+    "outfitFile": "vanguard_armor.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Avance Tactique",
+        "description": "Avance rapidement vers l'avant, renversant les ennemis sur son passage.",
+        "damage": 80,
+        "cooldown": 6.0,
+        "manaCost": 40,
+        "type": "dmg"
+      },
+      {
+        "name": "Baliser la Zone",
+        "description": "Marque une zone, alliés dans celle-ci gagnent 15% de vitesse de déplacement.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 70,
+        "type": "SP"
+      },
+      {
+        "name": "Leadership",
+        "description": "Augmente les statistiques des alliés proches de 10% pendant 8 secondes.",
+        "damage": 0,
+        "cooldown": 18.0,
+        "manaCost": 85,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Defender",
+    "history": "Le rempart de l'équipe. Rien ne peut franchir sa ligne de défense.",
+    "category": "Force",
+    "baseHp": 1020,
+    "maxHp": 1020,
+    "attack": 40,
+    "defense": 86,
+    "attackSpeed": 0.45,
+    "maxMana": 130,
+    "characterRow": 8,
+    "hairRow": 4,
+    "outfitFile": "defender_armor.png",
+    "suitRow": 3,
+    "spells": [
+      {
+        "name": "Mur d'Acier",
+        "description": "Créé un mur qui bloque les déplacements et les projectiles pendant 6 secondes.",
+        "damage": 0,
+        "cooldown": 12.0,
+        "manaCost": 80,
+        "type": "SP"
+      },
+      {
+        "name": "Riposte",
+        "description": "Contre-attaque automatiquement quand on l'attaque, infligeant 80% de ses dégâts.",
+        "damage": 0,
+        "cooldown": 0.0,
+        "manaCost": 0,
+        "type": "SP"
+      },
+      {
+        "name": "Position Inébranlable",
+        "description": "Devient impossible à déplacer par les effets de contrôle pendant 10 secondes.",
+        "damage": 0,
+        "cooldown": 20.0,
+        "manaCost": 70,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Sentinel2",
+    "history": "Le gardien des frontières sacrées. Son devoir est de protéger à tout prix.",
+    "category": "Force",
+    "baseHp": 950,
+    "maxHp": 950,
+    "attack": 46,
+    "defense": 80,
+    "attackSpeed": 0.6,
+    "maxMana": 175,
+    "characterRow": 6,
+    "hairRow": 1,
+    "outfitFile": "sentinel2_armor.png",
+    "suitRow": 1,
+    "spells": [
+      {
+        "name": "Protection Stellaire",
+        "description": "Réduit tous les dégâts subis par les alliés proches de 20% pendant 10 secondes.",
+        "damage": 0,
+        "cooldown": 18.0,
+        "manaCost": 85,
+        "type": "SP"
+      },
+      {
+        "name": "Lien de Vie",
+        "description": "Partage sa régénération de PV avec un allié pendant 8 secondes.",
+        "damage": 0,
+        "cooldown": 12.0,
+        "manaCost": 60,
+        "type": "SP"
+      },
+      {
+        "name": "Fléau des Ombres",
+        "description": "Inflige 100 dégâts et marque l'ennemi, augmentant les dégâts subis de 15% pendant 10s.",
+        "damage": 100,
+        "cooldown": 10.0,
+        "manaCost": 55,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Colossus",
+    "history": "Un géant parmi les hommes. Son ombre suffit à effrayer les ennemis.",
+    "category": "Force",
+    "baseHp": 1150,
+    "maxHp": 1150,
+    "attack": 42,
+    "defense": 92,
+    "attackSpeed": 0.35,
+    "maxMana": 110,
+    "characterRow": 9,
+    "hairRow": 7,
+    "outfitFile": "colossus_armor.png",
+    "suitRow": 2,
+    "spells": [
+      {
+        "name": "Fracture",
+        "description": "Frappe le sol créant une fissure qui immobilise les ennemis pendant 2 secondes.",
+        "damage": 100,
+        "cooldown": 10.0,
+        "manaCost": 55,
+        "type": "CC"
+      },
+      {
+        "name": "Imposant",
+        "description": "Gagne +1% de taille et +2% de PV par point d'armure pendant 8 secondes.",
+        "damage": 0,
+        "cooldown": 16.0,
+        "manaCost": 90,
+        "type": "SP"
+      },
+      {
+        "name": "Écrasement",
+        "description": "Écrase un ennemi au sol, infligeant 200 dégâts et l'étourdissant 2 secondes.",
+        "damage": 200,
+        "cooldown": 14.0,
+        "manaCost": 75,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Martial",
+    "history": "Le maître des arts martiaux. Son corps est une arme mortelle.",
+    "category": "Force",
+    "baseHp": 880,
+    "maxHp": 880,
+    "attack": 70,
+    "defense": 60,
+    "attackSpeed": 1.2,
+    "maxMana": 150,
+    "characterRow": 0,
+    "hairRow": 8,
+    "outfitFile": "martial_armor.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Tempête de Coups",
+        "description": "Enchaîne 5 frappes rapides, infligeant au total 200 dégâts.",
+        "damage": 200,
+        "cooldown": 7.0,
+        "manaCost": 55,
+        "type": "dmg"
+      },
+      {
+        "name": "Défense en Mouvement",
+        "description": "Esquive toutes les attaques pendant 2 secondes et contre-attaque.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 70,
+        "type": "SP"
+      },
+      {
+        "name": "Frappe du Dragon",
+        "description": "Attaque puissante qui inflige 250 dégâts et repousse l'ennemi.",
+        "damage": 250,
+        "cooldown": 12.0,
+        "manaCost": 80,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Forge",
+    "history": "L'artisan des dieux. Son marteau peut remodeler le champ de bataille.",
+    "category": "Force",
+    "baseHp": 970,
+    "maxHp": 970,
+    "attack": 55,
+    "defense": 78,
+    "attackSpeed": 0.62,
+    "maxMana": 165,
+    "characterRow": 4,
+    "hairRow": 6,
+    "outfitFile": "forge_armor.png",
+    "suitRow": 3,
+    "spells": [
+      {
+        "name": "Enclume",
+        "description": "Inflige 120 dégâts et réduit l'armure de 40% pendant 5 secondes.",
+        "damage": 120,
+        "cooldown": 9.0,
+        "manaCost": 50,
+        "type": "dmg"
+      },
+      {
+        "name": "Armure Forgée",
+        "description": "Améliore son armure de 40% et gagne 30% de résistance aux CC pendant 6 secondes.",
+        "damage": 0,
+        "cooldown": 14.0,
+        "manaCost": 75,
+        "type": "SP"
+      },
+      {
+        "name": "Marteau du Forgeron",
+        "description": "Attaque lourde qui inflige 180 dégâts et brise les boucliers ennemis.",
+        "damage": 180,
+        "cooldown": 10.0,
+        "manaCost": 60,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Berserker",
+    "history": "Un guerrier frenétique dont la rage ignore la douleur.",
+    "category": "Force",
+    "baseHp": 920,
+    "maxHp": 920,
+    "attack": 75,
+    "defense": 55,
+    "attackSpeed": 1.1,
+    "maxMana": 120,
+    "characterRow": 7,
+    "hairRow": 9,
+    "outfitFile": "berserker_armor.png",
+    "suitRow": 0,
+    "spells": [
+      {
+        "name": "Frénésie",
+        "description": "Gagne +50% de vitesse d'attaque mais perd 20% de défense pendant 8 secondes.",
+        "damage": 0,
+        "cooldown": 8.0,
+        "manaCost": 45,
+        "type": "SP"
+      },
+      {
+        "name": "Coup de Sang",
+        "description": "Attaque qui inflige 200% des dégâts si ses PV sont en dessous de 50%.",
+        "damage": 0,
+        "cooldown": 12.0,
+        "manaCost": 60,
+        "type": "dmg"
+      },
+      {
+        "name": "Hâte Sanguinaire",
+        "description": "Se soigne de 15% des dégâts infligés et gagne 30% de vitesse pendant 5s.",
+        "damage": 0,
+        "cooldown": 16.0,
+        "manaCost": 70,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Sentinel3",
+    "history": "Le veilleur silencieux. Son regard perce les ombres.",
+    "category": "Force",
+    "baseHp": 960,
+    "maxHp": 960,
+    "attack": 48,
+    "defense": 76,
+    "attackSpeed": 0.65,
+    "maxMana": 170,
+    "characterRow": 6,
+    "hairRow": 1,
+    "outfitFile": "sentinel3_armor.png",
+    "suitRow": 1,
+    "spells": [
+      {
+        "name": "Veille Éternelle",
+        "description": "Ne peut pas être endormi ou étourdi pendant 10 secondes.",
+        "damage": 0,
+        "cooldown": 20.0,
+        "manaCost": 70,
+        "type": "SP"
+      },
+      {
+        "name": "Tir de Précision",
+        "description": "Attaque à distance précise qui ignore 30% de l'armure.",
+        "damage": 110,
+        "cooldown": 6.0,
+        "manaCost": 40,
+        "type": "dmg"
+      },
+      {
+        "name": "Marque de la Garde",
+        "description": "Marque un allié, réduisant les dégâts qu'il subit de 25% pendant 6s.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 50,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Swift",
+    "history": "Un coureur des ombres plus rapide que le vent. Personne ne peut échapper à ses attaques précises.",
+    "category": "Agilité",
+    "baseHp": 480,
+    "maxHp": 480,
+    "attack": 85,
+    "defense": 25,
+    "attackSpeed": 1.9,
+    "maxMana": 180,
+    "characterRow": 10,
+    "hairRow": 0,
+    "outfitFile": "archer_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Flèche Rapide",
+        "description": "Tire 3 flèches rapides, chacune infligeant 60 dégâts.",
+        "damage": 180,
+        "cooldown": 5.0,
+        "manaCost": 40,
+        "type": "dmg"
+      },
+      {
+        "name": "Embuscade",
+        "description": "Devient invisible pendant 2 secondes et inflige 150 dégâts surprises.",
+        "damage": 150,
+        "cooldown": 10.0,
+        "manaCost": 50,
+        "type": "dmg"
+      },
+      {
+        "name": "Pluie de Flèches",
+        "description": "Invoque une tempête de flèches sur une zone, infligeant 250 dégâts.",
+        "damage": 250,
+        "cooldown": 12.0,
+        "manaCost": 80,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Blade",
+    "history": "Un maître des lames dont les coups sont aussi rapides que mortels. Il danse au milieu du chaos.",
+    "category": "Agilité",
+    "baseHp": 500,
+    "maxHp": 500,
+    "attack": 90,
+    "defense": 28,
+    "attackSpeed": 2.0,
+    "maxMana": 200,
+    "characterRow": 11,
+    "hairRow": 1,
+    "outfitFile": "assassin_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Fente",
+        "description": "S'élance vers la cible, infligeant 100 dégâts coupures.",
+        "damage": 100,
+        "cooldown": 5.0,
+        "manaCost": 35,
+        "type": "dmg"
+      },
+      {
+        "name": "Tourbillon de Lames",
+        "description": "Tourne sur lui-même, frappant tous les ennemis proches pour 120 dégâts.",
+        "damage": 120,
+        "cooldown": 8.0,
+        "manaCost": 45,
+        "type": "dmg"
+      },
+      {
+        "name": "Assaut Mortel",
+        "description": "Effectue 5 attaques rapides sur une cible, chaque coup critique inflige 200% dégâts.",
+        "damage": 150,
+        "cooldown": 15.0,
+        "manaCost": 70,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Shadow",
+    "history": "Une présence silencieuse qui frappe depuis les ténèbres. Ses cibles ne voient jamais venir la mort.",
+    "category": "Agilité",
+    "baseHp": 460,
+    "maxHp": 460,
+    "attack": 95,
+    "defense": 22,
+    "attackSpeed": 2.1,
+    "maxMana": 160,
+    "characterRow": 12,
+    "hairRow": 3,
+    "outfitFile": "shadow_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Poignardage",
+        "description": "Attaque furtive infligeant 180 dégâts critiques depuis l'ombre.",
+        "damage": 180,
+        "cooldown": 6.0,
+        "manaCost": 40,
+        "type": "dmg"
+      },
+      {
+        "name": "Pas de l'Ombre",
+        "description": "Se téléporte derrière la cible, esquivant tous les projectiles.",
+        "damage": 0,
+        "cooldown": 8.0,
+        "manaCost": 35,
+        "type": "CC"
+      },
+      {
+        "name": "Nuit Éternelle",
+        "description": "Plonge la zone dans l'obscurité, rendant les ennemis aveugles pendant 4 secondes.",
+        "damage": 0,
+        "cooldown": 20.0,
+        "manaCost": 100,
+        "type": "CC"
+      }
+    ]
+  },
+  {
+    "name": "Phantom",
+    "history": "Une illusion vivante qui peut se multiplier. Personne ne sait jamais quelle est la vraie.",
+    "category": "Agilité",
+    "baseHp": 490,
+    "maxHp": 490,
+    "attack": 88,
+    "defense": 24,
+    "attackSpeed": 2.0,
+    "maxMana": 190,
+    "characterRow": 13,
+    "hairRow": 2,
+    "outfitFile": "phantom_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Mirage",
+        "description": "Crée 2 illusions qui attaquent la cible pour 50% de ses dégâts.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 45,
+        "type": "SP"
+      },
+      {
+        "name": "Flèches Jumelles",
+        "description": "Tire deux flèches fantômes qui traversent les ennemis, infligeant 80 dégâts chacune.",
+        "damage": 160,
+        "cooldown": 5.0,
+        "manaCost": 35,
+        "type": "dmg"
+      },
+      {
+        "name": "Duplication",
+        "description": "Se duplique, devenant insaisissable et renvoyant 30% des dégâts.",
+        "damage": 0,
+        "cooldown": 18.0,
+        "manaCost": 90,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Nightshade",
+    "history": "Un assassin des ténèbres qui maîtrise les poisons mortels.",
+    "category": "Agilité",
+    "baseHp": 470,
+    "maxHp": 470,
+    "attack": 92,
+    "defense": 20,
+    "attackSpeed": 2.15,
+    "maxMana": 170,
+    "characterRow": 14,
+    "hairRow": 4,
+    "outfitFile": "nightshade_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Poison Mortel",
+        "description": "Inflige 90 dégâts et applique un poison qui fait 50 dégâts par seconde pendant 6 secondes.",
+        "damage": 90,
+        "cooldown": 5.5,
+        "manaCost": 40,
+        "type": "dmg"
+      },
+      {
+        "name": "Invisibilité",
+        "description": "Devient complètement invisible pendant 3 secondes.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 30,
+        "type": "SP"
+      },
+      {
+        "name": "Exécution",
+        "description": "Exécute immédiatement une cible dont les PV sont en dessous de 30%.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 60,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Viper",
+    "history": "Un chasseur rapide dont les attaques empoisonnent ses ennemis.",
+    "category": "Agilité",
+    "baseHp": 450,
+    "maxHp": 450,
+    "attack": 88,
+    "defense": 26,
+    "attackSpeed": 2.05,
+    "maxMana": 160,
+    "characterRow": 15,
+    "hairRow": 5,
+    "outfitFile": "viper_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Morsure Venimeuse",
+        "description": "Inflige 100 dégâts et applique un poison qui fait 40 dégâts par seconde pendant 4 secondes.",
+        "damage": 100,
+        "cooldown": 4.5,
+        "manaCost": 35,
+        "type": "dmg"
+      },
+      {
+        "name": "Dash Rapide",
+        "description": "Se dash vers la cible et attaque, infligeant 80 dégâts.",
+        "damage": 80,
+        "cooldown": 6.0,
+        "manaCost": 30,
+        "type": "dmg"
+      },
+      {
+        "name": "Baiser du Serpent",
+        "description": "Zone de poison qui inflige 200 dégâts sur 3 secondes.",
+        "damage": 200,
+        "cooldown": 14.0,
+        "manaCost": 70,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Huntress",
+    "history": "Une archère experte qui ne rate jamais sa cible.",
+    "category": "Agilité",
+    "baseHp": 460,
+    "maxHp": 460,
+    "attack": 86,
+    "defense": 24,
+    "attackSpeed": 2.1,
+    "maxMana": 175,
+    "characterRow": 16,
+    "hairRow": 6,
+    "outfitFile": "huntress_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Visée Parfaite",
+        "description": "Attaque précise qui inflige 180 dégâts et ne peut pas être esquivée.",
+        "damage": 180,
+        "cooldown": 4.0,
+        "manaCost": 35,
+        "type": "dmg"
+      },
+      {
+        "name": "Flèche Multiple",
+        "description": "Tire 5 flèches en éventail, chacune infligeant 30 dégâts.",
+        "damage": 150,
+        "cooldown": 8.0,
+        "manaCost": 50,
+        "type": "dmg"
+      },
+      {
+        "name": "Tir Lointain",
+        "description": "Attaque depuis une très longue distance, infligeant 130 dégâts.",
+        "damage": 130,
+        "cooldown": 3.0,
+        "manaCost": 30,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Windrunner",
+    "history": "La messagère des vents, aussi rapide qu'une rafale.",
+    "category": "Agilité",
+    "baseHp": 480,
+    "maxHp": 480,
+    "attack": 82,
+    "defense": 30,
+    "attackSpeed": 2.3,
+    "maxMana": 150,
+    "characterRow": 17,
+    "hairRow": 7,
+    "outfitFile": "windrunner_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Rafale",
+        "description": "Tire 3 rafales de vent, chacune infligeant 70 dégâts.",
+        "damage": 210,
+        "cooldown": 6.0,
+        "manaCost": 45,
+        "type": "dmg"
+      },
+      {
+        "name": "Échappatoire",
+        "description": "Gagne 50% de vitesse de déplacement pendant 3 secondes.",
+        "damage": 0,
+        "cooldown": 8.0,
+        "manaCost": 30,
+        "type": "SP"
+      },
+      {
+        "name": "Tempête",
+        "description": "Invoque une tempête dévastatrice qui inflige 300 dégâts dans une grande zone.",
+        "damage": 300,
+        "cooldown": 20.0,
+        "manaCost": 100,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Trickster",
+    "history": "Un faiseur de tours qui exploite la confusion au combat.",
+    "category": "Agilité",
+    "baseHp": 450,
+    "maxHp": 450,
+    "attack": 90,
+    "defense": 18,
+    "attackSpeed": 2.2,
+    "maxMana": 180,
+    "characterRow": 18,
+    "hairRow": 8,
+    "outfitFile": "trickster_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Illusion",
+        "description": "Crée une fausse image de lui-même qui attire les attaques ennemies pendant 4 secondes.",
+        "damage": 0,
+        "cooldown": 8.0,
+        "manaCost": 30,
+        "type": "SP"
+      },
+      {
+        "name": "Disparition",
+        "description": "Devient complètement invisible et se téléporte une courte distance.",
+        "damage": 0,
+        "cooldown": 12.0,
+        "manaCost": 40,
+        "type": "SP"
+      },
+      {
+        "name": "Contrefaçon",
+        "description": "Copie la dernière attaque ennemie et la renvoie avec 150% de sa puissance.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 70,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Dagger",
+    "history": "Une tueuse silencieuse armée de lames empoisonnées.",
+    "category": "Agilité",
+    "baseHp": 470,
+    "maxHp": 470,
+    "attack": 94,
+    "defense": 19,
+    "attackSpeed": 2.25,
+    "maxMana": 165,
+    "characterRow": 19,
+    "hairRow": 9,
+    "outfitFile": "dagger_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Poignardage Furtif",
+        "description": "Inflige 200 dégâts et applique un saignement qui fait 50 dégâts par seconde pendant 4 secondes.",
+        "damage": 200,
+        "cooldown": 6.0,
+        "manaCost": 45,
+        "type": "dmg"
+      },
+      {
+        "name": "Danse des Lames",
+        "description": "Gagne 40% de vitesse d'attaque pendant 5 secondes.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 40,
+        "type": "SP"
+      },
+      {
+        "name": "Exécution Rapide",
+        "description": "Attaque ultra rapide qui inflige 120 dégâts et reset le cooldown de Poignardage.",
+        "damage": 120,
+        "cooldown": 2.0,
+        "manaCost": 25,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Zephyr",
+    "history": "Le fantôme des plaines, personne ne voit son passage.",
+    "category": "Agilité",
+    "baseHp": 460,
+    "maxHp": 460,
+    "attack": 87,
+    "defense": 23,
+    "attackSpeed": 2.18,
+    "maxMana": 170,
+    "characterRow": 20,
+    "hairRow": 0,
+    "outfitFile": "zephyr_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Vent Rapide",
+        "description": "Se déplace à une vitesse incroyable et attaque, infligeant 100 dégâts.",
+        "damage": 100,
+        "cooldown": 5.0,
+        "manaCost": 35,
+        "type": "dmg"
+      },
+      {
+        "name": "Évasion",
+        "description": "Esquive automatiquement toutes les attaques pendant 2 secondes et contre-attaque.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 50,
+        "type": "SP"
+      },
+      {
+        "name": "Coup de Vent",
+        "description": "Gust de vent puissant qui inflige 150 dégâts et knockback les ennemis.",
+        "damage": 150,
+        "cooldown": 10.0,
+        "manaCost": 60,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Sting",
+    "history": "Une guêpe mortelle dont le dard est fatal.",
+    "category": "Agilité",
+    "baseHp": 440,
+    "maxHp": 440,
+    "attack": 91,
+    "defense": 17,
+    "attackSpeed": 2.3,
+    "maxMana": 155,
+    "characterRow": 21,
+    "hairRow": 1,
+    "outfitFile": "sting_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Piqûre",
+        "description": "Attaque précise qui inflige 140 dégâts et applique un poison.",
+        "damage": 140,
+        "cooldown": 4.5,
+        "manaCost": 30,
+        "type": "dmg"
+      },
+      {
+        "name": "Essaim",
+        "description": "Invoque un essaim d'insectes qui inflige 80 dégâts par seconde aux ennemis proches pendant 4 secondes.",
+        "damage": 320,
+        "cooldown": 12.0,
+        "manaCost": 65,
+        "type": "dmg"
+      },
+      {
+        "name": "Vitesse de l'Éclair",
+        "description": "Gagne 80% de vitesse de déplacement pendant 2 secondes.",
+        "damage": 0,
+        "cooldown": 8.0,
+        "manaCost": 35,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Raven",
+    "history": "Un oiseau de malheur qui annonce la mort de ses ennemis.",
+    "category": "Agilité",
+    "baseHp": 460,
+    "maxHp": 460,
+    "attack": 89,
+    "defense": 21,
+    "attackSpeed": 2.12,
+    "maxMana": 175,
+    "characterRow": 22,
+    "hairRow": 2,
+    "outfitFile": "raven_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Bec Perçant",
+        "description": "Attaque rapide qui inflige 130 dégâts et ignore 20% d'armure.",
+        "damage": 130,
+        "cooldown": 4.0,
+        "manaCost": 30,
+        "type": "dmg"
+      },
+      {
+        "name": "Vol Noir",
+        "description": "Prend la forme d'un corbeau et devient invisible pendant 3 secondes.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 40,
+        "type": "SP"
+      },
+      {
+        "name": "Présage Funeste",
+        "description": "Marque un ennemi, infligeant 100 dégâts supplémentaires lors de la prochaine attaque.",
+        "damage": 100,
+        "cooldown": 8.0,
+        "manaCost": 45,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Fang",
+    "history": "Un chasseur dont les crocs transpercent toutes les armures.",
+    "category": "Agilité",
+    "baseHp": 480,
+    "maxHp": 480,
+    "attack": 84,
+    "defense": 28,
+    "attackSpeed": 2.0,
+    "maxMana": 160,
+    "characterRow": 23,
+    "hairRow": 3,
+    "outfitFile": "fang_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Morsure",
+        "description": "Attaque féroce qui inflige 150 dégâts.",
+        "damage": 150,
+        "cooldown": 5.0,
+        "manaCost": 35,
+        "type": "dmg"
+      },
+      {
+        "name": "Course Predatrice",
+        "description": "Gagne 50% de vitesse et peut traverser les unités pendant 4 secondes.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 40,
+        "type": "SP"
+      },
+      {
+        "name": "SAccroc",
+        "description": "Attaque qui ralentit l'ennemi de 60% pendant 3 secondes.",
+        "damage": 120,
+        "cooldown": 6.0,
+        "manaCost": 35,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Arrow",
+    "history": "Un archer légendaire dont la précision est sans égale.",
+    "category": "Agilité",
+    "baseHp": 470,
+    "maxHp": 470,
+    "attack": 83,
+    "defense": 26,
+    "attackSpeed": 2.15,
+    "maxMana": 170,
+    "characterRow": 24,
+    "hairRow": 4,
+    "outfitFile": "arrow_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Flèche de Précision",
+        "description": "Inflige 160 dégâts avec 100% de chance de coup critique.",
+        "damage": 160,
+        "cooldown": 6.0,
+        "manaCost": 40,
+        "type": "dmg"
+      },
+      {
+        "name": "Pluie de Flèches",
+        "description": "Invoque une pluie de flèches sur une zone, infligeant 200 dégâts.",
+        "damage": 200,
+        "cooldown": 10.0,
+        "manaCost": 60,
+        "type": "dmg"
+      },
+      {
+        "name": "Concentration",
+        "description": "Augmente les dégâts de 40% pendant 6 secondes.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 50,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Thorn",
+    "history": "Une épine-volante qui défend les forêts anciennes.",
+    "category": "Agilité",
+    "baseHp": 450,
+    "maxHp": 450,
+    "attack": 85,
+    "defense": 22,
+    "attackSpeed": 2.08,
+    "maxMana": 180,
+    "characterRow": 25,
+    "hairRow": 5,
+    "outfitFile": "thorn_outfit.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Épine",
+        "description": "Lance une épine qui inflige 120 dégâts et ralentit de 30%.",
+        "damage": 120,
+        "cooldown": 4.5,
+        "manaCost": 35,
+        "type": "dmg"
+      },
+      {
+        "name": "Forêt Protectrice",
+        "description": "Les ennemis dans un rayon de 5 tuiles subissent 20% de dégâts en moins pendant 8 secondes.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 60,
+        "type": "SP"
+      },
+      {
+        "name": "Burst d'Épines",
+        "description": "Fait exploser toutes les épines autour de soi, infligeant 180 dégâts.",
+        "damage": 180,
+        "cooldown": 12.0,
+        "manaCost": 70,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Archmage",
+    "history": "Un maître des arcanes qui manipule les éléments avec une facilité déconcertante.",
+    "category": "Intelligence",
+    "baseHp": 420,
+    "maxHp": 420,
+    "attack": 35,
+    "defense": 20,
+    "attackSpeed": 1.0,
+    "maxMana": 550,
+    "characterRow": 30,
+    "hairRow": 1,
+    "outfitFile": "archmage_robe.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Boule de Feu",
+        "description": "Lance une boule de feu qui explose, infligeant 120 dégâts de zone.",
+        "damage": 120,
+        "cooldown": 5.0,
+        "manaCost": 60,
+        "type": "dmg"
+      },
+      {
+        "name": "Éclairs",
+        "description": "Invoque 3 éclairs qui frappent aléatoirement les ennemis proches, 80 dégâts chacun.",
+        "damage": 240,
+        "cooldown": 7.0,
+        "manaCost": 70,
+        "type": "dmg"
+      },
+      {
+        "name": "Météore",
+        "description": "Appelle un météore qui s'écrase, infligeant 300 dégâts dans une grande zone.",
+        "damage": 300,
+        "cooldown": 20.0,
+        "manaCost": 150,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Sorcerer",
+    "history": "Un ensorceleur dont les sorts peuvent altérer la réalité elle-même.",
+    "category": "Intelligence",
+    "baseHp": 440,
+    "maxHp": 440,
+    "attack": 30,
+    "defense": 18,
+    "attackSpeed": 0.9,
+    "maxMana": 600,
+    "characterRow": 31,
+    "hairRow": 2,
+    "outfitFile": "sorcerer_robe.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Givre",
+        "description": "Projette un rayon de givre qui inflige 90 dégâts et ralentit de 50% pendant 3 secondes.",
+        "damage": 90,
+        "cooldown": 4.0,
+        "manaCost": 50,
+        "type": "dmg"
+      },
+      {
+        "name": "Téléportation",
+        "description": "Se téléporte à un endroit choisi, ignorant les collisions.",
+        "damage": 0,
+        "cooldown": 12.0,
+        "manaCost": 80,
+        "type": "SP"
+      },
+      {
+        "name": "Inversion",
+        "description": "Inverse les dégâts subis en soins pendant 5 secondes.",
+        "damage": 0,
+        "cooldown": 25.0,
+        "manaCost": 120,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Warlock",
+    "history": "Un nécromancien qui tire son pouvoir des ténèbres. Ses sorts drainent la vie de ses ennemis.",
+    "category": "Intelligence",
+    "baseHp": 400,
+    "maxHp": 400,
+    "attack": 40,
+    "defense": 15,
+    "attackSpeed": 0.8,
+    "maxMana": 650,
+    "characterRow": 32,
+    "hairRow": 3,
+    "outfitFile": "warlock_robe.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Drain de Vie",
+        "description": "Draine les PV d'une cible, infligeant 100 dégâts et se soignant de 80.",
+        "damage": 100,
+        "cooldown": 6.0,
+        "manaCost": 55,
+        "type": "dmg"
+      },
+      {
+        "name": "Ombre Maléfique",
+        "description": "Invoque une ombre qui suit la cible et inflige 50 dégâts par seconde pendant 4 secondes.",
+        "damage": 200,
+        "cooldown": 8.0,
+        "manaCost": 60,
+        "type": "dmg"
+      },
+      {
+        "name": "Explosion Sombres",
+        "description": "Fait exploser une zone, infligeant 200 dégâts et renvoyant 50% en mana.",
+        "damage": 200,
+        "cooldown": 15.0,
+        "manaCost": 100,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Enchantress",
+    "history": "Une magicienne qui chante ses sorts pour embellir le champ de bataille à son avantage.",
+    "category": "Intelligence",
+    "baseHp": 460,
+    "maxHp": 460,
+    "attack": 28,
+    "defense": 22,
+    "attackSpeed": 1.1,
+    "maxMana": 500,
+    "characterRow": 33,
+    "hairRow": 0,
+    "outfitFile": "enchantress_robe.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Charme",
+        "description": "Charme un ennemi, le forçant à attaquer ses alliés pendant 3 secondes.",
+        "damage": 0,
+        "cooldown": 9.0,
+        "manaCost": 65,
+        "type": "CC"
+      },
+      {
+        "name": "Bénédiction",
+        "description": "Augmente les statistiques d'un allié de 20% pendant 6 secondes.",
+        "damage": 0,
+        "cooldown": 12.0,
+        "manaCost": 70,
+        "type": "SP"
+      },
+      {
+        "name": "Harmonie",
+        "description": "Soigne tous les alliés dans la zone de 150 PV et accorde un bouclier léger.",
+        "damage": 0,
+        "cooldown": 18.0,
+        "manaCost": 100,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Necromancer",
+    "history": "Un invocateur des morts qui commande une armée de squelettes.",
+    "category": "Intelligence",
+    "baseHp": 380,
+    "maxHp": 380,
+    "attack": 32,
+    "defense": 14,
+    "attackSpeed": 0.85,
+    "maxMana": 600,
+    "characterRow": 34,
+    "hairRow": 4,
+    "outfitFile": "necromancer_robe.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Armée des Morts",
+        "description": "Invoque 5 squelettes qui combattent pour vous pendant 30 secondes.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 70,
+        "type": "SP"
+      },
+      {
+        "name": "Siphon d'Âme",
+        "description": "Draine 80 PV par seconde pendant 5 secondes sur une cible.",
+        "damage": 400,
+        "cooldown": 6.0,
+        "manaCost": 50,
+        "type": "dmg"
+      },
+      {
+        "name": "Explosion de la Mort",
+        "description": "Fait exploser un cadavre, infligeant 250 dégâts dans une zone et appliquant un slow.",
+        "damage": 250,
+        "cooldown": 18.0,
+        "manaCost": 100,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Druid",
+    "history": "Un gardien de la nature qui canalise sa puissance des éléments.",
+    "category": "Intelligence",
+    "baseHp": 410,
+    "maxHp": 410,
+    "attack": 30,
+    "defense": 18,
+    "attackSpeed": 0.95,
+    "maxMana": 520,
+    "characterRow": 35,
+    "hairRow": 5,
+    "outfitFile": "druid_robe.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Racines",
+        "description": "Fait émerger des racines qui immobilisent les ennemis pendant 4 secondes.",
+        "damage": 0,
+        "cooldown": 7.0,
+        "manaCost": 45,
+        "type": "CC"
+      },
+      {
+        "name": "Forme Animale",
+        "description": "Se transforme en ours, gagnant 200 PV et +50% d'armure pendant 15 secondes.",
+        "damage": 0,
+        "cooldown": 15.0,
+        "manaCost": 80,
+        "type": "SP"
+      },
+      {
+        "name": "Tempête Verte",
+        "description": "Invoque une tempête de granite qui inflige 250 dégâts et soigne les alliés.",
+        "damage": 250,
+        "cooldown": 16.0,
+        "manaCost": 95,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Alchemist",
+    "history": "Un savant qui transforme la matière en puissants élixirs.",
+    "category": "Intelligence",
+    "baseHp": 430,
+    "maxHp": 430,
+    "attack": 33,
+    "defense": 20,
+    "attackSpeed": 1.05,
+    "maxMana": 540,
+    "characterRow": 37,
+    "hairRow": 7,
+    "outfitFile": "alchemist_robe.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Élixir de Feu",
+        "description": "Lance une boule de feu qui inflige 150 dégâts et brûle pendant 3 secondes.",
+        "damage": 150,
+        "cooldown": 5.0,
+        "manaCost": 55,
+        "type": "dmg"
+      },
+      {
+        "name": "Élixir de Soin",
+        "description": "Lance un élixir qui soigne tous les alliés dans une zone de 200 PV.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 60,
+        "type": "SP"
+      },
+      {
+        "name": "Élixir de Poisson",
+        "description": "Crée une zone de poison qui inflige 180 dégâts par seconde pendant 4 secondes.",
+        "damage": 720,
+        "cooldown": 12.0,
+        "manaCost": 80,
+        "type": "dmg"
+      }
+    ]
+  },
+  {
+    "name": "Summoner",
+    "history": "Un invocateur qui fait apparaître des créatures élémentaires.",
+    "category": "Intelligence",
+    "baseHp": 400,
+    "maxHp": 400,
+    "attack": 25,
+    "defense": 15,
+    "attackSpeed": 0.8,
+    "maxMana": 620,
+    "characterRow": 38,
+    "hairRow": 8,
+    "outfitFile": "summoner_robe.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Élémentaire de Feu",
+        "description": "Invoque un élémentaire de feu avec 500 PV qui attaque les ennemis proches.",
+        "damage": 0,
+        "cooldown": 8.0,
+        "manaCost": 60,
+        "type": "SP"
+      },
+      {
+        "name": "Élémentaire d'Eau",
+        "description": "Invoque un élémentaire d'eau qui soigne les alliés proches.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 70,
+        "type": "SP"
+      },
+      {
+        "name": "Élémentaire de Terre",
+        "description": "Invoque un élémentaire de terre tank avec 800 PV qui ralentit les ennemis.",
+        "damage": 0,
+        "cooldown": 12.0,
+        "manaCost": 80,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Time",
+    "history": "Un maître du temps qui peut accélérer ou ralentir le flux temporel.",
+    "category": "Intelligence",
+    "baseHp": 400,
+    "maxHp": 400,
+    "attack": 30,
+    "defense": 18,
+    "attackSpeed": 0.95,
+    "maxMana": 550,
+    "characterRow": 44,
+    "hairRow": 4,
+    "outfitFile": "time_robe.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Ralentissement",
+        "description": "Ralentit un ennemi de 60% pendant 4 secondes.",
+        "damage": 0,
+        "cooldown": 6.0,
+        "manaCost": 40,
+        "type": "CC"
+      },
+      {
+        "name": "Accélération",
+        "description": "Accélère un allié de 40% pendant 5 secondes.",
+        "damage": 0,
+        "cooldown": 10.0,
+        "manaCost": 50,
+        "type": "SP"
+      },
+      {
+        "name": "Boucle Temporelle",
+        "description": "Rejoue les 3 dernières actions de la cible (ennemi = subit, allié = regagne PV).",
+        "damage": 0,
+        "cooldown": 25.0,
+        "manaCost": 120,
+        "type": "SP"
+      }
+    ]
+  },
+  {
+    "name": "Void",
+    "history": "Un manipulateur des ténèbres du vide, capable de déchirer la réalité.",
+    "category": "Intelligence",
+    "baseHp": 380,
+    "maxHp": 380,
+    "attack": 45,
+    "defense": 12,
+    "attackSpeed": 0.75,
+    "maxMana": 650,
+    "characterRow": 43,
+    "hairRow": 3,
+    "outfitFile": "void_robe.png",
+    "suitRow": null,
+    "spells": [
+      {
+        "name": "Portail du Vide",
+        "description": "Téléporte la cible sur votre position.",
+        "damage": 0,
+        "cooldown": 8.0,
+        "manaCost": 50,
+        "type": "CC"
+      },
+      {
+        "name": "Éclat du Void",
+        "description": "Projette un éclat qui inflige 300 dégâts et ignore toute armure.",
+        "damage": 300,
+        "cooldown": 18.0,
+        "manaCost": 100,
+        "type": "dmg"
+      },
+      {
+        "name": "Silence du Void",
+        "description": "Crée une zone de silence qui dure 5 secondes et inflige 100 dégâts par seconde.",
+        "damage": 500,
+        "cooldown": 20.0,
+        "manaCost": 110,
+        "type": "dmg"
+      }
+    ]
+  }
+]

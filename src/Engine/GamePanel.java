@@ -1,6 +1,8 @@
 package Engine;
 
 import Core.Config;
+import Core.Database.dao.HeroDAO;
+import Core.Database.model.Hero;
 import Core.Entity.Player;
 import Core.Moba.Units.Tour;
 import Core.Moba.Units.Ancient;
@@ -18,6 +20,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 
 /**
@@ -26,52 +29,54 @@ import java.awt.geom.AffineTransform;
  */
 public class GamePanel extends JPanel {
     
+    private enum GameState {
+        HERO_SELECTION,
+        PLAYING
+    }
+    
+    private GameState currentState = GameState.HERO_SELECTION;
+    
     private final KeyHandler keyHandler;
     private final MouseHandler mouseHandler;
-    private final Player player;
-    private final TileRenderer tileRenderer;
-    private final PlayerRenderer playerRenderer;
-    private final TowerRenderer towerRenderer;
-    private final ProjectileRenderer projectileRenderer;
+    private Player player;
+    private TileRenderer tileRenderer;
+    private PlayerRenderer playerRenderer;
+    private TowerRenderer towerRenderer;
+    private ProjectileRenderer projectileRenderer;
     private final Camera camera;
-    private final Arena arena;
-    private final GameEngine gameEngine;
+    private Arena arena;
+    private GameEngine gameEngine;
+    
+    private HeroSelectionPanel heroSelectionPanel;
+    private Hero selectedHero;
     
     public GamePanel() {
         setPreferredSize(new Dimension(Config.getScreenWidth(), Config.getScreenHeight()));
         setBackground(Color.black);
         setDoubleBuffered(true);
+        setLayout(null); // Use absolute positioning
         
         // Initialisation des handlers d'input
         keyHandler = new KeyHandler();
         mouseHandler = new MouseHandler();
         camera = new Camera(Config.getScreenWidth(), Config.getScreenHeight());
         mouseHandler.setCamera(camera);
-
-        // Chargement de la carte
-        TileMap tileMap = loadTileMap();
-        setupCamera(tileMap);
-        
-        // Chargement des tuiles
-        Tile[] tiles = loadTiles();
-        CollisionTable collisionTable = new CollisionTable(buildCollisionTable(tiles));
-
-        tileRenderer = new TileRenderer(tileMap, tiles);
-        
-        // Création de l'arène (tours, bases)
-        arena = createArena(tileMap);
-        
-        // Création du joueur
-        player = createPlayer(tileMap, collisionTable, arena);
-        playerRenderer = new PlayerRenderer(new PlayerSprites());
-        towerRenderer = createTowerRenderer(tiles);
-        projectileRenderer = new ProjectileRenderer();
         
         setupInputListeners();
         setupResizeListener();
         
-        // Initialisation du moteur de jeu
-        gameEngine = new GameEngine(player, camera, mouseHandler, arena);
+        // Initialize hero selection panel as a proper Swing component
+        heroSelectionPanel = new HeroSelectionPanel(new Dimension(Config.getScreenWidth(), Config.getScreenHeight()));
+        heroSelectionPanel.setBounds(0, 0, Config.getScreenWidth(), Config.getScreenHeight());
+        heroSelectionPanel.setVisible(true);
+        heroSelectionPanel.setSelectionListener(selectedHero -> {
+            selectedHero = selectedHero;
+            startGame();
+        });
+        add(heroSelectionPanel);
+        
+        // Initially hide game components
+        currentState = GameState.HERO_SELECTION;
     }
 
     private TileMap loadTileMap() {
@@ -114,9 +119,10 @@ public class GamePanel extends JPanel {
         return arena;
     }
 
-    private Player createPlayer(TileMap tileMap, CollisionTable collisionTable, Arena arena) {
+    private Player createPlayerWithHero(TileMap tileMap, CollisionTable collisionTable, Arena arena, Hero hero) {
         Player player = new Player(keyHandler, mouseHandler, tileMap, collisionTable, arena);
         arena.ajouterUnite(player);
+        // Store the hero info in player - may need to extend Player class to hold this
         return player;
     }
 
@@ -142,6 +148,50 @@ public class GamePanel extends JPanel {
             }
         });
     }
+    
+    private void handleSelectionConfirm() {
+        if (currentState == GameState.HERO_SELECTION) {
+            Hero hero = heroSelectionPanel.getSelectedHero();
+            if (hero != null) {
+                selectedHero = hero;
+                startGame();
+            }
+        }
+    }
+    
+    private void startGame() {
+        try {
+            // Load the game components with the selected hero
+            TileMap tileMap = loadTileMap();
+            setupCamera(tileMap);
+            
+            Tile[] tiles = loadTiles();
+            CollisionTable collisionTable = new CollisionTable(buildCollisionTable(tiles));
+            
+            tileRenderer = new TileRenderer(tileMap, tiles);
+            arena = createArena(tileMap);
+            
+            // Create player with selected hero
+            player = createPlayerWithHero(tileMap, collisionTable, arena, selectedHero);
+            playerRenderer = new PlayerRenderer(new PlayerSprites());
+            towerRenderer = createTowerRenderer(tiles);
+            projectileRenderer = new ProjectileRenderer();
+            
+            // Initialize game engine
+            gameEngine = new GameEngine(player, camera, mouseHandler, arena);
+            
+            // Remove hero selection panel and change state
+            remove(heroSelectionPanel);
+            currentState = GameState.PLAYING;
+            revalidate();
+            repaint();
+            
+            // Start the game thread
+            startGameThread();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private void handleResize() {
         int width = getWidth();
@@ -152,6 +202,12 @@ public class GamePanel extends JPanel {
         
         Config.updateScreenSize(cols * Config.getTileSize(), rows * Config.getTileSize());
         camera.setViewportSize(width, height);
+        
+        // Update hero selection panel size if it's still visible
+        if (currentState == GameState.HERO_SELECTION) {
+            heroSelectionPanel.setSize(width, height);
+            heroSelectionPanel.revalidate();
+        }
         
         repaint();
     }
@@ -178,10 +234,13 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        Graphics2D g2 = (Graphics2D) g;
-        drawGameWorld(g2);
-        drawUI(g2);
-        g2.dispose();
+        if (currentState == GameState.PLAYING) {
+            Graphics2D g2 = (Graphics2D) g;
+            drawGameWorld(g2);
+            drawUI(g2);
+            g2.dispose();
+        }
+        // Hero selection panel handles its own painting when visible
     }
 
     private void drawGameWorld(Graphics2D g2) {

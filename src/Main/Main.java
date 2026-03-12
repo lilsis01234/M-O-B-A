@@ -1,10 +1,20 @@
 package Main;
 
+import Core.Database.util.DatabaseInitializer;
+import Engine.GamePanel;
 import javax.swing.*;
 
 public class Main {
     
     public static void main(String[] args) {
+        try {
+            // Initialize database and seed heroes from JSON
+            DatabaseInitializer.initialize();
+        } catch (Exception e) {
+            System.err.println("Failed to initialize database: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(true);
@@ -19,6 +29,6 @@ public class Main {
         window.setVisible(true);
         
         gamePanel.requestFocusInWindow();
-        gamePanel.startGameThread();
+        // Game will start after hero selection
     }
 }

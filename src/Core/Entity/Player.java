@@ -1,6 +1,12 @@
 package Core.Entity;
 
 import Core.Config;
+import Core.Database.dao.HeroDAO;
+import Core.Database.dao.PlayerDAO;
+import Core.Database.dao.PlayerHeroDAO;
+import Core.Database.exception.DatabaseException;
+import Core.Database.model.PlayerHero;
+import Core.Database.model.Hero;
 import Core.Input.MoveInput;
 import Core.Input.TargetInput;
 import Core.Moba.Combat.Stats;
@@ -11,6 +17,7 @@ import Core.Moba.World.TeamColor;
 import Core.Moba.World.Vec2;
 import Core.Tile.CollisionTable;
 import Core.Tile.TileMap;
+import java.sql.SQLException;
 
 /**
  * Représente le joueur contrôlé par l'utilisateur.
@@ -36,6 +43,12 @@ public class Player extends Entity {
     // Enemy wood damage tracking
     private long lastWoodDamageTimeNanos = 0;
     private static final long WOOD_DAMAGE_INTERVAL_NANOS = 200_000_000; // 200ms
+    
+    // Database persistence fields
+    private int databasePlayerId = 0;
+    private int databasePlayerHeroId = 0;
+    private int heroId = 0;
+    private int experience = 0;
     
     public Player(MoveInput moveInput, TargetInput targetInput, 
                   TileMap tileMap, CollisionTable collisionTable, Arena arena) {
@@ -98,8 +111,147 @@ public class Player extends Entity {
         this.level = Math.max(1, level);
     }
     
+    public int getHeroId() {
+        return heroId;
+    }
+    
+    public void setHeroId(int heroId) {
+        this.heroId = heroId;
+    }
+    
+    public int getExperience() {
+        return experience;
+    }
+    
+    public void setExperience(int experience) {
+        this.experience = Math.max(0, experience);
+    }
+    
     public Stats stats() {
         return stats;
+    }
+    
+    public int getDatabasePlayerId() {
+        return databasePlayerId;
+    }
+    
+    public void setDatabasePlayerId(int databasePlayerId) {
+        this.databasePlayerId = databasePlayerId;
+    }
+    
+    public int getDatabasePlayerHeroId() {
+        return databasePlayerHeroId;
+    }
+    
+    public void setDatabasePlayerHeroId(int databasePlayerHeroId) {
+        this.databasePlayerHeroId = databasePlayerHeroId;
+    }
+    
+    public void saveToDatabase() throws DatabaseException {
+        try {
+            PlayerDAO playerDAO = new PlayerDAO();
+            PlayerHeroDAO playerHeroDAO = new PlayerHeroDAO();
+            
+            // Save or create player profile
+            Core.Database.model.Player dbPlayer;
+            if (databasePlayerId > 0) {
+                dbPlayer = playerDAO.findById(databasePlayerId);
+                if (dbPlayer == null) {
+                    throw new DatabaseException("Player with ID " + databasePlayerId + " not found");
+                }
+                // Update existing player (username could be updated if we had a setter)
+                playerDAO.update(dbPlayer);
+            } else {
+                // Create new player with a default username if not set
+                dbPlayer = new Core.Database.model.Player("Player_" + System.currentTimeMillis());
+                playerDAO.create(dbPlayer);
+                this.databasePlayerId = dbPlayer.getId();
+            }
+            
+            // Save player-hero progression
+            PlayerHero playerHero;
+            if (databasePlayerHeroId > 0) {
+                playerHero = playerHeroDAO.findById(databasePlayerHeroId);
+                if (playerHero == null) {
+                    throw new DatabaseException("PlayerHero with ID " + databasePlayerHeroId + " not found");
+                }
+                playerHero.setLevel(level);
+                playerHero.setExperience(experience);
+                playerHero.setHeroId(heroId);
+                playerHeroDAO.update(playerHero);
+            } else {
+                // Look for existing record with same player and hero
+                playerHero = playerHeroDAO.findByPlayerAndHero(databasePlayerId, heroId);
+                if (playerHero == null) {
+                    // Create new with default spell levels (1)
+                    playerHero = new PlayerHero(databasePlayerId, heroId, level, experience, 1, 1, 1);
+                    playerHeroDAO.create(playerHero);
+                    this.databasePlayerHeroId = playerHero.getId();
+                } else {
+                    // Update existing
+                    playerHero.setLevel(level);
+                    playerHero.setExperience(experience);
+                    playerHeroDAO.update(playerHero);
+                    this.databasePlayerHeroId = playerHero.getId();
+                }
+            }
+        } catch (DatabaseException e) {
+            throw new DatabaseException("Failed to save player to database", e);
+        }
+    }
+    
+    public static Player loadFromDatabase(int playerId, int heroId, 
+                                           MoveInput moveInput, TargetInput targetInput,
+                                           TileMap tileMap, CollisionTable collisionTable, Arena arena) 
+            throws DatabaseException {
+        try {
+            PlayerDAO playerDAO = new PlayerDAO();
+            PlayerHeroDAO playerHeroDAO = new PlayerHeroDAO();
+            HeroDAO heroDAO = new HeroDAO();
+            
+            Core.Database.model.Player dbPlayer = playerDAO.findById(playerId);
+            if (dbPlayer == null) {
+                throw new DatabaseException("Player with ID " + playerId + " not found");
+            }
+            
+            PlayerHero playerHero = playerHeroDAO.findByPlayerAndHero(playerId, heroId);
+            if (playerHero == null) {
+                // No progression exists, create a new one with default level 1
+                playerHero = new PlayerHero(playerId, heroId, 1, 0, 1, 1, 1);
+                playerHeroDAO.create(playerHero);
+            }
+            
+            Hero hero = heroDAO.findById(heroId);
+            if (hero == null) {
+                throw new DatabaseException("Hero with ID " + heroId + " not found");
+            }
+            
+            // Construct the Player with dependencies
+            Player player = new Player(moveInput, targetInput, tileMap, collisionTable, arena);
+            
+            // Set database-related fields
+            player.setDatabasePlayerId(dbPlayer.getId());
+            player.setDatabasePlayerHeroId(playerHero.getId());
+            player.setHeroId(heroId);
+            player.setLevel(playerHero.getLevel());
+            player.setExperience(playerHero.getExperience());
+            
+            // Optionally, you could adjust base stats based on hero's stats
+            // For now, we keep the default stats from constructor or modify them
+            // Example: player.stats().setMaxHp(hero.getMaxHp());
+            // You could also scale stats by level
+            
+            return player;
+        } catch (DatabaseException e) {
+            throw new DatabaseException("Failed to load player from database", e);
+        }
+    }
+    
+    // Helper method to get the hero's base stats from database (requires DAO call)
+    public Hero getLoadedHero() throws DatabaseException {
+        if (heroId <= 0) return null;
+        HeroDAO heroDAO = new HeroDAO();
+        return heroDAO.findById(heroId);
     }
     
     public boolean isInFountain() {

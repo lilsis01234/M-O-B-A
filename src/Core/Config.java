@@ -12,7 +12,7 @@ public class Config {
     private static final int MAX_FPS = 60;
     private static final double NANOSECONDS_PER_FRAME = 1_000_000_000.0 / MAX_FPS;
     
-    private static final int PLAYER_DEFAULT_SPEED = 4;
+    private static final int PLAYER_DEFAULT_SPEED = 2;
     private static final int PLAYER_DEFAULT_X = 5 * TILE_SIZE;
     private static final int PLAYER_DEFAULT_Y = 95 * TILE_SIZE;
     
@@ -24,7 +24,7 @@ public class Config {
     private static final float MAX_ZOOM = 3.0f;
     private static final float ZOOM_STEP = 0.1f;
 
-    private static final String PLAYER_IMAGE_PATH = "src/Resource/Player/";
+    private static final String PLAYER_IMAGE_PATH = "src/Resource/Characters/MetroCity/CharacterModel/";
     private static final String MAP_FILE_PATH = "src/Data/Map.txt";
     private static final int MAX_TILES = 50;
 

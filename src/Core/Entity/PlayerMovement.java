@@ -69,9 +69,14 @@ public class PlayerMovement {
             pathFollower.clearPath(); // Plus de chemin quand on joue au clavier
         }
         
-        // Si on bouge, on anime le sprite
+        // Si on bouge, on anime le sprite avec une vitesse proportionnelle à la vitesse du joueur
         if (isMoving) {
-            entity.updateSpriteAnimation(Config.getSpriteAnimationSpeed());
+            int baseValue = Config.getPlayerDefaultSpeed() * Config.getSpriteAnimationSpeed();
+            int animSpeed = Math.max(1, (int) Math.round((double) baseValue / entity.getSpeed()));
+            entity.updateSpriteAnimation(animSpeed);
+        } else {
+            // Si on ne bouge pas, on affiche le sprite idle (frame 1) pour la direction actuelle
+            entity.setSpriteNum(1);
         }
     }
 

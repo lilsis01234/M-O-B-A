@@ -23,7 +23,16 @@ New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 $sources = Get-ChildItem -Path (Join-Path $PSScriptRoot "src") -Recurse -Filter "*.java" | ForEach-Object { $_.FullName }
 if (-not $sources -or $sources.Count -eq 0) { throw "No Java sources found under src/." }
 
-javac -encoding UTF-8 -d $outDir @sources
+# Build classpath: all jars in lib directory
+$classpath = (Get-ChildItem -Path (Join-Path $PSScriptRoot "lib") -Filter "*.jar" | ForEach-Object { $_.FullName }) -join ';'
+
+if (-not $classpath) {
+    throw "No JAR files found in lib/ directory. Please ensure required libraries are present."
+}
+
+# Compile all Java sources with all jars in classpath
+Write-Host "Using classpath: $classpath"
+javac -encoding UTF-8 -cp $classpath -d $outDir @sources
 
 Write-Host "Compiled to $outDir"
 

@@ -34,7 +34,7 @@ public class Entity {
     public void updateSpriteAnimation(int animationSpeed) {
         spriteCounter++;
         if (spriteCounter > animationSpeed) {
-            spriteNum = spriteNum == 1 ? 2 : 1;
+            spriteNum = spriteNum % 6 + 1;  // Cycle through frames 1-6
             spriteCounter = 0;
         }
     }
