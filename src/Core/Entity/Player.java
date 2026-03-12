@@ -25,6 +25,7 @@ public class Player extends Entity {
     private final Stats stats;
     private Arena arena;
     private Equipe equipe;
+    private final TileMap tileMap;
     private int level = 1;
     
     // Death and respawn tracking
@@ -32,11 +33,16 @@ public class Player extends Entity {
     private long deathTimeNanos = 0;
     private long respawnEndTimeNanos = 0;
     
+    // Enemy wood damage tracking
+    private long lastWoodDamageTimeNanos = 0;
+    private static final long WOOD_DAMAGE_INTERVAL_NANOS = 200_000_000; // 200ms
+    
     public Player(MoveInput moveInput, TargetInput targetInput, 
                   TileMap tileMap, CollisionTable collisionTable, Arena arena) {
         this.moveInput = moveInput;
         this.targetInput = targetInput;
         this.arena = arena;
+        this.tileMap = tileMap;
         
         this.collisionDetector = new CollisionDetector(tileMap, collisionTable, arena);
         this.pathFollower = new PathFollower(tileMap, collisionTable, arena);
@@ -97,7 +103,39 @@ public class Player extends Entity {
     }
     
     public boolean isInFountain() {
-        return checkFountainProximity();
+        if (equipe() == null || arena == null) return false;
+        int tileSize = Core.Config.getTileSize();
+        int tileX = (int)(getX() / tileSize);
+        int tileY = (int)(getY() / tileSize);
+        if (tileY < 0 || tileY >= tileMap.getRows() || tileX < 0 || tileX >= tileMap.getColumns()) return false;
+        if (tileMap.getTileAt(tileY, tileX) != 1) return false; // not wood
+        
+        Vec2 myAncient = (equipe().couleur() == TeamColor.BLUE) ? arena.getBlueAncient() : arena.getRedAncient();
+        Vec2 enemyAncient = (equipe().couleur() == TeamColor.BLUE) ? arena.getRedAncient() : arena.getBlueAncient();
+        if (myAncient == null || enemyAncient == null) return false;
+        
+        double distToOwn = Math.hypot(tileX - myAncient.x(), tileY - myAncient.y());
+        double distToEnemy = Math.hypot(tileX - enemyAncient.x(), tileY - enemyAncient.y());
+        double margin = 2.0;
+        return distToOwn < distToEnemy - margin;
+    }
+    
+    public boolean isOnEnemyWood() {
+        if (equipe() == null || arena == null) return false;
+        int tileSize = Core.Config.getTileSize();
+        int tileX = (int)(getX() / tileSize);
+        int tileY = (int)(getY() / tileSize);
+        if (tileY < 0 || tileY >= tileMap.getRows() || tileX < 0 || tileX >= tileMap.getColumns()) return false;
+        if (tileMap.getTileAt(tileY, tileX) != 1) return false; // not wood
+        
+        Vec2 myAncient = (equipe().couleur() == TeamColor.BLUE) ? arena.getBlueAncient() : arena.getRedAncient();
+        Vec2 enemyAncient = (equipe().couleur() == TeamColor.BLUE) ? arena.getRedAncient() : arena.getBlueAncient();
+        if (myAncient == null || enemyAncient == null) return false;
+        
+        double distToOwn = Math.hypot(tileX - myAncient.x(), tileY - myAncient.y());
+        double distToEnemy = Math.hypot(tileX - enemyAncient.x(), tileY - enemyAncient.y());
+        double margin = 2.0;
+        return distToEnemy < distToOwn - margin;
     }
     
     public boolean estMorte() {
@@ -186,10 +224,39 @@ public class Player extends Entity {
             return; // Skip movement update while dead
         }
         
-        // Check if player is in fountain for regeneration
-        if (isInFountain() && equipe() != null && equipe().fontaine() != null) {
-            double deltaSeconds = 1.0 / 60.0; // Match game loop
-            equipe().fontaine().regen(stats, deltaSeconds);
+        int tileSize = Core.Config.getTileSize();
+        int tileX = (int)(getX() / tileSize);
+        int tileY = (int)(getY() / tileSize);
+        
+        // Ensure within map bounds
+        if (tileY >= 0 && tileY < tileMap.getRows() && tileX >= 0 && tileX < tileMap.getColumns()) {
+            int tileId = tileMap.getTileAt(tileY, tileX);
+            
+            if (tileId == 1) { // Wood floor (fountain area)
+                if (equipe() != null && arena != null) {
+                    Vec2 myAncient = (equipe().couleur() == TeamColor.BLUE) ? arena.getBlueAncient() : arena.getRedAncient();
+                    Vec2 enemyAncient = (equipe().couleur() == TeamColor.BLUE) ? arena.getRedAncient() : arena.getBlueAncient();
+                    
+                    if (myAncient != null && enemyAncient != null) {
+                        double distToOwn = Math.hypot(tileX - myAncient.x(), tileY - myAncient.y());
+                        double distToEnemy = Math.hypot(tileX - enemyAncient.x(), tileY - enemyAncient.y());
+                        double margin = 2.0; // tile tolerance
+                        
+                        if (distToOwn < distToEnemy - margin) {
+                            // Friendly wood - heal and mana regen
+                            double deltaSeconds = 1.0 / 60.0; // Match game loop
+                            equipe().fontaine().regen(stats, deltaSeconds);
+                        } else if (distToEnemy < distToOwn - margin) {
+                            // Enemy wood - take damage every 200ms (3x tower damage = 60)
+                            long currentNanos = System.nanoTime();
+                            if (currentNanos - lastWoodDamageTimeNanos >= WOOD_DAMAGE_INTERVAL_NANOS) {
+                                subirDegats(60);
+                                lastWoodDamageTimeNanos = currentNanos;
+                            }
+                        }
+                    }
+                }
+            }
         }
         
         movement.update(this);

@@ -241,5 +241,10 @@ public class GamePanel extends JPanel {
             g2.setColor(Color.CYAN);
             g2.drawString("In Fountain - Healing/Mana Regen", 10, 80);
         }
+        
+        if (player.isOnEnemyWood()) {
+            g2.setColor(Color.RED);
+            g2.drawString("ENEMY TERRITORY - Taking Damage!", 10, 100);
+        }
     }
 }
