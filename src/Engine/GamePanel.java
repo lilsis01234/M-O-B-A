@@ -19,6 +19,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 
@@ -255,17 +261,62 @@ public class GamePanel extends JPanel {
             tour.updateAnimation();
         }
         
-        // Only draw player if alive
-        if (player.isAlive()) {
-            playerRenderer.draw(g2, player);
-        }
+        // Depth-sorted rendering: draw entities based on Y position
+        drawDepthSorted(g2);
         
-        drawTowers(g2);
-        drawAncients(g2);
         drawProjectiles(g2);
         drawClickEffects(g2);
 
         g2.setTransform(oldTransform);
+    }
+    
+    private void drawDepthSorted(Graphics2D g2) {
+        java.util.List<RenderableEntity> entities = new java.util.ArrayList<>();
+        
+        int tileSize = Config.getTileSize();
+        
+        // Add towers
+        for (Tour tour : arena.tours()) {
+            double towerBaseY = (tour.position().y() + tour.height()) * tileSize;
+            entities.add(new RenderableEntity(towerBaseY, RenderableEntity.Type.TOWER, tour));
+        }
+        
+        // Add ancients
+        for (Ancient ancient : arena.ancients()) {
+            double ancientBaseY = (ancient.position().y() + ancient.height()) * tileSize;
+            entities.add(new RenderableEntity(ancientBaseY, RenderableEntity.Type.ANCIENT, ancient));
+        }
+        
+        // Add player
+        if (player.isAlive()) {
+            double playerBaseY = player.getY() + tileSize;
+            entities.add(new RenderableEntity(playerBaseY, RenderableEntity.Type.PLAYER, player));
+        }
+        
+        // Sort by Y position (lower Y = behind, higher Y = in front)
+        entities.sort(java.util.Comparator.comparingDouble(e -> e.renderY));
+        
+        // Draw in sorted order
+        for (RenderableEntity entity : entities) {
+            switch (entity.type) {
+                case TOWER -> towerRenderer.draw(g2, (Tour) entity.entity, camera);
+                case ANCIENT -> towerRenderer.drawAncient(g2, (Ancient) entity.entity, camera);
+                case PLAYER -> playerRenderer.draw(g2, player);
+            }
+        }
+    }
+    
+    private static class RenderableEntity {
+        enum Type { TOWER, ANCIENT, PLAYER }
+        final double renderY;
+        final Type type;
+        final Object entity;
+        
+        RenderableEntity(double renderY, Type type, Object entity) {
+            this.renderY = renderY;
+            this.type = type;
+            this.entity = entity;
+        }
     }
 
     private void drawTowers(Graphics2D g2) {

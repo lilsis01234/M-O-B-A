@@ -20,6 +20,5 @@ public class Main {
         window.setVisible(true);
         
         gamePanel.requestFocusInWindow();
-        // Game will start after hero selection
     }
 }

@@ -7,6 +7,7 @@ import Core.Moba.Units.Tour;
 import Core.Moba.World.Arena;
 import Core.Tile.CollisionTable;
 import Core.Tile.TileMap;
+import Core.Entity.HitboxUtils;
 
 import java.util.List;
 
@@ -131,25 +132,21 @@ public class PathFollower {
         double bottom = topLeftY + tileSize - inset;
 
         for (Tour tower : arena.tours()) {
-            double towerPixelX = tower.position().x() * tileSize;
-            double towerPixelY = tower.position().y() * tileSize;
-            double towerWidth = tower.width() * tileSize;
-            double towerHeight = tower.height() * tileSize;
-
-            if (right > towerPixelX && left < towerPixelX + towerWidth
-                    && bottom > towerPixelY && top < towerPixelY + towerHeight) {
+            HitboxUtils.Hitbox towerCollisionBox = HitboxUtils.createTowerCollisionBox(
+                tower.position().x(), tower.position().y(), tower.width(), tower.height());
+            
+            if (right > towerCollisionBox.getLeft() && left < towerCollisionBox.getRight()
+                    && bottom > towerCollisionBox.getTop() && top < towerCollisionBox.getBottom()) {
                 return true;
             }
         }
 
         for (Ancient ancient : arena.ancients()) {
-            double ancientPixelX = ancient.position().x() * tileSize;
-            double ancientPixelY = ancient.position().y() * tileSize;
-            double ancientWidth = ancient.width() * tileSize;
-            double ancientHeight = ancient.height() * tileSize;
+            HitboxUtils.Hitbox ancientCollisionBox = HitboxUtils.createAncientCollisionBox(
+                ancient.position().x(), ancient.position().y(), ancient.width(), ancient.height());
 
-            if (right > ancientPixelX && left < ancientPixelX + ancientWidth
-                    && bottom > ancientPixelY && top < ancientPixelY + ancientHeight) {
+            if (right > ancientCollisionBox.getLeft() && left < ancientCollisionBox.getRight()
+                    && bottom > ancientCollisionBox.getTop() && top < ancientCollisionBox.getBottom()) {
                 return true;
             }
         }

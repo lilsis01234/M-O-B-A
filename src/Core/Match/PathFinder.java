@@ -1,5 +1,6 @@
 package Core.Match;
 
+import Core.Entity.HitboxUtils;
 import Core.Tile.CollisionTable;
 import Core.Tile.TileMap;
 import Core.Moba.Units.Tour;
@@ -57,18 +58,16 @@ public class PathFinder {
             return null;
         }
 
-        // If target is blocked, find the nearest walkable tile
         if (hasCollision(targetRow, targetCol)) {
             int[] nearest = findNearestWalkableTile(targetCol, targetRow);
             if (nearest != null) {
                 targetCol = nearest[0];
                 targetRow = nearest[1];
             } else {
-                return null; // No walkable tiles nearby
+                return null;
             }
         }
         
-        // Don't pathfind if we are already at the (possibly adjusted) target
         if (startCol == targetCol && startRow == targetRow) {
             return null;
         }
@@ -97,7 +96,6 @@ public class PathFinder {
             
             closedList.add(currentNode);
             
-            // Check neighbors (8 directions)
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dy = -1; dy <= 1; dy++) {
                     if (dx == 0 && dy == 0) continue;
@@ -113,7 +111,6 @@ public class PathFinder {
                         continue;
                     }
                     
-                    // Prevent cutting through corners
                     if (Math.abs(dx) == 1 && Math.abs(dy) == 1) {
                         if (hasCollision(ny, currentNode.x) || 
                             hasCollision(currentNode.y, nx)) {
@@ -147,46 +144,47 @@ public class PathFinder {
             }
         }
         
-        return null; // No path found
+        return null;
     }
     
     private boolean hasCollision(int row, int col) {
-        if (collisionTable.hasCollision(tileMap.getTileAt(row, col))) {
+        if (isWallTile(row, col)) {
             return true;
         }
         
         if (arena != null) {
-            return hasTowerCollision(row, col);
+            return hasStructureCollision(row, col);
         }
         
         return false;
     }
     
-    private boolean hasTowerCollision(int row, int col) {
+    private boolean isWallTile(int row, int col) {
+        if (row < 0 || row >= tileMap.getRows() || col < 0 || col >= tileMap.getColumns()) {
+            return true;
+        }
+        return collisionTable.hasCollision(tileMap.getTileAt(row, col));
+    }
+    
+    private boolean hasStructureCollision(int row, int col) {
         int tileSize = Config.getTileSize();
-        double tileX = col * tileSize;
-        double tileY = row * tileSize;
+        double tilePixelX = col * tileSize;
+        double tilePixelY = row * tileSize;
         
+        HitboxUtils.Hitbox tileCollisionBox = HitboxUtils.createEntityCollisionBox(tilePixelX, tilePixelY);
+
         for (Tour tower : arena.tours()) {
-            double towerPixelX = tower.position().x() * tileSize;
-            double towerPixelY = tower.position().y() * tileSize;
-            double towerWidth = tower.width() * tileSize;
-            double towerHeight = tower.height() * tileSize;
-            
-            if (tileX < towerPixelX + towerWidth && tileX + tileSize > towerPixelX
-                    && tileY < towerPixelY + towerHeight && tileY + tileSize > towerPixelY) {
+            HitboxUtils.Hitbox towerCollisionBox = HitboxUtils.createTowerCollisionBox(
+                tower.position().x(), tower.position().y(), tower.width(), tower.height());
+            if (HitboxUtils.aabbIntersects(tileCollisionBox, towerCollisionBox)) {
                 return true;
             }
         }
         
         for (Ancient ancient : arena.ancients()) {
-            double ancientPixelX = ancient.position().x() * tileSize;
-            double ancientPixelY = ancient.position().y() * tileSize;
-            double ancientWidth = ancient.width() * tileSize;
-            double ancientHeight = ancient.height() * tileSize;
-            
-            if (tileX < ancientPixelX + ancientWidth && tileX + tileSize > ancientPixelX
-                    && tileY < ancientPixelY + ancientHeight && tileY + tileSize > ancientPixelY) {
+            HitboxUtils.Hitbox ancientCollisionBox = HitboxUtils.createAncientCollisionBox(
+                ancient.position().x(), ancient.position().y(), ancient.width(), ancient.height());
+            if (HitboxUtils.aabbIntersects(tileCollisionBox, ancientCollisionBox)) {
                 return true;
             }
         }
@@ -195,14 +193,12 @@ public class PathFinder {
     }
     
     private int calculateHeuristic(int x1, int y1, int x2, int y2) {
-        // Octile distance for 8-way movement
         int dx = Math.abs(x1 - x2);
         int dy = Math.abs(y1 - y2);
         return 10 * (dx + dy) + (14 - 2 * 10) * Math.min(dx, dy);
     }
 
     private int[] findNearestWalkableTile(int targetCol, int targetRow) {
-        // BFS to find the nearest walkable tile within a reasonable radius
         int maxRadius = 10;
         Queue<int[]> queue = new LinkedList<>();
         Set<String> visited = new HashSet<>();
@@ -215,17 +211,14 @@ public class PathFinder {
             int cx = current[0];
             int cy = current[1];
 
-            // If this tile is walkable, return it
             if (!hasCollision(cy, cx)) {
                 return current;
             }
 
-            // Check if we've exceeded radius
             if (Math.abs(cx - targetCol) >= maxRadius || Math.abs(cy - targetRow) >= maxRadius) {
                 continue;
             }
 
-            // Add neighbors
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dy = -1; dy <= 1; dy++) {
                     if (dx == 0 && dy == 0) continue;

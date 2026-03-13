@@ -2,10 +2,13 @@ package Core.Entity;
 
 import Core.Config;
 
-/**
- * Utilitaires pour les hitboxes (boites de collision).
- */
 public class HitboxUtils {
+
+    public static final double COLLISION_BOX_BOTTOM_RATIO = 0.15;
+    public static final double HITBOX_INSET = 2.0;
+    public static final double TOWER_COLLISION_WIDTH_RATIO = 0.35;
+    public static final double TOWER_COLLISION_HEIGHT_RATIO = 0.25;
+    public static final double TOWER_HITBOX_HEIGHT_RATIO = 0.75;
 
     public static class Hitbox {
         private double x, y, width, height;
@@ -39,9 +42,6 @@ public class HitboxUtils {
         }
     }
 
-    /**
-     * Teste si deux hitboxes se chevauchent.
-     */
     public static boolean aabbIntersects(Hitbox a, Hitbox b) {
         return a.getLeft() < b.getRight() &&
                a.getRight() > b.getLeft() &&
@@ -63,23 +63,108 @@ public class HitboxUtils {
 
     public static Hitbox createEntityHitbox(double topLeftX, double topLeftY) {
         int tileSize = Config.getTileSize();
-        double inset = 6.0;
+        double inset = HITBOX_INSET;
+        double fullWidth = tileSize - 2 * inset;
+        double fullHeight = tileSize - 2 * inset;
+        
+        double hitboxWidth = fullWidth * 0.5;
+        double hitboxHeight = fullHeight;
+        
+        double offsetX = (fullWidth - hitboxWidth) / 2;
+        
         return new Hitbox(
-            topLeftX + inset,
+            topLeftX + inset + offsetX,
             topLeftY + inset,
-            tileSize - 2 * inset,
-            tileSize - 2 * inset
+            hitboxWidth,
+            hitboxHeight
         );
     }
 
     public static Hitbox createEntityHitbox(double topLeftX, double topLeftY, double inset) {
         int tileSize = Config.getTileSize();
+        double fullWidth = tileSize - 2 * inset;
+        double fullHeight = tileSize - 2 * inset;
+        
+        double hitboxWidth = fullWidth * 0.5;
+        double hitboxHeight = fullHeight;
+        
+        double offsetX = (fullWidth - hitboxWidth) / 2;
+        
         return new Hitbox(
-            topLeftX + inset,
+            topLeftX + inset + offsetX,
             topLeftY + inset,
-            tileSize - 2 * inset,
-            tileSize - 2 * inset
+            hitboxWidth,
+            hitboxHeight
         );
+    }
+
+    public static Hitbox createEntityCollisionBox(double topLeftX, double topLeftY) {
+        int tileSize = Config.getTileSize();
+        double inset = HITBOX_INSET;
+        double fullWidth = tileSize - 2 * inset;
+        double fullHeight = tileSize - 2 * inset;
+        
+        double collisionWidth = fullWidth * 0.5;
+        double collisionHeight = fullHeight * COLLISION_BOX_BOTTOM_RATIO;
+        
+        double offsetX = (fullWidth - collisionWidth) / 2;
+        
+        return new Hitbox(
+            topLeftX + inset + offsetX,
+            topLeftY + tileSize - inset - collisionHeight,
+            collisionWidth,
+            collisionHeight
+        );
+    }
+
+    public static Hitbox createTowerCollisionBox(double towerX, double towerY, int width, int height) {
+        int tileSize = Config.getTileSize();
+        double pixelX = towerX * tileSize;
+        double pixelY = towerY * tileSize;
+        
+        double spriteWidth = width * tileSize;
+        double spriteHeight = height * tileSize;
+        
+        double collisionWidth = spriteWidth * TOWER_COLLISION_WIDTH_RATIO;
+        double collisionHeight = spriteHeight * TOWER_COLLISION_HEIGHT_RATIO;
+        
+        double offsetX = (spriteWidth - collisionWidth) / 2;
+        
+        return new Hitbox(
+            pixelX + offsetX,
+            pixelY + spriteHeight - collisionHeight,
+            collisionWidth,
+            collisionHeight
+        );
+    }
+
+    public static Hitbox createTowerHitbox(double towerX, double towerY, int width, int height) {
+        int tileSize = Config.getTileSize();
+        double pixelX = towerX * tileSize;
+        double pixelY = towerY * tileSize;
+        
+        double spriteWidth = width * tileSize;
+        double spriteHeight = height * tileSize;
+        
+        double hitboxWidth = spriteWidth * TOWER_COLLISION_WIDTH_RATIO;
+        double hitboxHeight = spriteHeight * TOWER_HITBOX_HEIGHT_RATIO;
+        
+        double offsetX = (spriteWidth - hitboxWidth) / 2;
+        
+        return new Hitbox(
+            pixelX + offsetX,
+            pixelY + spriteHeight - hitboxHeight,
+            hitboxWidth,
+            hitboxHeight
+        );
+    }
+
+    public static Hitbox createAncientCollisionBox(double ancientX, double ancientY, int width, int height) {
+        return createTowerCollisionBox(ancientX, ancientY, width, height);
+    }
+
+    public static Hitbox createAncientHitbox(double ancientX, double ancientY, int width, int height) {
+        return createTowerHitbox(ancientX, ancientY, width, height);
     }
 
     private HitboxUtils() {}

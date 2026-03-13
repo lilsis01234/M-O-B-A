@@ -7,12 +7,7 @@ import Core.Moba.World.Arena;
 import Core.Tile.CollisionTable;
 import Core.Tile.TileMap;
 
-/**
- * Détecte les collisions entre les entités et le monde.
- */
 public class CollisionDetector {
-
-    private static final double HITBOX_INSET_PX = 6.0;
 
     private final TileMap tileMap;
     private final CollisionTable collisionTable;
@@ -24,57 +19,49 @@ public class CollisionDetector {
         this.arena = arena;
     }
 
-    /**
-     * Vérifie si une position est en collision.
-     */
     public boolean collidesAt(double topLeftX, double topLeftY) {
         return collidesWithTile(topLeftX, topLeftY) || 
-               (arena != null && collidesWithTowers(topLeftX, topLeftY));
+               (arena != null && collidesWithStructures(topLeftX, topLeftY));
     }
 
     private boolean collidesWithTile(double topLeftX, double topLeftY) {
-        int tileSize = Config.getTileSize();
-        HitboxUtils.Hitbox hitbox = HitboxUtils.createEntityHitbox(topLeftX, topLeftY);
+        HitboxUtils.Hitbox collisionBox = HitboxUtils.createEntityCollisionBox(topLeftX, topLeftY);
         
-        return isWallAt(hitbox.getLeft(), hitbox.getTop()) ||
-               isWallAt(hitbox.getRight(), hitbox.getTop()) ||
-               isWallAt(hitbox.getLeft(), hitbox.getBottom()) ||
-               isWallAt(hitbox.getRight(), hitbox.getBottom()) ||
-               isWallAt(hitbox.getCenterX(), hitbox.getCenterY());
+        return isWallAt(collisionBox.getLeft(), collisionBox.getTop()) ||
+               isWallAt(collisionBox.getRight(), collisionBox.getTop()) ||
+               isWallAt(collisionBox.getLeft(), collisionBox.getBottom()) ||
+               isWallAt(collisionBox.getRight(), collisionBox.getBottom()) ||
+               isWallAt(collisionBox.getCenterX(), collisionBox.getCenterY());
     }
 
     private boolean isWallAt(double pixelX, double pixelY) {
         int tileSize = Config.getTileSize();
         int col = (int) Math.floor(pixelX / tileSize);
         int row = (int) Math.floor(pixelY / tileSize);
+        
+        if (col < 0 || col >= tileMap.getColumns() || row < 0 || row >= tileMap.getRows()) {
+            return true;
+        }
+        
         int tileId = tileMap.getTileAt(row, col);
         return collisionTable.hasCollision(tileId);
     }
 
-    private boolean collidesWithTowers(double topLeftX, double topLeftY) {
-        HitboxUtils.Hitbox hitbox = HitboxUtils.createEntityHitbox(topLeftX, topLeftY);
-        int tileSize = Config.getTileSize();
+    private boolean collidesWithStructures(double topLeftX, double topLeftY) {
+        HitboxUtils.Hitbox entityCollisionBox = HitboxUtils.createEntityCollisionBox(topLeftX, topLeftY);
 
         for (Tour tower : arena.tours()) {
-            HitboxUtils.Hitbox towerHitbox = new HitboxUtils.Hitbox(
-                tower.position().x() * tileSize,
-                tower.position().y() * tileSize,
-                tower.width() * tileSize,
-                tower.height() * tileSize
-            );
-            if (HitboxUtils.aabbIntersects(hitbox, towerHitbox)) {
+            HitboxUtils.Hitbox towerCollisionBox = HitboxUtils.createTowerCollisionBox(
+                tower.position().x(), tower.position().y(), tower.width(), tower.height());
+            if (HitboxUtils.aabbIntersects(entityCollisionBox, towerCollisionBox)) {
                 return true;
             }
         }
 
         for (Ancient ancient : arena.ancients()) {
-            HitboxUtils.Hitbox ancientHitbox = new HitboxUtils.Hitbox(
-                ancient.position().x() * tileSize,
-                ancient.position().y() * tileSize,
-                ancient.width() * tileSize,
-                ancient.height() * tileSize
-            );
-            if (HitboxUtils.aabbIntersects(hitbox, ancientHitbox)) {
+            HitboxUtils.Hitbox ancientCollisionBox = HitboxUtils.createAncientCollisionBox(
+                ancient.position().x(), ancient.position().y(), ancient.width(), ancient.height());
+            if (HitboxUtils.aabbIntersects(entityCollisionBox, ancientCollisionBox)) {
                 return true;
             }
         }
@@ -82,62 +69,50 @@ public class CollisionDetector {
         return false;
     }
 
-    /**
-     * Vérifie si le chemin entre deux points est dégagé.
-     */
     public boolean isPathClear(double x1, double y1, double x2, double y2) {
         double distance = MathUtils.distance(x1, y1, x2, y2);
         if (distance < 1) return true;
 
-        double pathClearInset = HITBOX_INSET_PX + 2.0;
+        double pathClearInset = HitboxUtils.HITBOX_INSET + 2.0;
         int steps = (int) Math.max(1, distance / (Config.getTileSize() / 8.0));
 
         for (int i = 1; i <= steps; i++) {
             double ratio = (double) i / steps;
             double checkX = x1 + (x2 - x1) * ratio;
             double checkY = y1 + (y2 - y1) * ratio;
-            if (collidesAtCustom(checkX, checkY, pathClearInset)) {
+            if (collidesAtPathCheck(checkX, checkY, pathClearInset)) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean collidesAtCustom(double topLeftX, double topLeftY, double inset) {
-        HitboxUtils.Hitbox hitbox = HitboxUtils.createEntityHitbox(topLeftX, topLeftY, inset);
+    private boolean collidesAtPathCheck(double topLeftX, double topLeftY, double inset) {
+        HitboxUtils.Hitbox collisionBox = HitboxUtils.createEntityCollisionBox(topLeftX, topLeftY);
         
-        return isWallAt(hitbox.getLeft(), hitbox.getTop()) ||
-               isWallAt(hitbox.getRight(), hitbox.getTop()) ||
-               isWallAt(hitbox.getLeft(), hitbox.getBottom()) ||
-               isWallAt(hitbox.getRight(), hitbox.getBottom()) ||
-               isWallAt(hitbox.getCenterX(), hitbox.getCenterY()) ||
-               (arena != null && collidesWithTowersCustom(topLeftX, topLeftY, inset));
+        return isWallAt(collisionBox.getLeft(), collisionBox.getTop()) ||
+               isWallAt(collisionBox.getRight(), collisionBox.getTop()) ||
+               isWallAt(collisionBox.getLeft(), collisionBox.getBottom()) ||
+               isWallAt(collisionBox.getRight(), collisionBox.getBottom()) ||
+               isWallAt(collisionBox.getCenterX(), collisionBox.getCenterY()) ||
+               (arena != null && collidesWithStructuresAt(topLeftX, topLeftY));
     }
 
-    private boolean collidesWithTowersCustom(double topLeftX, double topLeftY, double inset) {
-        HitboxUtils.Hitbox hitbox = HitboxUtils.createEntityHitbox(topLeftX, topLeftY, inset);
-        int tileSize = Config.getTileSize();
+    private boolean collidesWithStructuresAt(double topLeftX, double topLeftY) {
+        HitboxUtils.Hitbox entityCollisionBox = HitboxUtils.createEntityCollisionBox(topLeftX, topLeftY);
 
         for (Tour tower : arena.tours()) {
-            HitboxUtils.Hitbox towerHitbox = new HitboxUtils.Hitbox(
-                tower.position().x() * tileSize,
-                tower.position().y() * tileSize,
-                tower.width() * tileSize,
-                tower.height() * tileSize
-            );
-            if (HitboxUtils.aabbIntersects(hitbox, towerHitbox)) {
+            HitboxUtils.Hitbox towerCollisionBox = HitboxUtils.createTowerCollisionBox(
+                tower.position().x(), tower.position().y(), tower.width(), tower.height());
+            if (HitboxUtils.aabbIntersects(entityCollisionBox, towerCollisionBox)) {
                 return true;
             }
         }
 
         for (Ancient ancient : arena.ancients()) {
-            HitboxUtils.Hitbox ancientHitbox = new HitboxUtils.Hitbox(
-                ancient.position().x() * tileSize,
-                ancient.position().y() * tileSize,
-                ancient.width() * tileSize,
-                ancient.height() * tileSize
-            );
-            if (HitboxUtils.aabbIntersects(hitbox, ancientHitbox)) {
+            HitboxUtils.Hitbox ancientCollisionBox = HitboxUtils.createAncientCollisionBox(
+                ancient.position().x(), ancient.position().y(), ancient.width(), ancient.height());
+            if (HitboxUtils.aabbIntersects(entityCollisionBox, ancientCollisionBox)) {
                 return true;
             }
         }
