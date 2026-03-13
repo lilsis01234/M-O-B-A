@@ -20,8 +20,8 @@ public class Config {
     
     private static final int CAMERA_EDGE_THRESHOLD = 80;
     private static final int CAMERA_SPEED = 20;
-    private static final float MIN_ZOOM = 0.5f;
-    private static final float MAX_ZOOM = 3.0f;
+    private static final float MIN_ZOOM = 1.2f;
+    private static final float MAX_ZOOM = 2.0f;
     private static final float ZOOM_STEP = 0.1f;
 
     private static final String PLAYER_IMAGE_PATH = "src/Resource/Characters/MetroCity/CharacterModel/";

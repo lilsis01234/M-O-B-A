@@ -7,7 +7,7 @@ public class Camera {
     
     private float x;
     private float y;
-    private float zoom = 1.0f;
+    private float zoom = 1.5f;
     private int viewportWidth;
     private int viewportHeight;
     private int worldWidth;
@@ -52,11 +52,6 @@ public class Camera {
             float zoomX = (float) viewportWidth / worldWidth;
             float zoomY = (float) viewportHeight / worldHeight;
             dynamicMinZoom = Math.max(zoomX, zoomY);
-            
-            if (zoom < dynamicMinZoom) {
-                zoom = dynamicMinZoom;
-                clamp();
-            }
         }
     }
 
@@ -112,7 +107,8 @@ public class Camera {
 
         float oldZoom = zoom;
         zoom += (wheelRotation < 0 ? 1 : -1) * Config.getZoomStep();
-        zoom = MathUtils.clamp(zoom, dynamicMinZoom, Config.getMaxZoom());
+        float effectiveMinZoom = Math.max(dynamicMinZoom, Config.getMinZoom());
+        zoom = Math.max(effectiveMinZoom, Math.min(zoom, Config.getMaxZoom()));
 
         if (oldZoom != zoom) {
             adjustPositionForZoom(oldZoom);
