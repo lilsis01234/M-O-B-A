@@ -2,6 +2,7 @@ package Engine;
 
 import Engine.Render.HeroSpriteCache;
 import Core.Database.JsonDataProvider;
+import Core.Database.JsonDataProviderFactory;
 import Core.Database.model.Hero;
 import Core.Entity.Direction;
 
@@ -96,7 +97,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     
     private void loadHeroes() {
         try {
-            JsonDataProvider dataProvider = JsonDataProvider.getInstance();
+            JsonDataProvider dataProvider = JsonDataProviderFactory.create();
             allHeroes = dataProvider.getAllHeroes();
         } catch (IOException e) {
             e.printStackTrace();

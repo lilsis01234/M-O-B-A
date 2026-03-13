@@ -12,17 +12,8 @@ public class JsonDataProvider {
     private List<Category> categories;
     private Map<Integer, List<Spell>> heroSpells;
     
-    private static JsonDataProvider instance;
-    
-    private JsonDataProvider() throws IOException {
+    public JsonDataProvider() throws IOException {
         loadData();
-    }
-    
-    public static synchronized JsonDataProvider getInstance() throws IOException {
-        if (instance == null) {
-            instance = new JsonDataProvider();
-        }
-        return instance;
     }
     
     private void loadData() throws IOException {

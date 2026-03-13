@@ -87,7 +87,8 @@ JSON-based data loading system (no external dependencies).
 
 | File | Description |
 |------|-------------|
-| `JsonDataProvider.java` | Singleton custom JSON parser |
+| `JsonDataProviderFactory.java` | Factory for creating data providers |
+| `JsonDataProvider.java` | Custom JSON parser (created by factory) |
 | `model/Hero.java` | Hero data model with stats and spells |
 | `model/Spell.java` | Spell data model |
 | `model/Category.java` | Hero category (Force/Agilité/Intelligence) |
@@ -590,7 +591,7 @@ HeroSpriteCache.compose(hero, direction, frame)
 Custom JSON parser without external dependencies:
 
 ```
-JsonDataProvider.getInstance()
+JsonDataProviderFactory.create()
   ├─> Lazy initialization on first call
   ├─> Read src/Data/heroes.json
   ├─> Parse using custom parser:

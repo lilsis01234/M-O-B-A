@@ -30,7 +30,7 @@ A lightweight, dependency-free JSON data loading system for the MOBA game engine
 ### Design Principles
 
 1. **Zero external dependencies**: Custom JSON parser using only `java.io` and `java.util`
-2. **Singleton pattern**: Single `JsonDataProvider` instance for entire application
+2. **Factory pattern**: `JsonDataProviderFactory` creates `JsonDataProvider` instances
 3. **Lazy initialization**: Data loads on first access
 4. **In-memory caching**: All data stored in memory for fast access
 5. **Type-safe models**: Strongly-typed POJOs for Hero, Spell, Category
@@ -39,7 +39,8 @@ A lightweight, dependency-free JSON data loading system for the MOBA game engine
 
 ```
 Core.Database/
-├── JsonDataProvider.java       # Singleton parser and data provider
+├── JsonDataProviderFactory.java  # Factory for creating data providers
+├── JsonDataProvider.java         # Data provider (created by factory)
 └── model/
     ├── Hero.java              # Hero data model
     ├── Spell.java             # Spell data model
@@ -52,7 +53,7 @@ Core.Database/
 ### Data Flow
 
 ```
-JsonDataProvider.getInstance()
+JsonDataProviderFactory.create()
       │
       ▼
 ┌─────────────────┐
@@ -232,7 +233,7 @@ HeroSpriteCache.compose(hero, direction, frame)
 ### Get All Heroes
 
 ```java
-JsonDataProvider dataProvider = JsonDataProvider.getInstance();
+JsonDataProvider dataProvider = JsonDataProviderFactory.create();
 List<Hero> allHeroes = dataProvider.getAllHeroes();
 
 for (Hero hero : allHeroes) {
@@ -360,7 +361,7 @@ If using custom sprites:
 
 ```java
 // On first call, all 49 heroes (including new one) load automatically
-JsonDataProvider provider = JsonDataProvider.getInstance();
+JsonDataProvider provider = JsonDataProviderFactory.create();
 List<Hero> heroes = provider.getAllHeroes(); // Now has 49 heroes
 ```
 
@@ -533,7 +534,7 @@ String cacheKey = hero.getCharacterRow() + "_" +
 ### NullPointerException on Hero Access
 
 **Solution**: Ensure JsonDataProvider is initialized before access
-- Fix: Call `JsonDataProvider.getInstance()` before using heroes
+- Fix: Call `JsonDataProviderFactory.create()` before using heroes
 
 ### Missing Heroes
 

@@ -118,7 +118,7 @@ java-2d-game-demo/
 │   │   ├── Config.java              # Global game constants and settings
 │   │   │
 │   │   ├── Database/                # JSON data loading system
-│   │   │   ├── JsonDataProvider.java    # Singleton JSON parser
+│   │   │   ├── JsonDataProviderFactory.java  # Factory for data providers
 │   │   │   └── model/
 │   │   │       ├── Hero.java             # Hero data model
 │   │   │       ├── Spell.java            # Spell data model
@@ -282,7 +282,7 @@ Main.main()
         ├─> MapParser.loadMap()          // Load Map.txt
         ├─> TileLoader.loadTiles()       // Load tile images
         ├─> Arena.create()               // Create teams/towers/bases
-        └─> JsonDataProvider.loadData()  // Load heroes.json
+        └─> JsonDataProviderFactory.create()  // Load heroes.json
 
 Game Loop (60 FPS):
   └─> GameEngine.gameLoop()
