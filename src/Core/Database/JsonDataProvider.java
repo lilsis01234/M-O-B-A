@@ -68,6 +68,7 @@ public class JsonDataProvider {
             hero.setDefense(parseInt(heroMap.get("defense")));
             hero.setAttackSpeed(parseDouble(heroMap.get("attackSpeed")));
             hero.setMaxMana(parseInt(heroMap.get("maxMana")));
+            hero.setSpeed(parseDouble(heroMap.get("speed")));
             hero.setCharacterRow(parseInt(heroMap.get("characterRow")));
             hero.setHairRow(parseInt(heroMap.get("hairRow")));
             hero.setOutfitFile(heroMap.get("outfitFile"));

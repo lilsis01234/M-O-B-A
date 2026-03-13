@@ -14,6 +14,7 @@ public class Hero {
     private int defense;
     private double attackSpeed;
     private int maxMana;
+    private double speed;
     private int characterRow; // Row in Character Model.png (body type/skin)
     private int hairRow; // Row in Hairs.png
     private String outfitFile; // Outfit PNG filename in Outfits folder
@@ -117,6 +118,14 @@ public class Hero {
     
     public void setMaxMana(int maxMana) {
         this.maxMana = maxMana;
+    }
+    
+    public double getSpeed() {
+        return speed;
+    }
+    
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
     
     public int getCharacterRow() {

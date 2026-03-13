@@ -70,8 +70,10 @@ public class Player extends Entity {
 
     private Stats createStats(Hero hero) {
         if (hero != null) {
-            return new Stats(hero.getMaxHp(), hero.getMaxMana(), hero.getAttack(), 
+            Stats stats = new Stats(hero.getMaxHp(), hero.getMaxMana(), hero.getAttack(), 
                           hero.getDefense(), hero.getAttackSpeed());
+            stats.takeDamage(hero.getMaxHp() - hero.getBaseHp());
+            return stats;
         }
         return new Stats(250, 200, 15, 10, 200.0);
     }
@@ -95,8 +97,15 @@ public class Player extends Entity {
     private void initializePosition() {
         setX(Config.getPlayerDefaultX());
         setY(Config.getPlayerDefaultY());
-        setSpeed(Config.getPlayerDefaultSpeed());
+        setSpeed((int) getSpeedFromHero(hero));
         setDirection(Direction.DOWN);
+    }
+    
+    private double getSpeedFromHero(Hero hero) {
+        if (hero != null && hero.getSpeed() > 0) {
+            return hero.getSpeed();
+        }
+        return (double) Config.getPlayerDefaultSpeed();
     }
 
     private void assignTeam() {
