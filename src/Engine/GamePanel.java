@@ -184,6 +184,17 @@ public class GamePanel extends JPanel {
             
             // Create HUD renderer
             hudRenderer = new HUDRenderer(player, arena, tileMap, getWidth(), getHeight());
+            hudRenderer.setCamera(camera);
+            hudRenderer.setMoveTargetConsumer(target -> {
+                player.setMovementTarget(target.x, target.y);
+                camera.setPosition(target.x, target.y);
+            });
+            
+            mouseHandler.setLeftClickCallback(point -> {
+                if (hudRenderer.handleMouseClick(point.x, point.y)) {
+                    // Click was handled by HUD (minimap)
+                }
+            });
             
             // Initialize game engine
             gameEngine = new GameEngine(player, camera, mouseHandler, arena);

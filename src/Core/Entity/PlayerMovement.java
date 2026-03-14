@@ -44,6 +44,38 @@ public class PlayerMovement {
         this.pathFollower = pathFollower;
     }
 
+    public void setTarget(double x, double y) {
+        double half = Config.getTileSize() / 2.0;
+        int tileSize = Config.getTileSize();
+        
+        double clickedX = x - half;
+        double clickedY = y - half;
+        
+        if (collisionDetector.isPathClear(0, 0, clickedX, clickedY)) {
+            targetX = clickedX;
+            targetY = clickedY;
+            hasTarget = true;
+            pathFollower.clearPath();
+        } else {
+            int startCol = (int) Math.floor(half / tileSize);
+            int startRow = (int) Math.floor(half / tileSize);
+            int targetCol = (int) Math.floor((clickedX + half) / tileSize);
+            int targetRow = (int) Math.floor((clickedY + half) / tileSize);
+            
+            List<int[]> path = pathFollower.findPath(startCol, startRow, targetCol, targetRow);
+            if (path != null && path.size() > 1) {
+                pathFollower.setPath(path);
+                pathFollower.smoothPath(collisionDetector);
+                pathFollower.setPathIndex(1);
+                
+                int[] firstNode = path.get(1);
+                targetX = firstNode[0] * tileSize;
+                targetY = firstNode[1] * tileSize;
+                hasTarget = true;
+            }
+        }
+    }
+
     /**
      * Update principal - appelé à chaque frame.
      * C'est le cœur du mouvement : on gère clic souris, clavier, et animations.

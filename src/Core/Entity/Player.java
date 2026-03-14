@@ -269,6 +269,14 @@ public class Player extends Entity {
         }
     }
     
+    public PlayerMovement getMovement() {
+        return movement;
+    }
+    
+    public void setMovementTarget(double x, double y) {
+        movement.setTarget(x, y);
+    }
+    
     public void update() {
         if (!isAlive) {
             checkRespawnTimer();

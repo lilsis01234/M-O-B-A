@@ -21,9 +21,14 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
     private int lastClickX = -1;
     private int lastClickY = -1;
     private boolean clickTriggered = false;
+    private java.util.function.Consumer<java.awt.Point> leftClickCallback;
 
     public void setCamera(Camera camera) {
         this.camera = camera;
+    }
+    
+    public void setLeftClickCallback(java.util.function.Consumer<java.awt.Point> callback) {
+        this.leftClickCallback = callback;
     }
     
     public int getTargetX() {
@@ -82,6 +87,9 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
     
     @Override
     public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1 && leftClickCallback != null) {
+            leftClickCallback.accept(new java.awt.Point(e.getX(), e.getY()));
+        }
         if (e.getButton() == MouseEvent.BUTTON3) {
             targetX = e.getX();
             targetY = e.getY();

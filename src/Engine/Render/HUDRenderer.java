@@ -1,6 +1,7 @@
 package Engine.Render;
 
 import Core.Config;
+import Core.Entity.Direction;
 import Core.Entity.Player;
 import Core.Moba.World.Arena;
 import Core.Moba.World.Equipe;
@@ -27,6 +28,8 @@ public class HUDRenderer {
     private final ScoreboardRenderer scoreboard;
     private final TargetInfoRenderer targetInfo;
     private final BuffRenderer buffRenderer;
+    private Camera camera;
+    private java.util.function.Consumer<Point> moveTargetConsumer;
 
     public HUDRenderer(Player player, Arena arena, TileMap tileMap, int screenWidth, int screenHeight) {
         this.player = player;
@@ -63,6 +66,20 @@ public class HUDRenderer {
         
         // Buff/Debuff Display - above target info
         this.buffRenderer = new BuffRenderer(player, 15, screenHeight - 380, 230, 35);
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+        this.minimap.setCamera(camera);
+    }
+
+    public void setMoveTargetConsumer(java.util.function.Consumer<Point> consumer) {
+        this.moveTargetConsumer = consumer;
+        this.minimap.setOnClickCallback(consumer);
+    }
+
+    public boolean handleMouseClick(int clickX, int clickY) {
+        return minimap.handleClick(clickX, clickY);
     }
 
     public void render(Graphics2D g2) {
@@ -104,6 +121,8 @@ class MinimapRenderer {
     private final TileMap tileMap;
     private final Player player;
     private final int x, y, size;
+    private Camera camera;
+    private java.util.function.Consumer<Point> onClickCallback;
 
     public MinimapRenderer(Player player, Arena arena, TileMap tileMap, int x, int y, int size) {
         this.player = player;
@@ -112,6 +131,32 @@ class MinimapRenderer {
         this.x = x;
         this.y = y;
         this.size = size;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
+    public void setOnClickCallback(java.util.function.Consumer<Point> callback) {
+        this.onClickCallback = callback;
+    }
+
+    public boolean handleClick(int clickX, int clickY) {
+        if (clickX >= x && clickX <= x + size && clickY >= y && clickY <= y + size) {
+            float mapWidth = tileMap.getColumns() * Config.getTileSize();
+            float mapHeight = tileMap.getRows() * Config.getTileSize();
+            float scaleX = mapWidth / size;
+            float scaleY = mapHeight / size;
+            
+            float worldX = (clickX - x) * scaleX;
+            float worldY = (clickY - y) * scaleY;
+            
+            if (onClickCallback != null) {
+                onClickCallback.accept(new Point((int) worldX, (int) worldY));
+            }
+            return true;
+        }
+        return false;
     }
 
     public void render(Graphics2D g2) {
@@ -125,9 +170,6 @@ class MinimapRenderer {
         float mapHeight = tileMap.getRows() * Config.getTileSize();
         float scaleX = size / mapWidth;
         float scaleY = size / mapHeight;
-
-        g2.setColor(new Color(40, 40, 50));
-        g2.fillRect(x, y, size, size);
 
         for (int row = 0; row < tileMap.getRows(); row++) {
             for (int col = 0; col < tileMap.getColumns(); col++) {
@@ -165,14 +207,27 @@ class MinimapRenderer {
         g2.setColor(Color.WHITE);
         g2.setStroke(new BasicStroke(1));
         g2.drawOval(playerX - 4, playerY - 4, 8, 8);
+
+        if (camera != null) {
+            int camX = x + (int) (camera.getX() * scaleX);
+            int camY = y + (int) (camera.getY() * scaleY);
+            int camW = (int) (camera.getViewportWidth() * scaleX);
+            int camH = (int) (camera.getViewportHeight() * scaleY);
+            g2.setColor(new Color(255, 255, 255, 100));
+            g2.setStroke(new BasicStroke(1));
+            g2.drawRect(camX, camY, camW, camH);
+        }
     }
 
     private Color getTileColor(int tileId) {
         return switch (tileId) {
-            case 0 -> new Color(60, 100, 60);
-            case 1 -> new Color(80, 60, 40);
-            case 2 -> new Color(50, 50, 50);
-            default -> null;
+            case 0 -> new Color(50, 120, 50);
+            case 1 -> new Color(90, 70, 40);
+            case 2 -> new Color(60, 60, 60);
+            case 3 -> new Color(160, 140, 100);
+            case 4 -> new Color(80, 150, 200);
+            case 5 -> new Color(30, 100, 30);
+            default -> new Color(40, 40, 50);
         };
     }
 }
@@ -180,6 +235,7 @@ class MinimapRenderer {
 class CharacterPanelRenderer {
     private final Player player;
     private final int x, y, width, height;
+    private final HeroSpriteCache spriteCache;
 
     public CharacterPanelRenderer(Player player, int x, int y, int width, int height) {
         this.player = player;
@@ -187,6 +243,7 @@ class CharacterPanelRenderer {
         this.y = y;
         this.width = width;
         this.height = height;
+        this.spriteCache = new HeroSpriteCache();
     }
 
     public void render(Graphics2D g2) {
@@ -200,6 +257,11 @@ class CharacterPanelRenderer {
         g2.fillRect(x + 15, y + 15, 60, 60);
 
         if (player.getHero() != null) {
+            var heroSprite = spriteCache.getSprite(player.getHero(), Direction.DOWN, 1);
+            if (heroSprite != null) {
+                g2.drawImage(heroSprite, x + 18, y + 18, 54, 54, null);
+            }
+            
             g2.setColor(Color.WHITE);
             g2.setFont(new Font("Arial", Font.BOLD, 12));
             g2.drawString(player.getHero().getName(), x + 85, y + 25);
@@ -228,12 +290,14 @@ class CharacterPanelRenderer {
             new Color(50, 100, 200), new Color(40, 80, 180), "MANA");
 
         int statsX = x + 15;
-        int statsY = y + 135;
+        int statsY = y + 138;
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Monospaced", Font.PLAIN, 11));
         g2.drawString("ATK: " + player.stats().attack(), statsX, statsY);
-        g2.drawString("DEF: " + player.stats().defense(), statsX + 80, statsY);
-        g2.drawString("SPD: " + String.format("%.1f", player.stats().moveSpeed()), statsX + 160, statsY);
+        statsY += 16;
+        g2.drawString("DEF: " + player.stats().defense(), statsX, statsY);
+        statsY += 16;
+        g2.drawString("SPD: " + String.format("%.1f", player.stats().moveSpeed()), statsX, statsY);
     }
 
     private void drawBar(Graphics2D g2, int x, int y, int width, int height, int current, int max, 
