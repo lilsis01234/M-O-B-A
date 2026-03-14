@@ -12,6 +12,7 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
     private int targetX = -1;
     private int targetY = -1;
     private boolean hasTarget = false;
+    private boolean targetIsWorldCoords = false;
 
     private int currentX = -1;
     private int currentY = -1;
@@ -22,6 +23,7 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
     private int lastClickY = -1;
     private boolean clickTriggered = false;
     private java.util.function.Consumer<java.awt.Point> leftClickCallback;
+    private java.util.function.Function<java.awt.Point, Boolean> rightClickCallback;
 
     public void setCamera(Camera camera) {
         this.camera = camera;
@@ -30,16 +32,20 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
     public void setLeftClickCallback(java.util.function.Consumer<java.awt.Point> callback) {
         this.leftClickCallback = callback;
     }
+
+    public void setRightClickCallback(java.util.function.Function<java.awt.Point, Boolean> callback) {
+        this.rightClickCallback = callback;
+    }
     
     public int getTargetX() {
-        if (camera != null && hasTarget) {
+        if (camera != null && hasTarget && !targetIsWorldCoords) {
             return camera.screenToWorldX(targetX);
         }
         return targetX;
     }
     
     public int getTargetY() {
-        if (camera != null && hasTarget) {
+        if (camera != null && hasTarget && !targetIsWorldCoords) {
             return camera.screenToWorldY(targetY);
         }
         return targetY;
@@ -83,6 +89,23 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
         hasTarget = false;
         targetX = -1;
         targetY = -1;
+        targetIsWorldCoords = false;
+    }
+
+    public void setTarget(int x, int y) {
+        targetX = x;
+        targetY = y;
+        hasTarget = true;
+        targetIsWorldCoords = true;
+        clickTriggered = true;
+    }
+
+    public void setTargetFromScreen(int x, int y) {
+        targetX = x;
+        targetY = y;
+        hasTarget = true;
+        targetIsWorldCoords = false;
+        clickTriggered = true;
     }
     
     @Override
@@ -91,13 +114,10 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
             leftClickCallback.accept(new java.awt.Point(e.getX(), e.getY()));
         }
         if (e.getButton() == MouseEvent.BUTTON3) {
-            targetX = e.getX();
-            targetY = e.getY();
-            hasTarget = true;
-
-            lastClickX = e.getX();
-            lastClickY = e.getY();
-            clickTriggered = true;
+            boolean handled = rightClickCallback != null && rightClickCallback.apply(new java.awt.Point(e.getX(), e.getY()));
+            if (!handled) {
+                setTargetFromScreen(e.getX(), e.getY());
+            }
         }
     }
 

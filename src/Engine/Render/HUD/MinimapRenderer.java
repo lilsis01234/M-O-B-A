@@ -38,13 +38,31 @@ public class MinimapRenderer {
 
     public boolean handleClick(int clickX, int clickY) {
         if (clickX >= x && clickX <= x + size && clickY >= y && clickY <= y + size) {
+            if (camera != null) {
+                float mapWidth = tileMap.getColumns() * Config.getTileSize();
+                float mapHeight = tileMap.getRows() * Config.getTileSize();
+                float scaleX = size / mapWidth;
+                float scaleY = size / mapHeight;
+                
+                float worldX = (clickX - x) / scaleX;
+                float worldY = (clickY - y) / scaleY;
+                
+                camera.setPosition(worldX, worldY);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean handleRightClick(int clickX, int clickY) {
+        if (clickX >= x && clickX <= x + size && clickY >= y && clickY <= y + size) {
             float mapWidth = tileMap.getColumns() * Config.getTileSize();
             float mapHeight = tileMap.getRows() * Config.getTileSize();
-            float scaleX = mapWidth / size;
-            float scaleY = mapHeight / size;
+            float scaleX = size / mapWidth;
+            float scaleY = size / mapHeight;
             
-            float worldX = (clickX - x) * scaleX;
-            float worldY = (clickY - y) * scaleY;
+            float worldX = (clickX - x) / scaleX;
+            float worldY = (clickY - y) / scaleY;
             
             if (onClickCallback != null) {
                 onClickCallback.accept(new Point((int) worldX, (int) worldY));
@@ -54,22 +72,16 @@ public class MinimapRenderer {
         return false;
     }
 
-    public boolean handleRightClick(int clickX, int clickY) {
-        if (clickX >= x && clickX <= x + size && clickY >= y && clickY <= y + size) {
-            if (camera != null) {
-                float mapWidth = tileMap.getColumns() * Config.getTileSize();
-                float mapHeight = tileMap.getRows() * Config.getTileSize();
-                float scaleX = mapWidth / size;
-                float scaleY = mapHeight / size;
-                
-                float worldX = (clickX - x) * scaleX;
-                float worldY = (clickY - y) * scaleY;
-                
-                camera.setPosition(worldX, worldY);
-            }
-            return true;
-        }
-        return false;
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public void render(Graphics2D g2) {

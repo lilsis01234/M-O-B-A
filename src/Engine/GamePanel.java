@@ -191,13 +191,30 @@ public class GamePanel extends JPanel {
             hudRenderer.setCamera(camera);
             hudRenderer.setMoveTargetConsumer(target -> {
                 player.setMovementTarget(target.x, target.y);
-                camera.setPosition(target.x, target.y);
             });
             
             mouseHandler.setLeftClickCallback(point -> {
                 if (hudRenderer.handleMouseClick(point.x, point.y)) {
-                    // Click was handled by HUD (minimap)
+                    // Left click on minimap sets camera
                 }
+            });
+
+            mouseHandler.setRightClickCallback(point -> {
+                if (hudRenderer.handleRightClick(point.x, point.y)) {
+                    // Right click on minimap - calculate world coords and set target for pathfinding
+                    int minimapX = hudRenderer.getMinimapX();
+                    int minimapY = hudRenderer.getMinimapY();
+                    int minimapSize = hudRenderer.getMinimapSize();
+                    float mapWidth = tileMap.getColumns() * Config.getTileSize();
+                    float mapHeight = tileMap.getRows() * Config.getTileSize();
+                    float scaleX = minimapSize / mapWidth;
+                    float scaleY = minimapSize / mapHeight;
+                    int worldX = (int) ((point.x - minimapX) / scaleX);
+                    int worldY = (int) ((point.y - minimapY) / scaleY);
+                    mouseHandler.setTarget(worldX, worldY);
+                    return true;
+                }
+                return false;
             });
             
             // Initialize game engine

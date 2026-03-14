@@ -76,6 +76,22 @@ public class HUDRenderer {
         return minimap.handleClick(clickX, clickY);
     }
 
+    public boolean handleRightClick(int clickX, int clickY) {
+        return minimap.handleRightClick(clickX, clickY);
+    }
+
+    public int getMinimapX() {
+        return minimap.getX();
+    }
+
+    public int getMinimapY() {
+        return minimap.getY();
+    }
+
+    public int getMinimapSize() {
+        return minimap.getSize();
+    }
+
     public void render(Graphics2D g2) {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
