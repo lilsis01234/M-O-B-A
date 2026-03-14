@@ -114,10 +114,10 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
     
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1 && leftClickCallback != null) {
+        if (e.getButton() == MouseEvent.BUTTON3 && leftClickCallback != null) {
             leftClickCallback.accept(new java.awt.Point(e.getX(), e.getY()));
         }
-        if (e.getButton() == MouseEvent.BUTTON3) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             boolean handled = rightClickCallback != null && rightClickCallback.apply(new java.awt.Point(e.getX(), e.getY()));
             if (!handled) {
                 setTargetFromScreen(e.getX(), e.getY());
