@@ -259,9 +259,17 @@ class MinimapRenderer {
             int camY = y + (int) (camera.getY() * scaleY);
             int camW = (int) (camera.getViewportWidth() * scaleX);
             int camH = (int) (camera.getViewportHeight() * scaleY);
-            g2.setColor(new Color(255, 255, 255, 80));
-            g2.setStroke(new BasicStroke(1.5f));
-            g2.drawRect(camX, camY, camW, camH);
+            
+            camX = Math.max(x, Math.min(camX, x + size - 1));
+            camY = Math.max(y, Math.min(camY, y + size - 1));
+            camW = Math.min(camW, x + size - camX);
+            camH = Math.min(camH, y + size - camY);
+            
+            if (camW > 0 && camH > 0) {
+                g2.setColor(new Color(255, 255, 255, 80));
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.drawRect(camX, camY, camW, camH);
+            }
         }
 
         g2.setColor(new Color(150, 150, 170));
