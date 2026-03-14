@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 
 public class HealthBarRenderer {
 
+    // dessiner barre de vie et mana complete
     public void draw(Graphics2D g2, int x, int y, int width, int height, Stats stats) {
         drawBackground(g2, x, y, width, height);
         if (stats != null) {
@@ -15,11 +16,13 @@ public class HealthBarRenderer {
         }
     }
 
+    // dessiner fond barre
     private void drawBackground(Graphics2D g2, int x, int y, int width, int height) {
         g2.setColor(Color.LIGHT_GRAY);
         g2.fillRect(x, y, width, height);
     }
 
+    // dessiner barre de vie
     private void drawHealthBar(Graphics2D g2, int x, int y, int width, int height, Stats stats) {
         double hpPercent = (double) stats.hp() / stats.maxHp();
         if (hpPercent > 0) {
@@ -28,6 +31,7 @@ public class HealthBarRenderer {
         }
     }
 
+    // dessiner barre de mana
     private void drawManaBar(Graphics2D g2, int x, int y, int width, int height, Stats stats) {
         if (stats.maxMana() <= 0) return;
         
@@ -42,6 +46,7 @@ public class HealthBarRenderer {
         }
     }
 
+    // dessiner barre simple avec pourcentage
     public void drawSimple(Graphics2D g2, int x, int y, int width, int height, double hpPercent) {
         g2.setColor(Color.RED);
         g2.fillRect(x, y, width, height);

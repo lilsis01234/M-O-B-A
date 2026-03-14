@@ -1,5 +1,5 @@
 package Engine.Input;
-
+//Interface pour les entrées pour savoir quel touche de direction sur quoi on a cliqué/
 public interface MoveInput {
     boolean isUpPressed();
     boolean isDownPressed();
@@ -10,3 +10,4 @@ public interface MoveInput {
         return isUpPressed() || isDownPressed() || isLeftPressed() || isRightPressed();
     }
 }
+

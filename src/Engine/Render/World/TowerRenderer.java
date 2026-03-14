@@ -31,62 +31,70 @@ public class TowerRenderer {
     
     public void draw(Graphics2D g2, Tour tour, Camera camera) {
         int tileSize = Config.getTileSize();
-        // Convert from top-left tile position to center-bottom of base
+        // Conversion de la position du coin supérieur gauche de la tuile au centre-bas de la base
         double centerTileX = tour.position().x() + tour.width() / 2.0;
         double baseTileY = tour.position().y() + tour.height();
         int x = (int) (centerTileX * tileSize);
         int y = (int) (baseTileY * tileSize);
         
-        // Calculate tower dimensions for health bar (2 tiles tall)
+        // Calcul des dimensions de la tour pour la barre de vie (hauteur = 2 tuiles)
         int structureWidth = tour.width() * tileSize;
         int scaledH = 2 * tileSize;
         
-        // Get tower tile (20 for blue, 21 for red)
+        // Récupération de la tuile de la tour 
         int tileId = tour.equipe().couleur() == TeamColor.RED ? 21 : 20;
         Tile tile = (tileId >= 0 && tileId < tiles.length) ? tiles[tileId] : null;
         
-        // Get animated frame from tower's current animation state
+        // Récupération de l'image animée correspondant à l'état actuel de la tour
         BufferedImage towerImg = getTowerFrame(tile, tour.getCurrentFrame());
         
         if (towerImg != null) {
-            // Isometric tower rendering (64x96 sprites scaled to tile size)
-            // The anchor is center-bottom of the tower base
+            // Rendu isométrique de la tour 
+            // L'ancre est le centre-bas de la base de la tour
             int imgWidth = towerImg.getWidth();
             int imgHeight = towerImg.getHeight();
             
-            // Scale to make tower 2 tiles tall
+            // Redimensionnement pour que la tour fasse 2 tuiles de hauteur
             scaledH = 2 * tileSize;
             int scaledW = (int)((double)imgWidth / imgHeight * scaledH);
-            structureWidth = scaledW; // Use sprite width for health bar
+            structureWidth = scaledW; 
             
-            // Position: x and y from tower position is the base center
+            // Position : x et y correspondent au centre de la base de la tour
             int drawX = x - scaledW / 2;
             int drawY = y - scaledH;
             
             g2.drawImage(towerImg, drawX, drawY, scaledW, scaledH, null);
         } else {
-            // Fallback to simple rectangle with adjusted team colors
+            // Solution de secours : rectangle simple avec couleurs de l'équipe
             g2.setColor(tour.equipe().couleur() == TeamColor.BLUE 
-                ? new Color(0x2a, 0x5a, 0x9e)  // Darker, less bright blue
-                : new Color(0xff, 0x45, 0x45)); // More saturated red
+                ? new Color(0x2a, 0x5a, 0x9e)  
+                : new Color(0xff, 0x45, 0x45)); 
             int structureHeight = tour.height() * tileSize;
             g2.fillRect(x - structureWidth/2, y - structureHeight, structureWidth, structureHeight);
         }
         
-        // Health bar - positioned on top of tower, smaller
-        int healthBarWidth = structureWidth - 20; // 10px padding on each side
-        int healthBarHeight = 4; // thinner
-        int healthBarY = y - scaledH - 8; // above the tower top
+        // Barre de vie - positionnée au-dessus de la tour, plus petite
+        int healthBarWidth = structureWidth - 20; // 10px de marge de chaque côté
+        int healthBarHeight = 4; // plus fine
+        int healthBarY = y - scaledH - 8; // au-dessus du sommet de la tour
         g2.setColor(Color.RED);
         g2.fillRect(x - healthBarWidth/2, healthBarY, healthBarWidth, healthBarHeight);
         g2.setColor(Color.GREEN);
         double healthPct = (double)tour.stats().hp() / tour.stats().maxHp();
         g2.fillRect(x - healthBarWidth/2, healthBarY, (int)(healthBarWidth * healthPct), healthBarHeight);
+        
+        // Affichage d'une bordure autour de la barre de vie
+        g2.setColor(Color.BLACK);
+        g2.drawRect(x - healthBarWidth/2, healthBarY, healthBarWidth, healthBarHeight);
+        // Logique future pour effets spéciaux de la tour (ex. étincelles, feu)
+        // A FAIREEE : ajouter des animations visuelles lors des attaques
+        // Débogage de position de la tour si besoin
+        // System.out.println("Tour position x=" + x + ", y=" + y);
     }
     
     public void drawAncient(Graphics2D g2, Ancient ancient, Camera camera) {
          int tileSize = Config.getTileSize();
-         // Convert from top-left tile position to center-bottom of base
+         // Conversion de la position du coin supérieur gauche de la tuile au centre-bas de la base
          double centerTileX = ancient.position().x() + ancient.width() / 2.0;
          double baseTileY = ancient.position().y() + ancient.height();
          int x = (int) (centerTileX * tileSize);
@@ -94,7 +102,7 @@ public class TowerRenderer {
          int w = ancient.width() * tileSize;
          int h = ancient.height() * tileSize;
         
-        // Draw team-colored fill (no wood floor background)
+        // Dessin du remplissage aux couleurs de l'équipe 
         Color teamColor = ancient.equipe().couleur() == TeamColor.BLUE 
             ? new Color(0x42, 0x99, 0xe1) 
             : new Color(0xf5, 0x65, 0x65);

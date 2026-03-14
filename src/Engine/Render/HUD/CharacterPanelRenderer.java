@@ -23,7 +23,7 @@ public class CharacterPanelRenderer {
         this.spriteCache = new HeroSpriteCache();
         this.calculatedHeight = 140;
     }
-    
+    // Permet de changer la position du panneau
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
@@ -32,23 +32,23 @@ public class CharacterPanelRenderer {
     public int getHeight() {
         return calculatedHeight;
     }
-
+    // Méthode principale pour dessiner le panneau
     public void render(Graphics2D g2) {
         if (background == null) {
             background = HUDBackgrounds.getPanelBackground(width, calculatedHeight);
         }
         g2.drawImage(background, x, y, null);
         drawBorder(g2, x, y, width, calculatedHeight);
-
+  // Portrait du héros
         FlexContainer portraitContainer = new FlexContainer()
-            .setBounds(x + 10, y + 10, 44, 44)
+            .setBounds(x + 10, y + 10, 44, 44) // Position et taille du conteneur
             .direction(FlexContainer.FlexDirection.ROW)
             .alignItems(FlexContainer.AlignItems.CENTER)
             .justifyContent(FlexContainer.JustifyContent.CENTER);
-        portraitContainer.addItem(44, 44);
+        portraitContainer.addItem(44, 44); // Taille de l'élément portrait
         portraitContainer.layout();
         Rectangle portraitBounds = portraitContainer.getItem(0).bounds;
-
+ // Fond du portrait
         g2.setColor(new Color(30, 30, 50));
         g2.fillRect(portraitBounds.x, portraitBounds.y, portraitBounds.width, portraitBounds.height);
 
@@ -58,11 +58,12 @@ public class CharacterPanelRenderer {
                 g2.drawImage(heroSprite, portraitBounds.x + 2, portraitBounds.y + 2, 
                     portraitBounds.width - 4, portraitBounds.height - 4, null);
             }
-            
+             
+            // Nom du héros
             g2.setColor(Color.WHITE);
             g2.setFont(new Font("Arial", Font.BOLD, 14));
             g2.drawString(player.getHero().getName(), x + 60, y + 24);
-            
+             // Catégorie et niveau du héros
             g2.setFont(new Font("Arial", Font.BOLD, 11));
             String category = switch (player.getHero().getCategoryId()) {
                 case 1 -> "Force";
@@ -73,7 +74,7 @@ public class CharacterPanelRenderer {
             g2.setColor(new Color(200, 200, 220));
             g2.drawString("Lv." + player.level() + " " + category, x + 60, y + 38);
         }
-
+ //Barres de hp et mana
         FlexContainer barsContainer = new FlexContainer()
             .setBounds(x + 10, y + 60, width - 20, 30)
             .direction(FlexContainer.FlexDirection.COLUMN)
@@ -84,7 +85,7 @@ public class CharacterPanelRenderer {
         
         Rectangle hpBarBounds = barsContainer.getItem(0).bounds;
         Rectangle manaBarBounds = barsContainer.getItem(1).bounds;
-
+// Dessin des barres
         drawBar(g2, hpBarBounds.x, hpBarBounds.y, hpBarBounds.width, hpBarBounds.height, 
             player.stats().hp(), player.stats().maxHp(), 
             new Color(50, 180, 50), new Color(40, 60, 40), "HP");
@@ -92,7 +93,7 @@ public class CharacterPanelRenderer {
         drawBar(g2, manaBarBounds.x, manaBarBounds.y, manaBarBounds.width, manaBarBounds.height, 
             player.stats().mana(), player.stats().maxMana(), 
             new Color(50, 100, 200), new Color(40, 80, 180), "MANA");
-
+ //  Statistiques de base (ATK, DEF, SPD) 
         FlexContainer statsContainer = new FlexContainer()
             .setBounds(x + 10, y + 100, width - 20, 20)
             .direction(FlexContainer.FlexDirection.ROW)
@@ -113,7 +114,7 @@ public class CharacterPanelRenderer {
         g2.drawString("DEF:" + player.stats().defense(), defBounds.x, defBounds.y + 12);
         g2.drawString("SPD:" + String.format("%.0f", player.stats().moveSpeed()), spdBounds.x, spdBounds.y + 12);
     }
-
+// Méthode utilitaire pour dessiner une barre
     private void drawBar(Graphics2D g2, int x, int y, int width, int height, int current, int max, 
                         Color fillColor, Color bgColor, String label) {
         g2.setColor(bgColor);
@@ -124,18 +125,18 @@ public class CharacterPanelRenderer {
             g2.setColor(fillColor);
             g2.fillRoundRect(x, y, fillWidth, height, 2, 2);
         }
-        
+  // Valeur textuelle centrée
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 10));
         String text = current + "/" + max;
         FontMetrics fm = g2.getFontMetrics();
         g2.drawString(text, x + (width - fm.stringWidth(text)) / 2, y + height - 1);
-        
+ // Label au-dessus de la barre
         g2.setColor(new Color(220, 220, 240));
         g2.setFont(new Font("Arial", Font.BOLD, 9));
         g2.drawString(label, x + 2, y - 1);
     }
-    
+    //DEssin bordure
     private void drawBorder(Graphics2D g2, int x, int y, int width, int height) {
         g2.setColor(new Color(80, 80, 100));
         g2.drawRect(x, y, width - 1, height - 1);

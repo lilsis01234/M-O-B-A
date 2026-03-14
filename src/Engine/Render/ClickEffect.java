@@ -13,12 +13,14 @@ public class ClickEffect {
     private final Particle[] particles;
     private int currentLife = 0;
 
+    // constructeur avec position dans le monde
     public ClickEffect(int worldX, int worldY) {
         this.worldX = worldX;
         this.worldY = worldY;
         this.particles = createParticles();
     }
 
+    // creer les particules initiales
     private Particle[] createParticles() {
         Particle[] particles = new Particle[PARTICLE_COUNT];
         java.util.Random rand = new java.util.Random();
@@ -30,6 +32,7 @@ public class ClickEffect {
         return particles;
     }
 
+    // mettre a jour les particules et la vie
     public void update() {
         currentLife++;
         for (Particle particle : particles) {
@@ -37,10 +40,12 @@ public class ClickEffect {
         }
     }
 
+    // verifier si effet termine
     public boolean isDead() {
         return currentLife >= LIFESPAN;
     }
 
+    // dessiner l'effet
     public void draw(Graphics2D g2) {
         float progress = (float) currentLife / LIFESPAN;
         int alpha = (int) (200 * (1.0f - progress));
@@ -53,6 +58,7 @@ public class ClickEffect {
         drawParticles(g2, baseColor);
     }
 
+    // dessiner anneau qui s'agrandit
     private void drawExpandingRing(Graphics2D g2, float progress, Color color) {
         int size = (int) (5 + progress * 40);
         g2.setColor(color);
@@ -60,6 +66,7 @@ public class ClickEffect {
         g2.draw(new Ellipse2D.Float(worldX - size / 2, worldY - size / 2, size, size));
     }
 
+    // dessiner anneau qui s'efface
     private void drawFadingRing(Graphics2D g2, float progress, Color color) {
         if (progress < 0.5f) {
             float innerProgress = progress * 2.0f;
@@ -71,6 +78,7 @@ public class ClickEffect {
         }
     }
 
+    // dessiner les lignes des particules
     private void drawParticles(Graphics2D g2, Color color) {
         g2.setStroke(new BasicStroke(1.5f));
         int lineLen = 4;
@@ -86,6 +94,7 @@ public class ClickEffect {
         }
     }
 
+    // classe interne pour particule
     private static class Particle {
         final float angle;
         final float speed;

@@ -8,14 +8,14 @@ public class MapParser {
 
     public record MapData(int[][] tileNumbers, int columns, int rows) {}
 
-    public MapData parse(String filePath) {
-        int[][] mapTiles = new int[100][100];
+    public MapData parse(String filePath) {// données de la carte
+        int[][] mapTiles = new int[100][100];// Tableau temporaire pour les tuiles
         int maxCols = 0;
         int maxRows = 0;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
-            boolean inMapSection = false;
+            boolean inMapSection = false;// Tableau temporaire pour les tuiles
             int currentRow = 0;
 
             while ((line = reader.readLine()) != null) {
@@ -23,7 +23,7 @@ public class MapParser {
                 if (trimmed.isEmpty()) continue;
 
                 if (trimmed.equals("MAP")) {
-                    inMapSection = true;
+                    inMapSection = true;// Commence la lecture des tuiles
                     continue;
                 }
                 if (trimmed.equals("TILES")) {
@@ -43,7 +43,7 @@ public class MapParser {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();// Affiche l’erreur si lecture échoue
         }
 
         return new MapData(mapTiles, maxCols, maxRows);

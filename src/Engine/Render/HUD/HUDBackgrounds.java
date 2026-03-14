@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class HUDBackgrounds {
-
+ // Images statiques du HUD
     private static BufferedImage panelBg;
     private static BufferedImage smallPanelBg;
     private static BufferedImage abilitySlotBg;
@@ -23,6 +23,7 @@ public class HUDBackgrounds {
             abilitySlotBg = ImageIO.read(new File("src/Resource/HUD/ability_slot.png"));
             itemSlotBg = ImageIO.read(new File("src/Resource/HUD/item_slot.png"));
         } catch (IOException e) {
+             // Création de backgrounds par défaut si les fichiers n'existent pas
             panelBg = createPanelBackground(200, 140);
             smallPanelBg = createSmallPanelBackground(140, 60);
             abilitySlotBg = createAbilitySlotBackground(46);
@@ -30,7 +31,7 @@ public class HUDBackgrounds {
         }
         initialized = true;
     }
-
+// accesseurs 
     public static BufferedImage getPanelBackground(int width, int height) {
         initialize();
         return scaleImage(panelBg, width, height);
@@ -50,7 +51,7 @@ public class HUDBackgrounds {
         initialize();
         return scaleImage(itemSlotBg, size, size);
     }
-
+//redimensionne limg si src est null crée img remplacement simple
     private static BufferedImage scaleImage(BufferedImage src, int width, int height) {
         if (src == null) {
             return createFallbackPanel(width, height);
@@ -71,16 +72,16 @@ public class HUDBackgrounds {
         g2.dispose();
         return img;
     }
-
+//Crée un panneau principal stylisé avec bordures et motif
     public static BufferedImage createPanelBackground(int width, int height) {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
         
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        
+        //fond principal
         g2.setColor(new Color(30, 30, 40, 230));
         g2.fillRect(2, 2, width - 4, height - 4);
-        
+        //bordure multiple effet 3D
         g2.setColor(new Color(50, 50, 70));
         g2.drawRect(0, 0, width - 1, height - 1);
         
@@ -102,7 +103,7 @@ public class HUDBackgrounds {
         g2.dispose();
         return img;
     }
-
+//Crée un petit panneau (ex: HUD gold ou info).
     public static BufferedImage createSmallPanelBackground(int width, int height) {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
@@ -121,7 +122,7 @@ public class HUDBackgrounds {
         g2.dispose();
         return img;
     }
-
+//Crée un slot pour compétence
     public static BufferedImage createAbilitySlotBackground(int size) {
         BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
@@ -143,7 +144,7 @@ public class HUDBackgrounds {
         g2.dispose();
         return img;
     }
-
+ //Crée un slot pour objet.
     public static BufferedImage createItemSlotBackground(int size) {
         BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();

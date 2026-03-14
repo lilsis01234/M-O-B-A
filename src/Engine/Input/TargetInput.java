@@ -1,8 +1,9 @@
 package Engine.Input;
-
+//Interface pour gérer une cible 
 public interface TargetInput {
     boolean hasTarget();
-    int getTargetX();
-    int getTargetY();
-    void clearTarget();
+    int getTargetX();//position x
+    int getTargetY(); //position y
+    void clearTarget();//suppression
 }
+

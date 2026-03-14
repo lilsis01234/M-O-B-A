@@ -75,7 +75,7 @@ public class GamePanel extends JPanel {
         setupInputListeners();
         setupResizeListener();
         
-        // Initialize hero selection panel as a proper Swing component
+        // Initialiser le panneau de sélection du héros comme un composant Swing approprié
         heroSelectionPanel = new HeroSelectionPanel(new Dimension(Config.getScreenWidth(), Config.getScreenHeight()));
         heroSelectionPanel.setBounds(0, 0, Config.getScreenWidth(), Config.getScreenHeight());
         heroSelectionPanel.setVisible(true);
@@ -85,7 +85,7 @@ public class GamePanel extends JPanel {
         });
         add(heroSelectionPanel);
         
-        // Initially hide game components
+// Masquer initialement les composants du jeu
         currentState = GameState.HERO_SELECTION;
     }
 
@@ -170,7 +170,7 @@ public class GamePanel extends JPanel {
     
     private void startGame() {
         try {
-            // Load the game components with the selected hero
+            // Charger les composants du jeu avec le héros sélectionné
             TileMap tileMap = loadTileMap();
             setupCamera(tileMap);
             
@@ -180,13 +180,13 @@ public class GamePanel extends JPanel {
             tileRenderer = new TileRenderer(tileMap, tiles);
             arena = createArena(tileMap);
             
-            // Create player with selected hero
+            // Creation du player avec hero selectionner 
             player = createPlayerWithHero(tileMap, collisionTable, arena, selectedHero);
             playerRenderer = new PlayerRenderer(player);
             towerRenderer = createTowerRenderer(tiles);
             projectileRenderer = new ProjectileRenderer();
             
-            // Create HUD renderer
+            // creer hud 
             hudRenderer = new HUDRenderer(player, arena, tileMap, tiles, getWidth(), getHeight());
             hudRenderer.setCamera(camera);
             camera.setMinimapBounds(
@@ -200,7 +200,7 @@ public class GamePanel extends JPanel {
             
             mouseHandler.setLeftClickCallback(point -> {
                 if (hudRenderer.handleMouseClick(point.x, point.y)) {
-                    // Left click on minimap sets camera
+                    // clique gauche dans la minimap pour la cam
                 }
             });
 
@@ -211,24 +211,24 @@ public class GamePanel extends JPanel {
                 return false;
             });
             
-            // Initialize game engine
+            // init game engine
             gameEngine = new GameEngine(player, camera, mouseHandler, arena);
             
-            // Tab key to center camera on player
+            // tab jey pour centrer la cam en le joueur 
             keyHandler.setTabCallback(v -> {
                 gameEngine.centerCameraOnPlayer();
             });
             
-            // Remove hero selection panel and change state
+            //  Supprimer le panneau de sélection du héros et changer l’état
             remove(heroSelectionPanel);
             currentState = GameState.PLAYING;
             revalidate();
             repaint();
             
-            // Request focus for keyboard input
+            // Demander le focus pour la saisie au clavier
             requestFocusInWindow();
             
-            // Start the game thread
+            // Démarrer le thread du jeu
             startGameThread();
         } catch (Exception e) {
             e.printStackTrace();
@@ -245,7 +245,7 @@ public class GamePanel extends JPanel {
         Config.updateScreenSize(cols * Config.getTileSize(), rows * Config.getTileSize());
         camera.setViewportSize(width, height);
         
-        // Update HUD renderer with new screen size
+        // Mettre à jour le rendu du HUD avec la nouvelle taille de l’écran
         if (hudRenderer != null) {
             hudRenderer.setScreenSize(width, height);
         }
@@ -287,7 +287,7 @@ public class GamePanel extends JPanel {
             drawUI(g2);
             g2.dispose();
         }
-        // Hero selection panel handles its own painting when visible
+      // Le panneau de sélection du héros gère sa propre peinture lorsqu’il est visible
     }
 
     private void drawGameWorld(Graphics2D g2) {
@@ -299,12 +299,12 @@ public class GamePanel extends JPanel {
         // Dessin du monde
         tileRenderer.draw(g2, camera, getWidth(), getHeight());
         
-        // Update tower animations
+        // mise  a jrs  tower animations
         for (Tour tour : arena.tours()) {
             tour.updateAnimation();
         }
         
-        // Depth-sorted rendering: draw entities based on Y position
+        // Rendu trié par profondeur Y
         drawDepthSorted(g2);
         
         drawProjectiles(g2);
@@ -318,28 +318,28 @@ public class GamePanel extends JPanel {
         
         int tileSize = Config.getTileSize();
         
-        // Add towers
+        // ajout des tours
         for (Tour tour : arena.tours()) {
             double towerBaseY = (tour.position().y() + tour.height()) * tileSize;
             entities.add(new RenderableEntity(towerBaseY, RenderableEntity.Type.TOWER, tour));
         }
         
-        // Add ancients
+        // ajout des ancients
         for (Ancient ancient : arena.ancients()) {
             double ancientBaseY = (ancient.position().y() + ancient.height()) * tileSize;
             entities.add(new RenderableEntity(ancientBaseY, RenderableEntity.Type.ANCIENT, ancient));
         }
         
-        // Add player
+        // jout des joueurs
         if (player.isAlive()) {
             double playerBaseY = player.getY() + tileSize;
             entities.add(new RenderableEntity(playerBaseY, RenderableEntity.Type.PLAYER, player));
         }
         
-        // Sort by Y position (lower Y = behind, higher Y = in front)
+        // Trier par position Y (Y plus faible derrière, Y plus élevé devant)
         entities.sort(java.util.Comparator.comparingDouble(e -> e.renderY));
         
-        // Draw in sorted order
+        //Dessiner dans l’ordre trié
         for (RenderableEntity entity : entities) {
             switch (entity.type) {
                 case TOWER -> towerRenderer.draw(g2, (Tour) entity.entity, camera);

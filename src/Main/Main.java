@@ -7,11 +7,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class Main {
-    
-    private static JFrame window;
-    private static GamePanel gamePanel;
+
+    private static JFrame window;          // Fenêtre principale
+    private static GamePanel gamePanel;    // Panneau de jeu
     private static boolean isFullscreen = false;
-    private static GraphicsDevice gd;
+    private static GraphicsDevice gd;      // Pour le plein écran
     
     public static void main(String[] args) {
         gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -28,7 +28,7 @@ public class Main {
         window.pack();
         window.setLocationRelativeTo(null);
         window.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        
+          // Bascule plein écran avec F11
         gamePanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -45,6 +45,7 @@ public class Main {
     }
     
     private static void toggleFullscreen() {
+         // Affiche l'état actuel pour debug
         System.out.println("Toggle fullscreen: " + isFullscreen);
         if (isFullscreen) {
             gd.setFullScreenWindow(null);
@@ -60,8 +61,8 @@ public class Main {
             gd.setFullScreenWindow(window);
             window.setVisible(true);
         }
-        
+         // Inverse l'état pour la prochaine fois
         isFullscreen = !isFullscreen;
-        gamePanel.requestFocusInWindow();
+        gamePanel.requestFocusInWindow(); // Assure que le panneau garde le focus pour le clavier
     }
 }

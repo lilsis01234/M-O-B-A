@@ -18,7 +18,7 @@ public class TileRenderer {
         this.tileMap = tileMap;
         this.tiles = tiles;
     }
-
+// Dessiner les tiles visibles sur le panel selon le cam et le zoom
     public void draw(Graphics2D g2, Camera camera, int panelWidth, int panelHeight) {
         int[] range = calculateVisibleRange(camera, panelWidth, panelHeight);
         int startCol = range[0];
@@ -48,7 +48,7 @@ public class TileRenderer {
 
         return new int[]{startCol, startRow, endCol, endRow};
     }
-
+// Dessiner un tile a la position row/col
     private void drawTile(Graphics2D g2, int row, int col) {
         int tileSize = Config.getTileSize();
         int tileId = tileMap.getTileAt(row, col);
@@ -72,7 +72,7 @@ public class TileRenderer {
             drawDefaultTile(g2, x, y, tileSize);
         }
     }
-
+ // Recuperer l'image du tile ou animation si eau
     private Image getTileImage(Tile tile, int tileId, int row, int col) {
         if (tileId == 5 && tile.getImages().size() > 1) {
             return getAnimatedWaterTile(tile, row, col);
@@ -86,7 +86,7 @@ public class TileRenderer {
         int index = Math.abs(new java.util.Random(seed).nextInt()) % tile.getImages().size();
         return tile.getImages().get(index);
     }
-
+ // Dessiner tile par defaut 
     private void drawDefaultTile(Graphics2D g2, int x, int y, int tileSize) {
         g2.setColor(Color.black);
         g2.fillRect(x, y, tileSize, tileSize);

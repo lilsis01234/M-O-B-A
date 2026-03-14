@@ -4,11 +4,11 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlexContainer {
+public class FlexContainer {// Direction principale des éléments (horizontal ou vertical
     public enum FlexDirection {
         ROW, COLUMN
     }
-
+// Alignement
     public enum JustifyContent {
         START, END, CENTER, SPACE_BETWEEN, SPACE_AROUND
     }
@@ -16,7 +16,7 @@ public class FlexContainer {
     public enum AlignItems {
         START, END, CENTER, STRETCH
     }
-
+//CLASSE FLEXITEM 
     public static class FlexItem {
         public float flexGrow = 0f;
         public int flexBasis = -1;
@@ -25,7 +25,7 @@ public class FlexContainer {
         public Rectangle bounds = new Rectangle(0, 0, 0, 0);
 
         public FlexItem() {}
-
+// Constructeur pour largeur/hauteur fixes
         public FlexItem(int width, int height) {
             this.width = width;
             this.height = height;
@@ -36,7 +36,7 @@ public class FlexContainer {
             this.flexBasis = flexBasis;
         }
     }
-
+// ATTRIBUTS DU CONTENEUR 
     private FlexDirection direction = FlexDirection.ROW;
     private JustifyContent justifyContent = JustifyContent.START;
     private AlignItems alignItems = AlignItems.STRETCH;
@@ -47,7 +47,7 @@ public class FlexContainer {
     private int containerX = 0;
     private int containerY = 0;
     private final List<FlexItem> items = new ArrayList<>();
-
+//METH de configuration cconteneur
     public FlexContainer() {}
 
     public FlexContainer direction(FlexDirection direction) {
@@ -82,7 +82,7 @@ public class FlexContainer {
         this.containerHeight = height;
         return this;
     }
-
+//ajout elements
     public FlexContainer addItem(FlexItem item) {
         items.add(item);
         return this;
@@ -99,7 +99,7 @@ public class FlexContainer {
         items.add(item);
         return item;
     }
-
+//calcul position et tailles des elements
     public void layout() {
         if (items.isEmpty()) return;
 
@@ -108,6 +108,7 @@ public class FlexContainer {
         int totalGap = gap * (items.size() - 1);
 
         if (direction == FlexDirection.ROW) {
+            //calcul largeur for row
             int fixedWidth = 0;
             float totalGrow = 0;
             for (FlexItem item : items) {
@@ -124,7 +125,7 @@ public class FlexContainer {
             int x = containerX + padding;
             int y = containerY + padding;
 
-            for (FlexItem item : items) {
+            for (FlexItem item : items) { 
                 int itemWidth;
                 if (item.width > 0) {
                     itemWidth = item.width;
@@ -237,11 +238,11 @@ public class FlexContainer {
             }
         }
     }
-
+// Retourne la zone totale du conteneur
     public Rectangle getBounds() {
         return new Rectangle(containerX, containerY, containerWidth, containerHeight);
     }
-
+// Retourne la liste complète des éléments 
     public List<FlexItem> getItems() {
         return items;
     }
@@ -249,7 +250,7 @@ public class FlexContainer {
     public FlexItem getItem(int index) {
         return items.get(index);
     }
-
+// Supprime tous les éléments du ctnt
     public void clear() {
         items.clear();
     }

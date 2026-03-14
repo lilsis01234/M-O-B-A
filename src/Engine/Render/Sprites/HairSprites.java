@@ -11,11 +11,11 @@ public class HairSprites {
     private static final int SPRITE_SIZE = 32;
     private static final int FRAMES_PER_DIRECTION = 6;
     
-    // Direction column offsets in spritesheet (0-indexed)
-    private static final int COL_SOUTH = 0;   // Facing South (front)
-    private static final int COL_EAST = 6;    // Facing East (right)
-    private static final int COL_NORTH = 12;  // Facing North (back)
-    private static final int COL_WEST = 18;   // Facing West (left)
+ // Décalages de colonne pour les directions dans la spritesheet (indexé à partir de 0)
+    private static final int COL_SOUTH = 0;   // vue de face (sud)
+    private static final int COL_EAST = 6;    // vue dest (droite))
+    private static final int COL_NORTH = 12;  // vue nord(derriere)
+    private static final int COL_WEST = 18;   // vue de ouest (gauche)
     
     private final int hairRow;
 
@@ -26,12 +26,12 @@ public class HairSprites {
         try {
             BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/Hair/Hairs.png"));
             
-            // Extract sprites for each direction
-            // Directions: DOWN, RIGHT, UP, LEFT (matching game's Direction enum)
-            extractDirectionFrames(sheet, hairRow, COL_SOUTH, 0);  // DOWN
-            extractDirectionFrames(sheet, hairRow, COL_EAST, 1);   // RIGHT
-            extractDirectionFrames(sheet, hairRow, COL_NORTH, 2); // UP
-            extractDirectionFrames(sheet, hairRow, COL_WEST, 3);  // LEFT
+          // Extraire les sprites pour chaque direction
+            // Directions : BAS, DROITE, HAUT, GAUCHE (correspondant )
+            extractDirectionFrames(sheet, hairRow, COL_SOUTH, 0);  // bas
+            extractDirectionFrames(sheet, hairRow, COL_EAST, 1);   // droite
+            extractDirectionFrames(sheet, hairRow, COL_NORTH, 2); // haut
+            extractDirectionFrames(sheet, hairRow, COL_WEST, 3);  // gauche
         } catch (IOException e) {
             throw new RuntimeException("Failed to load hair spritesheet", e);
         }

@@ -17,22 +17,27 @@ public class DebugRenderer {
     private boolean showHitboxes = true;
     private boolean showCollisionBoxes = true;
 
+    // bascule affichage hitboxes
     public void toggleHitboxes() {
         showHitboxes = !showHitboxes;
     }
 
+    // bascule affichage collision boxes
     public void toggleCollisionBoxes() {
         showCollisionBoxes = !showCollisionBoxes;
     }
 
+    // definir affichage hitboxes
     public void setShowHitboxes(boolean show) {
         this.showHitboxes = show;
     }
 
+    // definir affichage collision boxes
     public void setShowCollisionBoxes(boolean show) {
         this.showCollisionBoxes = show;
     }
 
+    // rendu debug pour joueur, tours et ancients
     public void render(Graphics2D g2, Player player, Iterable<Tour> towers, Iterable<Ancient> ancients) {
         if (!showHitboxes && !showCollisionBoxes) return;
 
@@ -47,6 +52,7 @@ public class DebugRenderer {
         }
     }
 
+    // rendu debug joueur
     private void renderPlayerDebug(Graphics2D g2, Player player) {
         double px = player.getX();
         double py = player.getY();
@@ -62,6 +68,7 @@ public class DebugRenderer {
         }
     }
 
+    // rendu debug tour
     private void renderTowerDebug(Graphics2D g2, Tour tower) {
         int tileSize = Core.Config.getTileSize();
         double px = tower.position().x() * tileSize;
@@ -82,6 +89,7 @@ public class DebugRenderer {
         }
     }
 
+    // rendu debug ancient
     private void renderAncientDebug(Graphics2D g2, Ancient ancient) {
         int tileSize = Core.Config.getTileSize();
         double px = ancient.position().x() * tileSize;
@@ -102,6 +110,7 @@ public class DebugRenderer {
         }
     }
 
+    // dessiner un rectangle avec couleur et label
     private void drawBox(Graphics2D g2, HitboxUtils.Hitbox box, Color fill, Color border, String label) {
         int x = (int) box.getLeft();
         int y = (int) box.getTop();
@@ -120,10 +129,12 @@ public class DebugRenderer {
         g2.drawString(label, x + 2, y + 12);
     }
 
+    // savoir si hitboxes visibles
     public boolean isShowingHitboxes() {
         return showHitboxes;
     }
 
+    // savoir si collision boxes visibles
     public boolean isShowingCollisionBoxes() {
         return showCollisionBoxes;
     }

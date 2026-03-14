@@ -27,11 +27,11 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     private Hero selectedHero;
     private int selectedIndex = -1;
     
-    // Category filtering
+ // Filtrage par catégorie
     private String[] categories = {"All", "Force", "Agilité", "Intelligence"};
     private String selectedCategory = "All";
     
-    // Colors
+    // couleurs 
     private final Color BACKGROUND = new Color(25, 25, 40);
     private final Color HEADER_BG = new Color(35, 35, 55, 230);
     private final Color CARD_BG = new Color(50, 50, 75);
@@ -48,41 +48,41 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     private final Color SCROLLBAR_BG = new Color(80, 80, 110, 200);
     private final Color SCROLLBAR_THUMB = new Color(150, 150, 190);
     
-    // Layout zones (flexible with padding)
+     // Zones de disposition (flexibles avec marge/padding)
     private final int HEADER_HEIGHT = 140;
     private final int FOOTER_HEIGHT = 100;
     private final int VERTICAL_PADDING = 20;
     private final int HORIZONTAL_PADDING = 30;
     
-    // Category tabs
+    // Onglets de catégorie
     private final int TAB_HEIGHT = 30;
     private final int TAB_WIDTH = 120;
     private final int TAB_SPACING = 8;
     private final int TAB_Y_OFFSET = 60;
     
-    // Card dimensions
+    //dimensions de la carte 
     private int cardWidth = 200;
     private int cardHeight = 170;
     private int cardSpacing = 20;
     private final int SPRITE_SIZE = 56;
     
-    // Fonts
+ // Polices
     private final Font FONT_TITLE = new Font("SansSerif", Font.BOLD, 28);
     private final Font FONT_CARD_NAME = new Font("SansSerif", Font.BOLD, 13);
     private final Font FONT_STAT = new Font("Monospaced", Font.BOLD, 11);
     private final Font FONT_DESC = new Font("SansSerif", Font.PLAIN, 10);
     private final Font FONT_TAB = new Font("SansSerif", Font.BOLD, 12);
     
-    // Scrolling
+ // Défilement
     private int scrollY = 0;
     private final int SCROLL_SPEED = 60;
     
-    // Layout bounds (computed)
-    private Rectangle headerBounds;
+ // Limites de disposition (calculées)
     private Rectangle contentBounds;
     private Rectangle footerBounds;
     
     private HeroSpriteCache spriteCache;
+    private Rectangle headerBounds;
     
     public HeroSelectionPanel(Dimension screenSize) {
         setPreferredSize(screenSize);
@@ -169,7 +169,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     }
     
     private void updateCursor(int x, int y) {
-        // Check header tabs - only if inside header bounds
+    	// Vérifie les onglets de l’en-tête – uniquement si à l’intérieur des limites de l’en-tête
         if (headerBounds != null && headerBounds.contains(x, y)) {
             if (y >= headerBounds.height - TAB_Y_OFFSET && y <= headerBounds.height - TAB_Y_OFFSET + TAB_HEIGHT) {
                 int totalTabWidth = categories.length * TAB_WIDTH + (categories.length - 1) * TAB_SPACING;
@@ -186,7 +186,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             }
         }
         
-        // Check confirm button (only if in footer bounds)
+        // verfier le bouton de confirmation (SSI FOOTER )
         if (footerBounds != null && footerBounds.contains(x, y) && selectedHero != null) {
             String btnText = "▶ COMMENCER LE JEU AVEC " + selectedHero.getName().toUpperCase();
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 16);
@@ -202,7 +202,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             }
         }
         
-        // Check hero cards only in content bounds
+     // Vérifie les cartes de héros uniquement dans les limites du contenu
         if (contentBounds != null && contentBounds.contains(x, y) && !filteredHeroes.isEmpty()) {
             int cols = calculateColumns();
             int totalWidth = cols * cardWidth + (cols - 1) * cardSpacing;
@@ -233,7 +233,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     private void handleClick(int x, int y, int button) {
         if (button != MouseEvent.BUTTON1) return;
         
-        // Check tabs (in header bounds)
+     // Vérifie les onglets (dans les limites de l’en-tête)
         if (headerBounds != null && headerBounds.contains(x, y)) {
             if (y >= headerBounds.height - TAB_Y_OFFSET && y <= headerBounds.height - TAB_Y_OFFSET + TAB_HEIGHT) {
                 int totalTabWidth = categories.length * TAB_WIDTH + (categories.length - 1) * TAB_SPACING;
@@ -253,7 +253,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             }
         }
         
-        // Check confirm button (in footer bounds)
+        // verifier confirmation (ssi footer )
         if (footerBounds != null && footerBounds.contains(x, y) && selectedHero != null) {
             String btnText = "▶ START GAME WITH " + selectedHero.getName().toUpperCase();
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 16);
@@ -271,7 +271,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             }
         }
         
-        // Check hero cards (only in content bounds)
+        // verifier carte hero 
         if (contentBounds == null || filteredHeroes.isEmpty()) return;
         
         if (!contentBounds.contains(x, y)) return;
@@ -298,12 +298,12 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         }
     }
     
-    private void handleKeyNav(int keyCode) {
+    private void handleKeyNav(int keyCode) {// Navigation clavier dans la grille des héros
         if (filteredHeroes.isEmpty()) return;
         
         int cols = calculateColumns();
         switch (keyCode) {
-            case KeyEvent.VK_UP:
+            case KeyEvent.VK_UP:// HAUT
                 if (selectedIndex - cols >= 0) {
                     selectedIndex -= cols;
                     selectedHero = filteredHeroes.get(selectedIndex);
@@ -311,7 +311,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
                     repaint();
                 }
                 break;
-            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_DOWN://BAS
                 if (selectedIndex + cols < filteredHeroes.size()) {
                     selectedIndex += cols;
                     selectedHero = filteredHeroes.get(selectedIndex);
@@ -319,7 +319,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
                     repaint();
                 }
                 break;
-            case KeyEvent.VK_LEFT:
+            case KeyEvent.VK_LEFT://gauche
                 if (selectedIndex > 0) {
                     selectedIndex--;
                     selectedHero = filteredHeroes.get(selectedIndex);
@@ -327,7 +327,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
                     repaint();
                 }
                 break;
-            case KeyEvent.VK_RIGHT:
+            case KeyEvent.VK_RIGHT://DROITE
                 if (selectedIndex < filteredHeroes.size() - 1) {
                     selectedIndex++;
                     selectedHero = filteredHeroes.get(selectedIndex);
@@ -342,7 +342,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
                 break;
         }
     }
-    
+ //  carte de héros   visible dans la zone de contenu
     private void ensureVisible(int index) {
         if (contentBounds == null) return;
         
@@ -369,10 +369,10 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         int w = getWidth();
         int h = getHeight();
         
-        // Header: full width at top
+     // En-tête : largeur complète en haut
         headerBounds = new Rectangle(0, 0, w, HEADER_HEIGHT);
         
-        // Footer: full width at bottom
+        // footer : largeur complète en haut
         footerBounds = new Rectangle(0, h - FOOTER_HEIGHT, w, FOOTER_HEIGHT);
         
         // Content: between header and footer with padding
@@ -380,7 +380,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         int contentHeight = h - HEADER_HEIGHT - FOOTER_HEIGHT - VERTICAL_PADDING * 2;
         contentBounds = new Rectangle(HORIZONTAL_PADDING, contentY, w - HORIZONTAL_PADDING * 2, contentHeight);
     }
-    
+ // Calcule le nombre de colonnes de cartes visibles dans la zone de contenu
     private int calculateColumns() {
         if (contentBounds == null) return 1;
         int availableWidth = contentBounds.width - 40; // Extra margin
@@ -403,23 +403,23 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        // Calculate layout bounds
+     // Calcule les limites de disposition
         calculateLayoutBounds();
         
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         
-        // Draw background
+        // dessine le background
         drawBackground(g2);
         
-        // Draw header area with clipping
+     // Dessine la zone de l’en-tête avec découpage (clipping)
         drawHeader(g2);
         
-        // Draw content area with clipping
+     // Dessine la zone avec découpage (clipping)
         drawHeroGrid(g2);
         
-        // Draw footer area
+        // dessine l area du footer 
         drawFooter(g2);
     }
     
@@ -432,13 +432,13 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     private void drawHeader(Graphics2D g2) {
         if (headerBounds == null) return;
         
-        // Save original clip
+         // Sauvegarde le clip original
         Shape originalClip = g2.getClip();
         
-        // Set clipping to header bounds
+     // Définit le clipping sur les limites de l’en-tête
         g2.setClip(headerBounds);
         
-        // Header background with gradient
+     // Fond de l’en-tête avec dégradé
         GradientPaint headerGradient = new GradientPaint(
             0, headerBounds.y, HEADER_BG,
             0, headerBounds.y + headerBounds.height, new Color(25, 25, 40, 200)
@@ -446,12 +446,12 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         g2.setPaint(headerGradient);
         g2.fillRect(headerBounds.x, headerBounds.y, headerBounds.width, headerBounds.height);
         
-        // Header bottom separator
+     // Séparateur en bas de l’en-tête
         g2.setColor(new Color(100, 100, 140));
         g2.drawLine(headerBounds.x, headerBounds.y + headerBounds.height - 1, 
                    headerBounds.x + headerBounds.width, headerBounds.y + headerBounds.height - 1);
         
-        // Title - centered in header
+     // Titre – centré dans l’en-tête
         g2.setColor(TEXT_MAIN);
         g2.setFont(FONT_TITLE);
         FontMetrics fm = g2.getFontMetrics();
@@ -460,10 +460,10 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         int titleY = headerBounds.y + 40;
         g2.drawString(title, titleX, titleY);
         
-        // Draw tabs
+     // Dessine les onglets
         drawCategoryTabs(g2);
         
-        // Restore original clip
+     // Restaure le clip original
         g2.setClip(originalClip);
     }
     
@@ -505,11 +505,10 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     private void drawHeroGrid(Graphics2D g2) {
         if (contentBounds == null || filteredHeroes.isEmpty()) return;
         
-        // Save original clip
+        
         Shape originalClip = g2.getClip();
         
-        // Set clipping to content bounds (prevents drawing outside this area)
-        g2.setClip(contentBounds);
+     // Définit le clipping sur les limites du contenu (empêche de dessiner en dehors de cette zone)
         
         int cols = calculateColumns();
         int totalWidth = cols * cardWidth + (cols - 1) * cardSpacing;
@@ -520,7 +519,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         int gridHeight = rows * cardTotalHeight - cardSpacing;
         boolean scrolling = gridHeight > contentBounds.height;
         
-        // Draw scrollbar if needed (outside clipping region since it's on the edge)
+     // Dessine la barre de défilement si nécessaire (en dehors de la zone de clipping puisqu’elle est sur le bord)
         if (scrolling) {
             int scrollbarX = contentBounds.x + contentBounds.width - 12;
             int scrollbarY = contentBounds.y;
@@ -538,12 +537,12 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             }
         }
         
-        // Determine visible range using proper formula
+     // Détermine la plage visible en utilisant la formule appropriée
         int firstRow = scrolling ? (int)Math.floor((double)scrollY / cardTotalHeight) : 0;
         int visibleRows = contentBounds.height / cardTotalHeight + 1;
         int lastRow = Math.min(rows, firstRow + visibleRows);
         
-        // Draw cards
+     // Dessine les cartes
         for (int row = firstRow; row < lastRow; row++) {
             for (int col = 0; col < cols; col++) {
                 int index = row * cols + col;
@@ -552,7 +551,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
                 int x = startX + col * (cardWidth + cardSpacing);
                 int y = contentBounds.y + row * cardTotalHeight - scrollY;
                 
-                // Skip if not in visible area (extra check)
+             // Ignorer si hors de la zone visible (vérification supplémentaire)
                 if (y + cardHeight < contentBounds.y || y > contentBounds.y + contentBounds.height) {
                     continue;
                 }
@@ -561,20 +560,19 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             }
         }
         
-        // Restore original clip
+     // Restaure le clip original
         g2.setClip(originalClip);
     }
     
     private void drawCard(Graphics2D g2, Hero hero, int x, int y, boolean selected) {
-        // Card shadow
-        g2.setColor(new Color(0, 0, 0, 50));
+    	// Ombre de la carte  
         g2.fillRoundRect(x + 4, y + 4, cardWidth, cardHeight, 12, 12);
         
-        // Card background
+        // arrier plan carte
         g2.setColor(selected ? CARD_SELECTED : CARD_BG);
         g2.fillRoundRect(x, y, cardWidth, cardHeight, 12, 12);
         
-        // Card border
+        // border de la carte
         g2.setColor(selected ? SELECTED_BORDER : CARD_BORDER);
         g2.setStroke(selected ? new BasicStroke(2) : new BasicStroke(1));
         g2.drawRoundRect(x, y, cardWidth, cardHeight, 12, 12);
@@ -588,7 +586,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             g2.drawImage(sprite, spriteX, spriteY, spriteSize, spriteSize, null);
         }
         
-        // Hero name
+        //  nom de lhero
         g2.setColor(TEXT_MAIN);
         g2.setFont(FONT_CARD_NAME);
         FontMetrics fm = g2.getFontMetrics();
@@ -597,7 +595,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         int nameY = y + 72;
         g2.drawString(name, nameX, nameY);
         
-        // Stats row
+        // Stats lignes
         g2.setFont(FONT_STAT);
         fm = g2.getFontMetrics();
         int statsY = nameY + 22;
@@ -671,11 +669,11 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         g2.setPaint(footerGradient);
         g2.fillRect(footerBounds.x, footerBounds.y, footerBounds.width, footerBounds.height);
         
-        // Footer top separator
+        // Séparateur supérieur du pied de page
         g2.setColor(new Color(100, 100, 140));
         g2.drawLine(footerBounds.x, footerBounds.y, footerBounds.x + footerBounds.width, footerBounds.y);
         
-        // Start button
+        // bouton start
         if (selectedHero != null) {
             String btnText = "▶ START GAME WITH " + selectedHero.getName().toUpperCase();
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 16);
@@ -685,17 +683,17 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             int btnX = (getWidth() - btnW) / 2;
             int btnY = footerBounds.y + (footerBounds.height - btnH) / 2;
             
-            // Shadow
+         // Ombre
             g2.setColor(new Color(0, 0, 0, 100));
             g2.fillRoundRect(btnX + 4, btnY + 4, btnW, btnH, 12, 12);
             
-            // Gradient
+            // degradé
             GradientPaint btnGrad = new GradientPaint(btnX, btnY, new Color(60, 180, 60),
                     btnX, btnY + btnH, new Color(40, 120, 40));
             g2.setPaint(btnGrad);
             g2.fillRoundRect(btnX, btnY, btnW, btnH, 12, 12);
             
-            // Border
+            // Bords
             g2.setColor(new Color(120, 255, 120));
             g2.setStroke(new BasicStroke(2));
             g2.drawRoundRect(btnX, btnY, btnW, btnH, 12, 12);

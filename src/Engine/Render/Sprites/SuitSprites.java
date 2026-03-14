@@ -11,11 +11,11 @@ public class SuitSprites {
     private static final int SPRITE_SIZE = 32;
     private static final int FRAMES_PER_DIRECTION = 6;
     
-    // Direction column offsets in spritesheet (0-indexed)
-    private static final int COL_SOUTH = 0;   // Facing South (front)
-    private static final int COL_EAST = 6;    // Facing East (right)
-    private static final int COL_NORTH = 12;  // Facing North (back)
-    private static final int COL_WEST = 18;   // Facing West (left)
+// Décalages des colonnes par direction dans la spritesheet (indexés à partir de 0)
+private static final int COL_SOUTH = 0;   // Orientation Sud (avant)
+private static final int COL_EAST = 6;    // Orientation Est (droite)
+private static final int COL_NORTH = 12;  // Orientation Nord (arrière)
+private static final int COL_WEST = 18;   // Orientation Ouest (gauche)
     
     private final int suitRow; // 0-3 (4 rows)
 
@@ -26,11 +26,11 @@ public class SuitSprites {
         try {
             BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/Outfits/Suit.png"));
             
-            // Extract sprites for each direction from the specified row
-            extractDirectionFrames(sheet, suitRow, COL_SOUTH, 0);  // DOWN
-            extractDirectionFrames(sheet, suitRow, COL_EAST, 1);   // RIGHT
-            extractDirectionFrames(sheet, suitRow, COL_NORTH, 2); // UP
-            extractDirectionFrames(sheet, suitRow, COL_WEST, 3);  // LEFT
+            // Extraire les sprites pour chaque direction à partir de la ligne spécifiée
+            extractDirectionFrames(sheet, suitRow, COL_SOUTH, 0);  // bas
+            extractDirectionFrames(sheet, suitRow, COL_EAST, 1);   // droite
+            extractDirectionFrames(sheet, suitRow, COL_NORTH, 2); // haut
+            extractDirectionFrames(sheet, suitRow, COL_WEST, 3);  // gauche
         } catch (IOException e) {
             throw new RuntimeException("Failed to load suit spritesheet", e);
         }
@@ -55,12 +55,10 @@ public class SuitSprites {
         return sprites[dirIndex][frameIndex];
     }
     
-    /** 
-     * Check if this suit includes headwear that covers the hair.
-     * Row 2 (Guard/Royal Attendant) and Row 4 (Worker) have hats/headwear.
-     * Row 1 (Police) has a peaked cap. Row 3 (Formal Suit) has no hat.
-     */
-    public boolean hasHeadwear() {
-        return suitRow != 2; // Only row 2 (index 2, Formal Suit) has no headwear
-    }
+/*** Vérifie si ce costume inclut un couvre-chef qui recouvre les cheveux.
+ * Ligne 2 (Garde / Assistant Royal) et ligne 4 (Ouvrier) ont des chapeaux/couvre-chefs.
+ * Ligne 1 (Police) a une casquette à visiere. Ligne 3 (Costume formel) n’a pas de chapeau*/
+public boolean hasHeadwear() {
+    return suitRow != 2; // Seule la ligne 2 (index 2, Costume formel) n’a pas de couvre-chef
+}
 }

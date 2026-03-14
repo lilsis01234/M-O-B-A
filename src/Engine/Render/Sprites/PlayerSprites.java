@@ -13,11 +13,11 @@ public class PlayerSprites {
     private static final int SPRITE_SIZE = 32;
     private static final int FRAMES_PER_DIRECTION = 6;
     
-    // Direction column offsets in spritesheet (0-indexed)
-    private static final int COL_SOUTH = 0;   // Facing South (front)
-    private static final int COL_EAST = 6;    // Facing East (right)
-    private static final int COL_NORTH = 12;  // Facing North (back)
-    private static final int COL_WEST = 18;   // Facing West (left)
+  // Décalages des colonnes par direction dans la spritesheet (indexés à partir de 0)
+    private static final int COL_SOUTH = 0;   // Face au Sud (avant)
+    private static final int COL_EAST = 6;    // Face à l'Est (droite)
+    private static final int COL_NORTH = 12;  // Face au Nord (arrière)
+    private static final int COL_WEST = 18;   // Face à l'Ouest (gauche)
     
     private final int characterRow;
 
@@ -29,7 +29,7 @@ public class PlayerSprites {
         try {
             BufferedImage sheet = ImageIO.read(new File(path + "Character Model.png"));
             
-            // Check if characterRow is valid
+            // verifi character est valis
             int maxRows = sheet.getHeight() / SPRITE_SIZE;
             int safeRow = (characterRow >= 0 && characterRow < maxRows) ? characterRow : 0;
             
@@ -37,12 +37,12 @@ public class PlayerSprites {
                 System.err.println("Warning: characterRow " + characterRow + " out of bounds (0-" + (maxRows-1) + "), using row 0");
             }
             
-            // Extract sprites for each direction
-            // Directions: DOWN, RIGHT, UP, LEFT (matching game's Direction enum)
-            extractDirectionFrames(sheet, safeRow, COL_SOUTH, 0);  // DOWN
-            extractDirectionFrames(sheet, safeRow, COL_EAST, 1);   // RIGHT
-            extractDirectionFrames(sheet, safeRow, COL_NORTH, 2); // UP
-            extractDirectionFrames(sheet, safeRow, COL_WEST, 3);  // LEFT
+            // Extraire les sprites pour chaque direction
+            // Directions
+            extractDirectionFrames(sheet, safeRow, COL_SOUTH, 0); // bas
+            extractDirectionFrames(sheet, safeRow, COL_EAST, 1);   // DROITE
+            extractDirectionFrames(sheet, safeRow, COL_NORTH, 2); //HAUT
+            extractDirectionFrames(sheet, safeRow, COL_WEST, 3);  // gauche
         } catch (IOException e) {
             throw new RuntimeException("Failed to load player spritesheet from " + path + "Character Model.png", e);
         }
@@ -57,7 +57,7 @@ public class PlayerSprites {
     }
 
     public BufferedImage get(Direction direction, int spriteNum) {
-        // spriteNum cycles 1-6, map to 0-5 index
+      // spriteNum varie de 1a6 mappé aux indices 0 a 5
         int frameIndex = (spriteNum - 1) % FRAMES_PER_DIRECTION;
         int dirIndex = switch (direction) {
             case DOWN -> 0;

@@ -6,15 +6,16 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class ProjectileSpriteCache {
-
+ // Tableau des différentes frames de la boule de feu
     private final BufferedImage[] fireballFrames;
     private final BufferedImage explosionSprite;
 
+    // Constructeur : charge les sprites des projectiles à l'initialisation
     public ProjectileSpriteCache() {
         this.fireballFrames = loadFireballFrames();
         this.explosionSprite = loadExplosionSprite();
     }
-
+  // Charge les images des frames de la boule de feu
     private BufferedImage[] loadFireballFrames() {
         BufferedImage[] frames = new BufferedImage[3];
         String[] frameNames = {"fireball_1.png", "fireball_2.png", "fireball_3.png"};
@@ -34,7 +35,7 @@ public class ProjectileSpriteCache {
         }
         return frames;
     }
-
+   // Charge le sprite de l'explosion
     private BufferedImage loadExplosionSprite() {
         try {
             String explosionPath = "src/Resource/Projectile/explosion.png";
@@ -47,6 +48,7 @@ public class ProjectileSpriteCache {
             return createExplosionFallback();
         }
     }
+    // Crée un sprite de secours pour la boule de feu
 
     private BufferedImage createFallbackSprite(int frame) {
         BufferedImage img = new BufferedImage(12, 12, BufferedImage.TYPE_INT_ARGB);
@@ -58,7 +60,7 @@ public class ProjectileSpriteCache {
         g.dispose();
         return img;
     }
-
+ // Crée un sprite de secours pour l'explosion
     private BufferedImage createExplosionFallback() {
         BufferedImage img = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
         java.awt.Graphics2D g = img.createGraphics();
@@ -70,7 +72,7 @@ public class ProjectileSpriteCache {
         g.fillOval(24, 24, 16, 16);
         g.dispose();
         return img;
-    }
+    }  // Retourne la frame de la boule de feu correspondant à l'index
 
     public BufferedImage getFireballFrame(int frameIndex) {
         if (frameIndex >= 0 && frameIndex < fireballFrames.length) {

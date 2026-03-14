@@ -13,19 +13,19 @@ public class TowerSpriteCache {
     public TowerSpriteCache(Tile[] tiles) {
         this.tiles = tiles;
     }
-
+    // Retourne la frame d'une tour en fonction de la couleur de l'équipe et de l'index de frame
     public BufferedImage getTowerFrame(TeamColor teamColor, int frameIndex) {
         int tileId = teamColor == TeamColor.RED ? 21 : 20;
         Tile tile = (tileId >= 0 && tileId < tiles.length) ? tiles[tileId] : null;
         return getFrameFromTile(tile, frameIndex);
     }
-
+// Retourne l'image de l'Ancien selon la couleur de l'équipe
     public BufferedImage getAncientFrame(TeamColor teamColor) {
         int tileId = teamColor == TeamColor.RED ? 23 : 22;
         Tile tile = (tileId >= 0 && tileId < tiles.length) ? tiles[tileId] : null;
         return tile != null ? tile.getImage() : null;
     }
-
+ // Récupère la frame correspondante à partir du tile
     private BufferedImage getFrameFromTile(Tile tile, int frameIndex) {
         if (tile == null) return null;
         Object userData = tile.getUserData();

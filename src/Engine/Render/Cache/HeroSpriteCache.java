@@ -6,13 +6,15 @@ import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-
+ // Cache pour stocker les sprites déjà composés des héros pour un accès rapide
 public class HeroSpriteCache {
     private final java.util.Map<String, BufferedImage> cache = new java.util.HashMap<>();
 
     public BufferedImage getSprite(Hero hero, Direction direction, int frame) {
+ // Construire une clé unique basée sur les caractéristiques du héros et la direction
         String key = hero.getCharacterRow() + "_" + hero.getHairRow() + "_" + 
                       hero.getOutfitFile() + "_" + direction + "_" + frame;
+         // Composer le sprite si non présent dans le cache
         BufferedImage cached = cache.get(key);
         if (cached != null) return cached;
 
@@ -22,15 +24,16 @@ public class HeroSpriteCache {
         }
         return composite;
     }
-
+ // Compose le sprite du héros en combinant les couches
     private BufferedImage composeHeroSprite(Hero hero, Direction direction, int frame) {
         try {
-            // Base character body
+             // Corps de base du personnage
             BufferedImage base = loadPart(
                 "src/Resource/Characters/CharacterModel/Character Model.png",
                 hero.getCharacterRow(), direction, frame
             );
-            if (base == null) {
+            if (base == null) { 
+                // Repli sur la ligne par défaut si la ligne spécifiée est invalide
                 base = loadPart(
                     "src/Resource/Characters/CharacterModel/Character Model.png",
                     0, direction, frame
@@ -40,7 +43,7 @@ public class HeroSpriteCache {
             // Hair - load from RIGHT column and flip for LEFT direction
             Direction hairDir = direction;
             if (direction == Direction.LEFT) {
-                hairDir = Direction.RIGHT;
+                hairDir = Direction.RIGHT;// on charge les cheveux comme si le personnage regardait à d
             }
             BufferedImage hair = loadPart(
                 "src/Resource/Characters/Hair/Hairs.png",
@@ -53,17 +56,18 @@ public class HeroSpriteCache {
                 );
             }
             
-            // Flip for LEFT direction
+            
+             // Inversion horizontale pour la direction LEFT
             if (hair != null && direction == Direction.LEFT) {
                 hair = flipHorizontal(hair);
             }
 
-            // Outfit (mapped to one of the six standard outfits)
+            // Tenue (mappée sur une des six tenues standards)
             String outfitFile = mapOutfit(hero.getOutfitFile());
             BufferedImage outfit = loadOutfit(outfitFile, direction, frame);
             if (outfit == null) outfit = loadOutfit("Outfit1.png", direction, frame);
 
-            // Composite: base -> outfit -> hair
+             // Composition finale : base -> tenue -> cheveux
             BufferedImage composite = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
             java.awt.Graphics2D g = composite.createGraphics();
             g.drawImage(base, 0, 0, null);
@@ -76,14 +80,14 @@ public class HeroSpriteCache {
             return null;
         }
     }
-
+ // Charge une partie d'une feuille de sprite
     private BufferedImage loadPart(String path, int row, Direction direction, int frame) {
         try {
             BufferedImage sheet = ImageIO.read(new File(path));
             int spriteSize = 32;
             int maxRows = sheet.getHeight() / spriteSize;
             if (row < 0 || row >= maxRows) {
-                // Try to find a valid row, else return null
+                // Essaye de trouver une ligne valide, sinon retourne null
                 if (maxRows > 0) row = 0;
                 else return null;
             }
@@ -98,7 +102,7 @@ public class HeroSpriteCache {
             return null;
         }
     }
-
+ // Charge la tenue du héros depuis le fichier correspondant
     private BufferedImage loadOutfit(String outfitFile, Direction direction, int frame) {
         try {
             BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/Outfits/" + outfitFile));
@@ -110,7 +114,7 @@ public class HeroSpriteCache {
             return null;
         }
     }
-
+ // Retourne l'offset de colonne dans la feuille de sprites selon la direction
     private int getColumnOffset(Direction direction) {
         return switch (direction) {
             case DOWN -> 0;
@@ -121,14 +125,13 @@ public class HeroSpriteCache {
     }
 
     private String mapOutfit(String outfitFile) {
-        // Always use the generic outfits, mapping based on outfitFile string to ensure
-        // different heroes get different outfits
+         // Mappe le fichier de tenue fourni sur l'une des six tenues génériques
         String[] outfits = {"Outfit1.png", "Outfit2.png", "Outfit3.png", "Outfit4.png", "Outfit5.png", "Outfit6.png"};
         if (outfitFile == null) return "Outfit1.png";
         int hash = Math.abs(outfitFile.hashCode());
         return outfits[hash % outfits.length];
     }
-    
+    // Retourne une image inversée horizontalement
     private BufferedImage flipHorizontal(BufferedImage src) {
         BufferedImage flipped = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = flipped.createGraphics();

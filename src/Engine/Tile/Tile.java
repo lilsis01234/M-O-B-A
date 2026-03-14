@@ -4,6 +4,9 @@ import java.awt.image.BufferedImage;
 
 import java.util.ArrayList;
 import java.util.List;
+/**
+ * CHAQUE tuile a  ID un nom des images une couleur un indicateur de collision  des données supplémentaires.
+ */
 
 public class Tile {
 
@@ -12,7 +15,7 @@ public class Tile {
     private final List<BufferedImage> images = new ArrayList<>();
     private final boolean collision;
     private java.awt.Color color;
-    private Object userData; // For caching sprite frames, etc.
+    private Object userData; // Pour mettre en cache les frames (images) des sprites, etc
 
     public Tile(int id, String name, BufferedImage image, boolean collision) {
         this.id = id;

@@ -13,18 +13,20 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
     private int targetY = -1;
     private boolean hasTarget = false;
     private boolean targetIsWorldCoords = false;
-
+ // Position actuelle de la souris
     private int currentX = -1;
     private int currentY = -1;
+ // Défilement de la molette
     private int wheelRotation = 0;
 
     private Camera camera;
     private int lastClickX = -1;
     private int lastClickY = -1;
     private boolean clickTriggered = false;
+    // Callbacks pour clic gauche/droit
     private java.util.function.Consumer<java.awt.Point> leftClickCallback;
     private java.util.function.Function<java.awt.Point, Boolean> rightClickCallback;
-
+// Configuration
     public void setCamera(Camera camera) {
         this.camera = camera;
     }
@@ -36,7 +38,7 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
     public void setRightClickCallback(java.util.function.Function<java.awt.Point, Boolean> callback) {
         this.rightClickCallback = callback;
     }
-    
+ // accesseurs pour la cible
     public int getTargetX() {
         if (camera != null && hasTarget && !targetIsWorldCoords) {
             return camera.screenToWorldX(targetX);
@@ -84,7 +86,7 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
         wheelRotation = 0; // Reset after reading
         return rotation;
     }
-    
+    //Gestion de la cible 
     public void clearTarget() {
         hasTarget = false;
         targetX = -1;
@@ -111,12 +113,14 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
         lastClickX = x;
         lastClickY = y;
     }
-    
-    @Override
+    //Events souris
+    @Override 
+    // Clic droit déclenche le callback gauche
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON3 && leftClickCallback != null) {
             leftClickCallback.accept(new java.awt.Point(e.getX(), e.getY()));
         }
+     // Clic gauche déclenche le callback droit 
         if (e.getButton() == MouseEvent.BUTTON1) {
             boolean handled = rightClickCallback != null && rightClickCallback.apply(new java.awt.Point(e.getX(), e.getY()));
             if (!handled) {
@@ -142,3 +146,4 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
         wheelRotation = e.getWheelRotation();
     }
 }
+

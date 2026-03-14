@@ -19,7 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class WorldRenderer {
-
+ // Renderers spécialisés pour chaque type d'objet
     private final TileRenderer tileRenderer;
     private final PlayerRenderer playerRenderer;
     private final TowerRenderer towerRenderer;
@@ -32,12 +32,12 @@ public class WorldRenderer {
     private final GameEngineRef gameEngineRef;
     private int panelWidth;
     private int panelHeight;
-
+// Interface pour accEDER aux projectiles depuis le moteur
     public interface GameEngineRef {
         List<TowerProjectile> getProjectiles();
         List<ClickEffect> getClickEffects();
     }
-
+// Constructeur principal
     public WorldRenderer(TileMap tileMap, Tile[] tiles, Player player, 
                         Arena arena, Camera camera, GameEngineRef gameEngineRef) {
         this.player = player;
@@ -51,7 +51,7 @@ public class WorldRenderer {
         this.projectileRenderer = new ProjectileRenderer();
         this.debugRenderer = new DebugRenderer();
     }
-
+ // Mise à jour de la taille du panel 
     public void setPanelSize(int width, int height) {
         this.panelWidth = width;
         this.panelHeight = height;
@@ -62,10 +62,10 @@ public class WorldRenderer {
         renderer.setTiles(tiles);
         return renderer;
     }
-
+    // Rendu complet du monde
     public void render(Graphics2D g2) {
         AffineTransform oldTransform = applyCameraTransform(g2);
-
+ // Rendu par couches
         renderTiles(g2);
         renderDepthSorted(g2);
         renderProjectiles(g2);
@@ -90,19 +90,19 @@ public class WorldRenderer {
         List<RenderableEntity> entities = new ArrayList<>();
 
         int tileSize = Config.getTileSize();
-
+  // Ajout des tours
         for (Tour tower : arena.tours()) {
             double towerPixelY = tower.position().y() * tileSize;
             double towerBaseY = towerPixelY + (tower.height() * tileSize);
             entities.add(new RenderableEntity(towerBaseY, RenderableEntity.Type.TOWER, tower));
         }
-
+  // Ajout des ANCIENT
         for (Ancient ancient : arena.ancients()) {
             double ancientPixelY = ancient.position().y() * tileSize;
             double ancientBaseY = ancientPixelY + (ancient.height() * tileSize);
             entities.add(new RenderableEntity(ancientBaseY, RenderableEntity.Type.ANCIENT, ancient));
         }
-
+        // Ajout du joueuR si il est encoree en vie
         if (player.isAlive()) {
             double playerBaseY = player.getY() + tileSize;
             entities.add(new RenderableEntity(playerBaseY, RenderableEntity.Type.PLAYER, player));
@@ -132,7 +132,7 @@ public class WorldRenderer {
             this.entity = entity;
         }
     }
-
+ // Rendu des projectiles
     private void renderProjectiles(Graphics2D g2) {
         if (gameEngineRef != null) {
             for (TowerProjectile projectile : gameEngineRef.getProjectiles()) {
@@ -140,7 +140,7 @@ public class WorldRenderer {
             }
         }
     }
-
+ // Rendu des effets de clic
     private void renderClickEffects(Graphics2D g2) {
         if (gameEngineRef != null) {
             for (ClickEffect effect : gameEngineRef.getClickEffects()) {
@@ -152,7 +152,7 @@ public class WorldRenderer {
     private void renderDebug(Graphics2D g2) {
         debugRenderer.render(g2, player, arena.tours(), arena.ancients());
     }
-
+// Getter pour le renderer de debug 
     public DebugRenderer getDebugRenderer() {
         return debugRenderer;
     }

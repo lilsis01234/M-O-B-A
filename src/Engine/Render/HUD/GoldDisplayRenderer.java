@@ -4,21 +4,21 @@ import Core.Entity.Player;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
+//utilise un petit panneau avec FlexContainer pour organiser le montant et le label "GOLD"
 public class GoldDisplayRenderer {
     private final Player player;
     private final int width;
     private BufferedImage background;
-
+//constructeur
     public GoldDisplayRenderer(Player player, int x, int y, int width, int height) {
         this.player = player;
         this.width = width;
     }
-
+//Dessiner le panneau et montant dor dun joueur
     public void render(Graphics2D g2, int x, int y) {
         int padding = 3;
         int gap = 8;
-        
+         // Définition des polices pour le texte
         g2.setFont(new Font("Arial", Font.BOLD, 16));
         int contentHeight = g2.getFontMetrics().getAscent() + 2;
         int totalHeight = padding * 2 + contentHeight;
@@ -26,10 +26,10 @@ public class GoldDisplayRenderer {
         if (background == null || background.getHeight() != totalHeight) {
             background = HUDBackgrounds.getSmallPanelBackground(width, totalHeight);
         }
-        
+         // Définition des polices pour le texte
         g2.drawImage(background, x, y, null);
         drawBorder(g2, x, y, width, totalHeight);
-        
+        // Création d’un FlexContainer pour organiser le montant et le label gold
         FlexContainer container = new FlexContainer()
             .setBounds(x, y, width, totalHeight)
             .padding(padding)
@@ -39,19 +39,19 @@ public class GoldDisplayRenderer {
         container.addItem(0, contentHeight);
         container.addItem(0, contentHeight);
         container.layout();
-        
+         // Récupération des rectangles calculés par le flexContainer
         Rectangle goldBounds = container.getItem(0).bounds;
         Rectangle labelBounds = container.getItem(1).bounds;
-        
+          // Dessine le montant d’or
         g2.setColor(new Color(255, 215, 0));
         g2.setFont(new Font("Arial", Font.BOLD, 16));
         g2.drawString("" + player.getGold(), goldBounds.x, goldBounds.y + g2.getFontMetrics().getAscent());
-        
+        // Dessine gold
         g2.setColor(new Color(220, 220, 150));
         g2.setFont(new Font("Arial", Font.BOLD, 11));
         g2.drawString("GOLD", labelBounds.x + labelBounds.width - 35, labelBounds.y + g2.getFontMetrics().getAscent());
     }
-    
+   // Dessine un contour 3D pour le panneau
     private void drawBorder(Graphics2D g2, int x, int y, int width, int height) {
         g2.setColor(new Color(80, 80, 100));
         g2.drawRect(x, y, width - 1, height - 1);

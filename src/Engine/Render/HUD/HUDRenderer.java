@@ -7,9 +7,9 @@ import Engine.Render.Camera;
 import Engine.Tile.Tile;
 
 import java.awt.*;
-
+//Classe principale de rendu du HUD 
 public class HUDRenderer {
-
+//attributs
     private final Player player;
     private final Arena arena;
     private final TileMap tileMap;
@@ -26,7 +26,7 @@ public class HUDRenderer {
     private BuffRenderer buffRenderer;
     private Camera camera;
     private java.util.function.Consumer<Point> moveTargetConsumer;
-
+//contructeur
     public HUDRenderer(Player player, Arena arena, TileMap tileMap, Tile[] tiles, int screenWidth, int screenHeight) {
         this.player = player;
         this.arena = arena;
@@ -36,7 +36,7 @@ public class HUDRenderer {
 
         int minimapSize = 180;
         this.minimap = new MinimapRenderer(player, arena, tileMap, tiles, 0, 0, minimapSize);
-        
+     // Initialisation des autres composants hud
         this.scoreboard = new ScoreboardRenderer(arena, player, 0, 0, 120, 50);
         this.goldDisplay = new GoldDisplayRenderer(player, 0, 0, 80, 18);
         this.characterPanel = new CharacterPanelRenderer(player, 0, 0, 200);
@@ -51,17 +51,18 @@ public class HUDRenderer {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
     }
-
+// Associe une caméra au HUD pour suivre le joueur et la minimap.
     public void setCamera(Camera camera) {
         this.camera = camera;
         this.minimap.setCamera(camera);
     }
-
+ //Dé
+ // definit le callback a exécuter lorsqu’un clic est effectue sur la minimap.
     public void setMoveTargetConsumer(java.util.function.Consumer<Point> consumer) {
         this.moveTargetConsumer = consumer;
         this.minimap.setOnClickCallback(consumer);
     }
-
+//gestion clic
     public boolean handleMouseClick(int clickX, int clickY) {
         return minimap.handleClick(clickX, clickY);
     }
@@ -81,7 +82,7 @@ public class HUDRenderer {
     public int getMinimapSize() {
         return minimap.getSize();
     }
-
+ // Activation de l’antialiasing pour texte et formes
     public void render(Graphics2D g2) {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -102,22 +103,22 @@ public class HUDRenderer {
         
         characterPanel.setPosition(margin, screenHeight - 125);
         characterPanel.render(g2);
-        
+         // Barre de compétences
         int abilityBarWidth = 300;
         int abilityBarX = (screenWidth - abilityBarWidth) / 2;
         abilityBar.setPosition(abilityBarX, screenHeight - 54);
         abilityBar.render(g2);
-        
+         // Barre deobjet 
         int itemBarWidth = 210;
         itemBar.setPosition(screenWidth - itemBarWidth, screenHeight - 55);
         itemBar.render(g2);
         
         targetInfo.setPosition(margin, screenHeight - 260);
         targetInfo.render(g2, 0, 0);
-
+ // Overlay si le joueur est en respawn
         drawRespawnOverlay(g2);
     }
-
+//Affiche un overlay semi transparent avec le temps de respawn si le joueur est mort
     private void drawRespawnOverlay(Graphics2D g2) {
         if (!player.isAlive()) {
             double timeLeft = player.getRespawnTimeRemaining();

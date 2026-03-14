@@ -11,11 +11,11 @@ public class OutfitSprites {
     private static final int SPRITE_SIZE = 32;
     private static final int FRAMES_PER_DIRECTION = 6;
     
-    // Direction column offsets in spritesheet (0-indexed)
-    private static final int COL_SOUTH = 0;   // Facing South (front)
-    private static final int COL_EAST = 6;    // Facing East (right)
-    private static final int COL_NORTH = 12;  // Facing North (back)
-    private static final int COL_WEST = 18;   // Facing West (left)
+   // Décalages des colonnes par direction dans la spritesheet (indexés à partir de 0)
+    private static final int COL_SOUTH = 0;   // Face au Sud (avant)
+    private static final int COL_EAST = 6;    // Face à l'Est (droite)
+    private static final int COL_NORTH = 12;  // Face au Nord (arrière)
+    private static final int COL_WEST = 18;   // Face à l'Ouest (gauche)
 
     public OutfitSprites(String outfitFileName) {
         sprites = new BufferedImage[4][FRAMES_PER_DIRECTION];
@@ -23,11 +23,11 @@ public class OutfitSprites {
         try {
             BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/Outfits/" + outfitFileName));
             
-            // Extract sprites for each direction from row 0 (single row)
-            extractDirectionFrames(sheet, 0, COL_SOUTH, 0);  // DOWN
-            extractDirectionFrames(sheet, 0, COL_EAST, 1);   // RIGHT
-            extractDirectionFrames(sheet, 0, COL_NORTH, 2); // UP
-            extractDirectionFrames(sheet, 0, COL_WEST, 3);  // LEFT
+            // Extraire les sprites pour chaque direction à partir de la ligne 0 
+            extractDirectionFrames(sheet, 0, COL_SOUTH, 0);  // bas
+            extractDirectionFrames(sheet, 0, COL_EAST, 1);   // droite
+            extractDirectionFrames(sheet, 0, COL_NORTH, 2); // haut
+            extractDirectionFrames(sheet, 0, COL_WEST, 3);  // gauche
         } catch (IOException e) {
             throw new RuntimeException("Failed to load outfit spritesheet: " + outfitFileName, e);
         }

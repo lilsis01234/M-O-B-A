@@ -16,7 +16,7 @@ public class Camera {
     private int minimapX, minimapY, minimapSize;
     private boolean followPlayer = false;
     private float playerX, playerY;
-
+//init cam avec taille du viewport
     public Camera(int viewportWidth, int viewportHeight) {
         this.viewportWidth = viewportWidth;
         this.viewportHeight = viewportHeight;
@@ -24,13 +24,13 @@ public class Camera {
         this.y = 0;
         updateDynamicMinZoom();
     }
-
+//def taille du monde
     public void setWorldSize(int width, int height) {
         this.worldWidth = width;
         this.worldHeight = height;
         updateDynamicMinZoom();
     }
-
+//def position x et y 
     public void setX(float x) {
         this.x = x;
     }
@@ -43,25 +43,25 @@ public class Camera {
         this.x = x;
         this.y = y;
     }
-
+//centrer camera sur position du mondee
     public void centerOn(float worldX, float worldY) {
         this.x = worldX - (viewportWidth / 2f / zoom);
         this.y = worldY - (viewportHeight / 2f / zoom);
         clamp();
     }
-
+//mis a jr taille viewport
     public void setViewportSize(int width, int height) {
         this.viewportWidth = width;
         this.viewportHeight = height;
         updateDynamicMinZoom();
     }
-
+//def position et taille minimap
     public void setMinimapBounds(int x, int y, int size) {
         this.minimapX = x;
         this.minimapY = y;
         this.minimapSize = size;
     }
-
+//suivi joueure (active desactive)
     public void setFollowPlayer(boolean follow) {
         this.followPlayer = follow;
     }
@@ -70,7 +70,7 @@ public class Camera {
         this.playerX = x;
         this.playerY = y;
     }
-
+// calcul zoom min dynamique
     private void updateDynamicMinZoom() {
         if (worldWidth > 0 && worldHeight > 0 && viewportWidth > 0 && viewportHeight > 0) {
             float zoomX = (float) viewportWidth / worldWidth;
@@ -78,7 +78,7 @@ public class Camera {
             dynamicMinZoom = Math.max(zoomX, zoomY);
         }
     }
-
+ // mise a jour camera selon souris ou suivi joueur
     public void update(int mouseX, int mouseY) {
         if (followPlayer) {
             centerOn(playerX, playerY);
@@ -95,12 +95,12 @@ public class Camera {
         handleEdgeScrolling(mouseX, mouseY, maxCameraX, maxCameraY);
         clamp();
     }
-
+ // verifier si souris sur viewport
     private boolean isMouseInBounds(int mouseX, int mouseY) {
         return mouseX >= 0 && mouseY >= 0 && 
                mouseX <= viewportWidth && mouseY <= viewportHeight;
     }
-
+ // verifier si souris sur minimap
     private boolean isMouseOverMinimap(int mouseX, int mouseY) {
         return minimapSize > 0 && 
                mouseX >= minimapX && mouseX <= minimapX + minimapSize &&
@@ -114,7 +114,7 @@ public class Camera {
     private float getMaxCameraY() {
         return Math.max(0, worldHeight - (viewportHeight / zoom));
     }
-
+ // gestion scroll bord ecran
     private void handleEdgeScrolling(int mouseX, int mouseY, float maxCameraX, float maxCameraY) {
         if (isMouseOverMinimap(mouseX, mouseY)) {
             return;
@@ -135,7 +135,7 @@ public class Camera {
             y += speed;
         }
     }
-
+ // empecher camera de sortir du monde
     private void clamp() {
         x = MathUtils.clamp(x, 0, getMaxCameraX());
         y = MathUtils.clamp(y, 0, getMaxCameraY());
@@ -154,7 +154,7 @@ public class Camera {
             clamp();
         }
     }
-
+// ajuster position pour garder centre viewport lors zoom
     private void adjustPositionForZoom(float oldZoom) {
         float viewportCenterX = viewportWidth / 2f;
         float viewportCenterY = viewportHeight / 2f;
