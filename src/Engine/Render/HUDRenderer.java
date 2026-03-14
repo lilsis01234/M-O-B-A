@@ -481,21 +481,29 @@ class ScoreboardRenderer {
 
         g2.setColor(Color.CYAN);
         g2.setFont(new Font("Arial", Font.BOLD, 12));
-        g2.drawString("RADIANT", x + 20, y + 20);
+        g2.drawString("TEAM", x + 20, y + 20);
         
         g2.setColor(new Color(255, 255, 255));
         g2.setFont(new Font("Arial", Font.BOLD, 16));
         String blueScore = "" + arena.getBlueKills();
-        g2.drawString(blueScore, x + 100, y + 22);
+        g2.drawString(blueScore, x + 80, y + 22);
 
-        g2.setColor(Color.RED);
+        g2.setColor(Color.CYAN);
         g2.setFont(new Font("Arial", Font.BOLD, 12));
-        g2.drawString("DIRE", x + 20, y + 45);
+        g2.drawString("BLUE TEAM", x + 20, y + 45);
         
         g2.setColor(new Color(255, 255, 255));
         g2.setFont(new Font("Arial", Font.BOLD, 16));
-        String redScore = "" + arena.getRedKills();
-        g2.drawString(redScore, x + 100, y + 47);
+        String blueTeamScore = "" + arena.getBlueKills();
+        g2.drawString(blueTeamScore, x + 100, y + 47);
+
+        g2.setColor(Color.RED);
+        g2.setFont(new Font("Arial", Font.BOLD, 12));
+        g2.drawString("RED TEAM", x + 20, y + 68);
+        
+        g2.setColor(new Color(255, 255, 255));
+        String redTeamScore = "" + arena.getRedKills();
+        g2.drawString(redTeamScore, x + 100, y + 70);
     }
 }
 
