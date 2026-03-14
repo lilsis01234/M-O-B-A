@@ -35,26 +35,34 @@ public class HUDRenderer {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
 
-        int minimapSize = 200;
+        // Minimap - top right
+        int minimapSize = 180;
         this.minimap = new MinimapRenderer(player, arena, tileMap, 
-            screenWidth - minimapSize - 20, 20, minimapSize);
+            screenWidth - minimapSize - 15, 15, minimapSize);
         
-        this.characterPanel = new CharacterPanelRenderer(player, 20, screenHeight - 180, 280, 160);
+        // Scoreboard - top left (above minimap to avoid overlap)
+        this.scoreboard = new ScoreboardRenderer(arena, player, 15, 15, 180, 70);
         
-        int abilityBarWidth = 400;
+        // Character Panel - bottom left
+        this.characterPanel = new CharacterPanelRenderer(player, 15, screenHeight - 170, 260, 150);
+        
+        // Ability Bar - bottom center
+        int abilityBarWidth = 380;
         int abilityBarX = (screenWidth - abilityBarWidth) / 2;
-        this.abilityBar = new AbilityBarRenderer(player, abilityBarX, screenHeight - 90, abilityBarWidth, 80);
+        this.abilityBar = new AbilityBarRenderer(player, abilityBarX, screenHeight - 85, abilityBarWidth, 75);
         
-        int itemBarWidth = 250;
-        this.itemBar = new ItemBarRenderer(player, screenWidth - itemBarWidth - 20, screenHeight - 280, itemBarWidth, 70);
+        // Item Bar - bottom right (above ability bar)
+        int itemBarWidth = 240;
+        this.itemBar = new ItemBarRenderer(player, screenWidth - itemBarWidth - 15, screenHeight - 165, itemBarWidth, 65);
         
-        this.goldDisplay = new GoldDisplayRenderer(player, screenWidth - 140, screenHeight - 295, 120, 30);
+        // Gold Display - above item bar
+        this.goldDisplay = new GoldDisplayRenderer(player, screenWidth - 130, screenHeight - 200, 115, 28);
         
-        this.scoreboard = new ScoreboardRenderer(arena, player, 20, 20, 200, 100);
+        // Target Info - left side, above character panel
+        this.targetInfo = new TargetInfoRenderer(player, 15, screenHeight - 340, 230, 130);
         
-        this.targetInfo = new TargetInfoRenderer(player, 20, screenHeight - 400, 250, 150);
-        
-        this.buffRenderer = new BuffRenderer(player, 20, screenHeight - 200, 250, 40);
+        // Buff/Debuff Display - above target info
+        this.buffRenderer = new BuffRenderer(player, 15, screenHeight - 380, 230, 35);
     }
 
     public void render(Graphics2D g2) {
@@ -322,10 +330,10 @@ class ItemBarRenderer {
         g2.setFont(new Font("Arial", Font.BOLD, 10));
         g2.drawString("ITEMS", x + 10, y + 15);
 
-        int slotSize = 40;
+        int slotSize = 32;
         int slotCount = 6;
-        int spacing = 5;
-        int startX = x + 5;
+        int spacing = 4;
+        int startX = x + 8;
         int startY = y + 25;
 
         for (int i = 0; i < slotCount; i++) {
