@@ -8,12 +8,4 @@ if (-not (Test-Path $outDir)) {
   & (Join-Path $PSScriptRoot "build.ps1")
 }
 
-# Build classpath: all jars in lib + compiled classes
-$libJars = (Get-ChildItem -Path (Join-Path $PSScriptRoot "lib") -Filter "*.jar" | ForEach-Object { $_.FullName }) -join ';'
-$classpath = $outDir
-if ($libJars) {
-    $classpath = $outDir + ';' + $libJars
-}
-
-java -cp $classpath Main.Main
-
+java -cp $outDir Main.Main

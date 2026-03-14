@@ -214,11 +214,19 @@ public class GamePanel extends JPanel {
             // Initialize game engine
             gameEngine = new GameEngine(player, camera, mouseHandler, arena);
             
+            // Tab key to center camera on player
+            keyHandler.setTabCallback(v -> {
+                gameEngine.centerCameraOnPlayer();
+            });
+            
             // Remove hero selection panel and change state
             remove(heroSelectionPanel);
             currentState = GameState.PLAYING;
             revalidate();
             repaint();
+            
+            // Request focus for keyboard input
+            requestFocusInWindow();
             
             // Start the game thread
             startGameThread();

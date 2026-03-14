@@ -66,6 +66,12 @@ public class GameEngine {
     private void update() {
         double deltaSeconds = 1.0 / 60.0;
         
+        if (player.justRespawned()) {
+            camera.centerOn((float) player.getX(), (float) player.getY());
+            player.clearJustRespawned();
+        }
+        
+        camera.updatePlayerPosition((float) player.getX(), (float) player.getY());
         updateCamera();
         updateClickEffects();
         updateTowers(deltaSeconds);
@@ -98,6 +104,12 @@ public class GameEngine {
     }
 
     private void updateCamera() {
+        boolean isMovingWithWASD = player.isMovingWithWASD();
+        if (isMovingWithWASD) {
+            camera.setFollowPlayer(true);
+        } else {
+            camera.setFollowPlayer(false);
+        }
         camera.update(mouseHandler.getCurrentX(), mouseHandler.getCurrentY());
         camera.zoom(mouseHandler.getWheelRotation());
     }
@@ -124,5 +136,9 @@ public class GameEngine {
 
     public List<TowerProjectile> getProjectiles() {
         return tousProjectiles;
+    }
+    
+    public void centerCameraOnPlayer() {
+        camera.centerOn((float) player.getX(), (float) player.getY());
     }
 }

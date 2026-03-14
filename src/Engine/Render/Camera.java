@@ -14,6 +14,8 @@ public class Camera {
     private int worldHeight;
     private float dynamicMinZoom = 1.0f;
     private int minimapX, minimapY, minimapSize;
+    private boolean followPlayer = false;
+    private float playerX, playerY;
 
     public Camera(int viewportWidth, int viewportHeight) {
         this.viewportWidth = viewportWidth;
@@ -42,6 +44,12 @@ public class Camera {
         this.y = y;
     }
 
+    public void centerOn(float worldX, float worldY) {
+        this.x = worldX - (viewportWidth / 2f / zoom);
+        this.y = worldY - (viewportHeight / 2f / zoom);
+        clamp();
+    }
+
     public void setViewportSize(int width, int height) {
         this.viewportWidth = width;
         this.viewportHeight = height;
@@ -54,6 +62,15 @@ public class Camera {
         this.minimapSize = size;
     }
 
+    public void setFollowPlayer(boolean follow) {
+        this.followPlayer = follow;
+    }
+
+    public void updatePlayerPosition(float x, float y) {
+        this.playerX = x;
+        this.playerY = y;
+    }
+
     private void updateDynamicMinZoom() {
         if (worldWidth > 0 && worldHeight > 0 && viewportWidth > 0 && viewportHeight > 0) {
             float zoomX = (float) viewportWidth / worldWidth;
@@ -63,6 +80,11 @@ public class Camera {
     }
 
     public void update(int mouseX, int mouseY) {
+        if (followPlayer) {
+            centerOn(playerX, playerY);
+            return;
+        }
+
         if (!isMouseInBounds(mouseX, mouseY)) {
             return;
         }

@@ -4,7 +4,7 @@
 
 A lightweight, dependency-free JSON data loading system for the MOBA game engine. The system supports **48 unique heroes** with complete stats, spells, and sprite configurations, all loaded from a single JSON file without any external dependencies.
 
-**System Version**: 1.1.0  
+**System Version**: 1.2.0  
 **Hero Count**: 48  
 **Spell Count**: 144 (3 per hero)  
 **Dependencies**: None (pure Java standard library only)

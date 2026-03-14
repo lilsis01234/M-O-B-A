@@ -35,6 +35,7 @@ public class Player extends Entity {
     
     private boolean isAlive = true;
     private long respawnEndTimeNanos = 0;
+    private boolean justRespawned = false;
     
     private long lastWoodDamageTimeNanos = 0;
     private static final long WOOD_DAMAGE_INTERVAL_NANOS = 200_000_000;
@@ -255,9 +256,22 @@ public class Player extends Entity {
     
     private void handleRespawn() {
         isAlive = true;
+        justRespawned = true;
         stats.heal(stats.maxHp());
         stats.restoreMana(stats.maxMana());
         respawnAtFountain();
+    }
+    
+    public boolean justRespawned() {
+        return justRespawned;
+    }
+    
+    public void clearJustRespawned() {
+        justRespawned = false;
+    }
+    
+    public boolean isMovingWithWASD() {
+        return moveInput.isAnyKeyPressed();
     }
 
     private void respawnAtFountain() {

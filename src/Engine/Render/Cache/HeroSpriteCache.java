@@ -3,6 +3,7 @@ package Engine.Render.Cache;
 import Core.Database.model.Hero;
 import Core.Entity.Direction;
 import javax.imageio.ImageIO;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -36,16 +37,25 @@ public class HeroSpriteCache {
                 );
             }
 
-            // Hair
+            // Hair - load from RIGHT column and flip for LEFT direction
+            Direction hairDir = direction;
+            if (direction == Direction.LEFT) {
+                hairDir = Direction.RIGHT;
+            }
             BufferedImage hair = loadPart(
                 "src/Resource/Characters/Hair/Hairs.png",
-                hero.getHairRow(), direction, frame
+                hero.getHairRow(), hairDir, frame
             );
             if (hair == null) {
                 hair = loadPart(
                     "src/Resource/Characters/Hair/Hairs.png",
-                    0, direction, frame
+                    0, hairDir, frame
                 );
+            }
+            
+            // Flip for LEFT direction
+            if (hair != null && direction == Direction.LEFT) {
+                hair = flipHorizontal(hair);
             }
 
             // Outfit (mapped to one of the six standard outfits)
@@ -117,5 +127,13 @@ public class HeroSpriteCache {
         if (outfitFile == null) return "Outfit1.png";
         int hash = Math.abs(outfitFile.hashCode());
         return outfits[hash % outfits.length];
+    }
+    
+    private BufferedImage flipHorizontal(BufferedImage src) {
+        BufferedImage flipped = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = flipped.createGraphics();
+        g.drawImage(src, src.getWidth(), 0, -src.getWidth(), src.getHeight(), null);
+        g.dispose();
+        return flipped;
     }
 }

@@ -1,5 +1,7 @@
 # Complete Technical Documentation
 
+**Version**: 1.2.0
+
 ## Table of Contents
 
 1. [Overview](#overview)
@@ -22,10 +24,13 @@
 This project is a production-ready 2D MOBA game engine written entirely in Java using Java2D Swing. It implements all core MOBA features with a clean, layered architecture that separates game logic from rendering.
 
 **Key Statistics**:
-- **~90 Java classes** across Core and Engine layers
+- **~95 Java classes** across Core and Engine layers
 - **48 unique heroes** loaded from JSON with 144 spells total
 - **60 FPS** fixed timestep game loop
 - **Zero external dependencies** - pure Java standard library
+- **HUD system** with flexbox layout
+- **Auto-detect keyboard layout** (QWERTY/AZERTY)
+- **True fullscreen** mode (F11)
 
 ---
 
@@ -239,14 +244,20 @@ Main Swing panel.
 
 #### `Engine.Input`
 
-Input handling.
+Input handling with keyboard layout detection.
 
 | Class | Description |
 |-------|-------------|
-| `KeyHandler` | Keyboard event listener |
+| `KeyHandler` | Keyboard event listener with AZERTY/QWERTY auto-detection |
+| `KeyboardLayoutDetector` | OS keyboard layout detection (Windows/Mac/Linux) |
 | `MouseHandler` | Mouse event listener |
 | `MoveInput` | Engine implementation of Core MoveInput |
 | `TargetInput` | Engine implementation of Core TargetInput |
+
+**Keyboard Layout Detection**:
+- Uses `KeyboardFocusManager.getCurrentKeyboardLayout()` to detect OS layout
+- Falls back to locale detection (FR = AZERTY)
+- Automatically maps WASD for QWERTY, ZQSD for AZERTY
 
 #### `Engine.Render`
 
@@ -254,11 +265,11 @@ Graphics rendering system.
 
 | Class | Description |
 |-------|-------------|
-| `Camera` | View management (zoom, pan, culling) |
+| `Camera` | View management (zoom, pan, culling, player follow) |
 | `TileRenderer` | Tile rendering with view culling |
 | `PlayerRenderer` | Player sprite rendering |
 | `PlayerSprites` | Player sprite image loading |
-| `HeroSpriteCache` | Hero sprite composition cache |
+| `HeroSpriteCache` | Hero sprite composition with hair flip for LEFT |
 | `HairSprites` | Hair sprite loading |
 | `OutfitSprites` | Outfit sprite loading |
 | `SuitSprites` | Suit (armor) sprite loading |
@@ -272,6 +283,23 @@ Graphics rendering system.
 | `UIRenderer` | UI overlay rendering |
 | `WorldRenderer` | World elements rendering |
 | `RenderingUtils` | Shared rendering utilities |
+
+#### `Engine.Render.HUD`
+
+HUD rendering system with flexbox layout.
+
+| Class | Description |
+|-------|-------------|
+| `HUDRenderer` | Main HUD coordinator |
+| `FlexContainer` | Flexbox-like layout container |
+| `MinimapRenderer` | Minimap with actual tile images |
+| `ScoreboardRenderer` | Team score display |
+| `GoldDisplayRenderer` | Player gold counter |
+| `CharacterPanelRenderer` | Hero portrait and stats |
+| `AbilityBarRenderer` | Spell/ability bar |
+| `ItemBarRenderer` | Inventory item bar |
+| `TargetInfoRenderer` | Current target display |
+| `HUDBackgrounds` | HUD background images |
 
 #### `Engine.Tile`
 
@@ -446,7 +474,10 @@ GameEngine.gameLoop()
   └─> While running:
         ├─> Wait until frame time elapsed (16.67ms)
         └─> update()
+              ├─> Check player respawn → center camera
+              ├─> Update player position for camera
               ├─> updateCamera()
+              │     ├─> Player follow mode (when using WASD)
               │     ├─> Edge scrolling (mouse at screen edges)
               │     └─> Zoom (mouse wheel)
               ├─> updateClickEffects()
@@ -468,6 +499,34 @@ GameEngine.gameLoop()
 - Target: 60 FPS = 16.67ms per frame
 - Implementation: `System.nanoTime()` for precision
 - Delta time: Fixed at 1/60 second for consistency
+
+### Input System
+
+**Keyboard Layout Detection**:
+```
+KeyHandler initialization
+  └─> KeyboardLayoutDetector.isAzerty()
+        ├─> Try: KeyboardFocusManager.getCurrentKeyboardLayout()
+        ├─> Catch: Fall back to Locale.getDefault()
+        └─> Return: AZERTY if FR locale, else QWERTY
+
+Result:
+  ├─> QWERTY: W/A/S/D for UP/LEFT/DOWN/RIGHT
+  └─> AZERTY: Z/Q/S/D for UP/LEFT/DOWN/RIGHT
+```
+
+**Keyboard Controls**:
+- `W`/`Z`: Move up (QWERTY/AZERTY)
+- `A`/`Q`: Move left (QWERTY/AZERTY)
+- `S`: Move down
+- `D`: Move right
+- `R`: Center camera on player
+- `F11`: Toggle fullscreen
+
+**Mouse Controls**:
+- `Right click`: Set movement target
+- `Mouse wheel`: Zoom in/out
+- `Mouse at edge`: Pan camera (unless over minimap)
 
 ---
 
@@ -773,12 +832,38 @@ List<int[]> path = follower.findPath(startCol, startRow, targetCol, targetRow);
 
 ### Camera
 
+The Camera class manages the game viewport with the following features:
+
 ```java
 Camera camera = new Camera(width, height);
+
+// Standard update with edge scrolling
 camera.update(mouseX, mouseY);
+
+// Zoom control
 camera.zoom(wheelRotation);
+
+// Set follow player mode (for WASD movement)
+camera.setFollowPlayer(true);
+camera.updatePlayerPosition(playerX, playerY);
+
+// Center camera on specific position
+camera.centerOn(playerX, playerY);
+
+// Set minimap bounds (disables edge scrolling when cursor is over minimap)
+camera.setMinimapBounds(minimapX, minimapY, minimapSize);
+
+// Convert coordinates
 int worldX = camera.screenToWorldX(screenX);
 ```
+
+**Features**:
+- **Edge scrolling**: Pan camera when mouse is near screen edges
+- **Zoom**: Mouse wheel zoom with configurable min/max levels
+- **Player follow**: Camera follows player when using keyboard movement
+- **Quick recenter**: Center camera on player with `centerOn()`
+- **Minimap exclusion**: Disable edge scrolling when cursor is over minimap
+- **World bounds**: Camera stays within map boundaries
 
 ---
 
