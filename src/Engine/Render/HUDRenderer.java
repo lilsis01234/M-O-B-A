@@ -549,6 +549,7 @@ class ScoreboardRenderer {
     private final Arena arena;
     private final Player player;
     private final int x, y, width, height;
+    private long matchStartTime;
 
     public ScoreboardRenderer(Arena arena, Player player, int x, int y, int width, int height) {
         this.arena = arena;
@@ -557,37 +558,31 @@ class ScoreboardRenderer {
         this.y = y;
         this.width = width;
         this.height = height;
+        this.matchStartTime = System.currentTimeMillis();
     }
 
     public void render(Graphics2D g2) {
         g2.setColor(new Color(20, 20, 30, 200));
         g2.fillRoundRect(x, y, width, height, 8, 8);
 
-        g2.setColor(Color.CYAN);
-        g2.setFont(new Font("Arial", Font.BOLD, 12));
-        g2.drawString("TEAM", x + 20, y + 20);
+        long elapsed = System.currentTimeMillis() - matchStartTime;
+        int minutes = (int) (elapsed / 60000);
+        int seconds = (int) ((elapsed % 60000) / 1000);
+        String timerText = String.format("%02d:%02d", minutes, seconds);
         
-        g2.setColor(new Color(255, 255, 255));
+        g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 16));
-        String blueScore = "" + arena.getBlueKills();
-        g2.drawString(blueScore, x + 80, y + 22);
+        FontMetrics fm = g2.getFontMetrics();
+        g2.drawString(timerText, x + (width - fm.stringWidth(timerText)) / 2, y + 22);
 
-        g2.setColor(Color.CYAN);
-        g2.setFont(new Font("Arial", Font.BOLD, 12));
-        g2.drawString("BLUE TEAM", x + 20, y + 45);
-        
-        g2.setColor(new Color(255, 255, 255));
-        g2.setFont(new Font("Arial", Font.BOLD, 16));
-        String blueTeamScore = "" + arena.getBlueKills();
-        g2.drawString(blueTeamScore, x + 100, y + 47);
+        g2.setColor(new Color(80, 180, 255));
+        g2.setFont(new Font("Arial", Font.PLAIN, 10));
+        String blueScore = "Blue: " + arena.getBlueKills();
+        g2.drawString(blueScore, x + 10, y + 45);
 
-        g2.setColor(Color.RED);
-        g2.setFont(new Font("Arial", Font.BOLD, 12));
-        g2.drawString("RED TEAM", x + 20, y + 68);
-        
-        g2.setColor(new Color(255, 255, 255));
-        String redTeamScore = "" + arena.getRedKills();
-        g2.drawString(redTeamScore, x + 100, y + 70);
+        g2.setColor(new Color(255, 80, 80));
+        String redScore = "Red: " + arena.getRedKills();
+        g2.drawString(redScore, x + 10, y + 62);
     }
 }
 
