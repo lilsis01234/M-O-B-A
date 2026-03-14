@@ -24,7 +24,7 @@ public class Config {
     private static final float MAX_ZOOM = 2.0f;
     private static final float ZOOM_STEP = 0.1f;
 
-    private static final String PLAYER_IMAGE_PATH = "src/Resource/Characters/MetroCity/CharacterModel/";
+    private static final String PLAYER_IMAGE_PATH = "src/Resource/Characters/CharacterModel/";
     private static final String MAP_FILE_PATH = "src/Data/Map.txt";
     private static final int MAX_TILES = 50;
 

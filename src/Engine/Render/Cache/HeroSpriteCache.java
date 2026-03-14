@@ -26,24 +26,24 @@ public class HeroSpriteCache {
         try {
             // Base character body
             BufferedImage base = loadPart(
-                "src/Resource/Characters/MetroCity/CharacterModel/Character Model.png",
+                "src/Resource/Characters/CharacterModel/Character Model.png",
                 hero.getCharacterRow(), direction, frame
             );
             if (base == null) {
                 base = loadPart(
-                    "src/Resource/Characters/MetroCity/CharacterModel/Character Model.png",
+                    "src/Resource/Characters/CharacterModel/Character Model.png",
                     0, direction, frame
                 );
             }
 
             // Hair
             BufferedImage hair = loadPart(
-                "src/Resource/Characters/MetroCity/Hair/Hairs.png",
+                "src/Resource/Characters/Hair/Hairs.png",
                 hero.getHairRow(), direction, frame
             );
             if (hair == null) {
                 hair = loadPart(
-                    "src/Resource/Characters/MetroCity/Hair/Hairs.png",
+                    "src/Resource/Characters/Hair/Hairs.png",
                     0, direction, frame
                 );
             }
@@ -91,7 +91,7 @@ public class HeroSpriteCache {
 
     private BufferedImage loadOutfit(String outfitFile, Direction direction, int frame) {
         try {
-            BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/MetroCity/Outfits/" + outfitFile));
+            BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/Outfits/" + outfitFile));
             int spriteSize = 32;
             int colStart = getColumnOffset(direction);
             int x = (colStart + (frame - 1)) * spriteSize;

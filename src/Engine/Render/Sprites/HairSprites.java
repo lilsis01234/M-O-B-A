@@ -24,7 +24,7 @@ public class HairSprites {
         sprites = new BufferedImage[4][FRAMES_PER_DIRECTION];
         
         try {
-            BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/MetroCity/Hair/Hairs.png"));
+            BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/Hair/Hairs.png"));
             
             // Extract sprites for each direction
             // Directions: DOWN, RIGHT, UP, LEFT (matching game's Direction enum)

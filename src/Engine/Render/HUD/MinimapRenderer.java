@@ -6,26 +6,37 @@ import Core.Moba.World.Arena;
 import Core.Moba.World.TeamColor;
 import Core.Tile.TileMap;
 import Engine.Render.Camera;
+import Engine.Tile.Tile;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class MinimapRenderer {
     private final Arena arena;
     private final TileMap tileMap;
+    private final Tile[] tiles;
     private final Player player;
-    private final int x, y, size;
+    private int x, y;
+    private final int size;
     private Camera camera;
     private java.util.function.Consumer<Point> onClickCallback;
     private TeamColor playerTeam;
+    private BufferedImage cachedMinimap;
 
-    public MinimapRenderer(Player player, Arena arena, TileMap tileMap, int x, int y, int size) {
+    public MinimapRenderer(Player player, Arena arena, TileMap tileMap, Tile[] tiles, int x, int y, int size) {
         this.player = player;
         this.arena = arena;
         this.tileMap = tileMap;
+        this.tiles = tiles;
         this.x = x;
         this.y = y;
         this.size = size;
         this.playerTeam = player.equipe() != null ? player.equipe().couleur() : TeamColor.BLUE;
+    }
+    
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     public void setCamera(Camera camera) {
@@ -90,26 +101,17 @@ public class MinimapRenderer {
         
         g2.setColor(new Color(30, 30, 40));
         g2.fillRoundRect(x, y, size, size, 8, 8);
+        
+        if (cachedMinimap == null) {
+            cachedMinimap = createMinimapBackground();
+        }
+        
+        g2.drawImage(cachedMinimap, x, y, null);
 
         float mapWidth = tileMap.getColumns() * Config.getTileSize();
         float mapHeight = tileMap.getRows() * Config.getTileSize();
         float scaleX = size / mapWidth;
         float scaleY = size / mapHeight;
-
-        for (int row = 0; row < tileMap.getRows(); row++) {
-            for (int col = 0; col < tileMap.getColumns(); col++) {
-                int tileId = tileMap.getTileAt(row, col);
-                Color tileColor = getTileColor(tileId);
-                if (tileColor != null) {
-                    int px = x + (int) (col * Config.getTileSize() * scaleX);
-                    int py = y + (int) (row * Config.getTileSize() * scaleY);
-                    int w = (int) (Config.getTileSize() * scaleX) + 1;
-                    int h = (int) (Config.getTileSize() * scaleY) + 1;
-                    g2.setColor(tileColor);
-                    g2.fillRect(px, py, w, h);
-                }
-            }
-        }
 
         drawLanes(g2, scaleX, scaleY);
 
@@ -207,26 +209,59 @@ public class MinimapRenderer {
     }
 
     private Color getTileColor(int tileId) {
-        return switch (tileId) {
-            case 0 -> new Color(45, 95, 45);
-            case 1 -> new Color(60, 80, 50);
-            case 2 -> new Color(40, 80, 150);
-            case 3 -> new Color(100, 90, 70);
-            case 4 -> new Color(160, 140, 100);
-            case 5 -> new Color(35, 85, 35);
-            case 6 -> new Color(45, 95, 45);
-            case 7 -> new Color(50, 100, 50);
-            case 8 -> new Color(40, 80, 140);
-            case 9 -> new Color(30, 70, 30);
-            case 10 -> new Color(55, 105, 55);
-            case 11 -> new Color(55, 105, 55);
-            case 12 -> new Color(40, 90, 40);
-            case 13 -> new Color(45, 95, 45);
-            case 14 -> new Color(45, 95, 45);
-            case 18 -> new Color(50, 100, 50);
-            case 20, 21 -> new Color(70, 70, 80);
-            case 22, 23 -> new Color(60, 60, 70);
-            default -> new Color(45, 45, 55);
-        };
+        if (tiles != null && tileId >= 0 && tileId < tiles.length && tiles[tileId] != null) {
+            return tiles[tileId].getColor();
+        }
+        return new Color(45, 45, 55);
+    }
+    
+    private BufferedImage getTileImage(int tileId, int row, int col) {
+        if (tiles == null || tileId < 0 || tileId >= tiles.length || tiles[tileId] == null) {
+            return null;
+        }
+        
+        Tile tile = tiles[tileId];
+        
+        if (tileId == 5 && tile.getImages().size() > 1) {
+            long timeInSeconds = System.currentTimeMillis() / 3000;
+            int seed = row * 73 + col * 37 + (int) timeInSeconds;
+            int index = Math.abs(new java.util.Random(seed).nextInt()) % tile.getImages().size();
+            return tile.getImages().get(index);
+        }
+        
+        return tile.getImage();
+    }
+
+    private BufferedImage createMinimapBackground() {
+        BufferedImage background = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = background.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        
+        int mapCols = tileMap.getColumns();
+        int mapRows = tileMap.getRows();
+        float tileScaleX = size / (float) mapCols;
+        float tileScaleY = size / (float) mapRows;
+        
+        for (int row = 0; row < mapRows; row++) {
+            for (int col = 0; col < mapCols; col++) {
+                int tileId = tileMap.getTileAt(row, col);
+                BufferedImage tileImg = getTileImage(tileId, row, col);
+                
+                int px = (int) (col * tileScaleX);
+                int py = (int) (row * tileScaleY);
+                int w = Math.max(1, (int) ((col + 1) * tileScaleX) - px);
+                int h = Math.max(1, (int) ((row + 1) * tileScaleY) - py);
+                
+                if (tileImg != null) {
+                    g2.drawImage(tileImg, px, py, w, h, null);
+                } else {
+                    g2.setColor(getTileColor(tileId));
+                    g2.fillRect(px, py, w, h);
+                }
+            }
+        }
+        
+        g2.dispose();
+        return background;
     }
 }

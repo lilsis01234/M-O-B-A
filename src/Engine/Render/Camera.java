@@ -13,6 +13,7 @@ public class Camera {
     private int worldWidth;
     private int worldHeight;
     private float dynamicMinZoom = 1.0f;
+    private int minimapX, minimapY, minimapSize;
 
     public Camera(int viewportWidth, int viewportHeight) {
         this.viewportWidth = viewportWidth;
@@ -47,6 +48,12 @@ public class Camera {
         updateDynamicMinZoom();
     }
 
+    public void setMinimapBounds(int x, int y, int size) {
+        this.minimapX = x;
+        this.minimapY = y;
+        this.minimapSize = size;
+    }
+
     private void updateDynamicMinZoom() {
         if (worldWidth > 0 && worldHeight > 0 && viewportWidth > 0 && viewportHeight > 0) {
             float zoomX = (float) viewportWidth / worldWidth;
@@ -72,6 +79,12 @@ public class Camera {
                mouseX <= viewportWidth && mouseY <= viewportHeight;
     }
 
+    private boolean isMouseOverMinimap(int mouseX, int mouseY) {
+        return minimapSize > 0 && 
+               mouseX >= minimapX && mouseX <= minimapX + minimapSize &&
+               mouseY >= minimapY && mouseY <= minimapY + minimapSize;
+    }
+
     private float getMaxCameraX() {
         return Math.max(0, worldWidth - (viewportWidth / zoom));
     }
@@ -81,6 +94,10 @@ public class Camera {
     }
 
     private void handleEdgeScrolling(int mouseX, int mouseY, float maxCameraX, float maxCameraY) {
+        if (isMouseOverMinimap(mouseX, mouseY)) {
+            return;
+        }
+        
         float speed = Config.getCameraSpeed();
         float threshold = Config.getCameraEdgeThreshold();
 

@@ -3,10 +3,14 @@ package Engine.Render.HUD;
 import Core.Entity.Player;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class ItemBarRenderer {
     private final Player player;
-    private final int x, y, width, height;
+    private int x, y;
+    private final int width, height;
+    private BufferedImage background;
+    private BufferedImage slotBackground;
 
     public ItemBarRenderer(Player player, int x, int y, int width, int height) {
         this.player = player;
@@ -15,35 +19,62 @@ public class ItemBarRenderer {
         this.width = width;
         this.height = height;
     }
+    
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
     public void render(Graphics2D g2) {
-        int padding = 4;
-        g2.setColor(new Color(20, 20, 30, 200));
-        g2.fillRoundRect(x, y, width, height, 6, 6);
-
-        g2.setColor(new Color(180, 180, 200));
-        g2.setFont(new Font("Arial", Font.BOLD, 9));
-        g2.drawString("ITEMS", x + padding + 4, y + padding + 8);
-
-        int slotSize = 28;
-        int slotCount = 6;
-        int spacing = 3;
-        int startX = x + padding + 4;
-        int startY = y + padding + 18;
-
-        for (int i = 0; i < slotCount; i++) {
-            int slotX = startX + i * (slotSize + spacing);
-            
-            g2.setColor(new Color(50, 50, 70));
-            g2.fillRect(slotX, startY, slotSize, slotSize);
-            g2.setColor(new Color(100, 100, 120));
-            g2.setStroke(new BasicStroke(1));
-            g2.drawRect(slotX, startY, slotSize, slotSize);
-
-            g2.setColor(new Color(120, 120, 140));
-            g2.setFont(new Font("Arial", Font.PLAIN, 7));
-            String num = (i + 1) + "";
-            g2.drawString(num, slotX + 2, startY + 8);
+        if (background == null) {
+            background = HUDBackgrounds.getPanelBackground(width, height);
+            slotBackground = HUDBackgrounds.getItemSlotBackground(28);
         }
+        g2.drawImage(background, x, y, null);
+        drawBorder(g2, x, y, width, height);
+
+        FlexContainer container = new FlexContainer()
+            .setBounds(x, y, width, height)
+            .padding(4)
+            .direction(FlexContainer.FlexDirection.COLUMN)
+            .gap(3);
+        container.addItem(0, 14);
+        container.addItem(1f, 0);
+        container.layout();
+        
+        Rectangle labelBounds = container.getItem(0).bounds;
+        Rectangle slotsBounds = container.getItem(1).bounds;
+        
+        g2.setColor(new Color(200, 200, 220));
+        g2.setFont(new Font("Arial", Font.BOLD, 11));
+        g2.drawString("ITEMS", labelBounds.x + 4, labelBounds.y + 10);
+
+        FlexContainer slotsContainer = new FlexContainer()
+            .setBounds(slotsBounds.x, slotsBounds.y, slotsBounds.width, slotsBounds.height)
+            .direction(FlexContainer.FlexDirection.ROW)
+            .gap(3);
+        
+        for (int i = 0; i < 6; i++) {
+            slotsContainer.addItem(28, 28);
+        }
+        slotsContainer.layout();
+
+        for (int i = 0; i < 6; i++) {
+            Rectangle slotBounds = slotsContainer.getItem(i).bounds;
+            
+            g2.drawImage(slotBackground, slotBounds.x, slotBounds.y, null);
+
+            g2.setColor(new Color(150, 150, 170));
+            g2.setFont(new Font("Arial", Font.BOLD, 9));
+            String num = (i + 1) + "";
+            g2.drawString(num, slotBounds.x + 3, slotBounds.y + 10);
+        }
+    }
+    
+    private void drawBorder(Graphics2D g2, int x, int y, int width, int height) {
+        g2.setColor(new Color(80, 80, 100));
+        g2.drawRect(x, y, width - 1, height - 1);
+        g2.setColor(new Color(40, 40, 60));
+        g2.drawRect(x + 1, y + 1, width - 3, height - 3);
     }
 }

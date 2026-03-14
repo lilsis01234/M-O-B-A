@@ -21,7 +21,7 @@ public class OutfitSprites {
         sprites = new BufferedImage[4][FRAMES_PER_DIRECTION];
         
         try {
-            BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/MetroCity/Outfits/" + outfitFileName));
+            BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/Outfits/" + outfitFileName));
             
             // Extract sprites for each direction from row 0 (single row)
             extractDirectionFrames(sheet, 0, COL_SOUTH, 0);  // DOWN

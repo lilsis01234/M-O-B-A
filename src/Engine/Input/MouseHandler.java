@@ -98,6 +98,8 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
         hasTarget = true;
         targetIsWorldCoords = true;
         clickTriggered = true;
+        lastClickX = x;
+        lastClickY = y;
     }
 
     public void setTargetFromScreen(int x, int y) {
@@ -106,6 +108,8 @@ public class MouseHandler extends MouseAdapter implements TargetInput {
         hasTarget = true;
         targetIsWorldCoords = false;
         clickTriggered = true;
+        lastClickX = x;
+        lastClickY = y;
     }
     
     @Override

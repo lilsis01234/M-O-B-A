@@ -22,7 +22,7 @@ public class PlayerRenderer {
 
     private BufferedImage loadShadow() {
         try {
-            return ImageIO.read(new File("src/Resource/Characters/MetroCity/CharacterModel/Shadow.png"));
+            return ImageIO.read(new File("src/Resource/Characters/CharacterModel/Shadow.png"));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load shadow image", e);
         }

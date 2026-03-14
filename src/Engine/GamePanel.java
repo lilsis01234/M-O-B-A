@@ -187,10 +187,15 @@ public class GamePanel extends JPanel {
             projectileRenderer = new ProjectileRenderer();
             
             // Create HUD renderer
-            hudRenderer = new HUDRenderer(player, arena, tileMap, getWidth(), getHeight());
+            hudRenderer = new HUDRenderer(player, arena, tileMap, tiles, getWidth(), getHeight());
             hudRenderer.setCamera(camera);
+            camera.setMinimapBounds(
+                hudRenderer.getMinimapX(), 
+                hudRenderer.getMinimapY(), 
+                hudRenderer.getMinimapSize()
+            );
             hudRenderer.setMoveTargetConsumer(target -> {
-                player.setMovementTarget(target.x, target.y);
+                mouseHandler.setTarget(target.x, target.y);
             });
             
             mouseHandler.setLeftClickCallback(point -> {
@@ -201,17 +206,6 @@ public class GamePanel extends JPanel {
 
             mouseHandler.setRightClickCallback(point -> {
                 if (hudRenderer.handleRightClick(point.x, point.y)) {
-                    // Right click on minimap - calculate world coords and set target for pathfinding
-                    int minimapX = hudRenderer.getMinimapX();
-                    int minimapY = hudRenderer.getMinimapY();
-                    int minimapSize = hudRenderer.getMinimapSize();
-                    float mapWidth = tileMap.getColumns() * Config.getTileSize();
-                    float mapHeight = tileMap.getRows() * Config.getTileSize();
-                    float scaleX = minimapSize / mapWidth;
-                    float scaleY = minimapSize / mapHeight;
-                    int worldX = (int) ((point.x - minimapX) / scaleX);
-                    int worldY = (int) ((point.y - minimapY) / scaleY);
-                    mouseHandler.setTarget(worldX, worldY);
                     return true;
                 }
                 return false;
@@ -242,6 +236,11 @@ public class GamePanel extends JPanel {
         
         Config.updateScreenSize(cols * Config.getTileSize(), rows * Config.getTileSize());
         camera.setViewportSize(width, height);
+        
+        // Update HUD renderer with new screen size
+        if (hudRenderer != null) {
+            hudRenderer.setScreenSize(width, height);
+        }
         
         // Update hero selection panel size if it's still visible
         if (currentState == GameState.HERO_SELECTION) {

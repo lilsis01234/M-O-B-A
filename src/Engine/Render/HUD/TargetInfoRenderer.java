@@ -3,35 +3,56 @@ package Engine.Render.HUD;
 import Core.Entity.Player;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class TargetInfoRenderer {
     private final Player player;
-    private final int x, y, width, height;
+    private final int width, height;
+    private BufferedImage background;
 
     public TargetInfoRenderer(Player player, int x, int y, int width, int height) {
         this.player = player;
-        this.x = x;
-        this.y = y;
         this.width = width;
         this.height = height;
     }
 
-    public void render(Graphics2D g2) {
+    public void setPosition(int x, int y) {
+        // Position is passed in render()
+    }
+
+    public void render(Graphics2D g2, int x, int y) {
         if (!player.hasSelectedTarget()) return;
 
-        g2.setColor(new Color(20, 20, 30, 220));
-        g2.fillRoundRect(x, y, width, height, 8, 8);
-        g2.setColor(new Color(100, 100, 130));
-        g2.setStroke(new BasicStroke(2));
-        g2.drawRoundRect(x, y, width, height, 8, 8);
+        if (background == null) {
+            background = HUDBackgrounds.getPanelBackground(width, height);
+        }
+        
+        g2.drawImage(background, x, y, null);
+        drawBorder(g2, x, y, width, height);
 
+        FlexContainer container = new FlexContainer()
+            .setBounds(x, y, width, height)
+            .padding(8)
+            .direction(FlexContainer.FlexDirection.COLUMN)
+            .gap(4);
+        container.addItem(0, 20);
+        container.addItem(0, 18);
+        container.addItem(0, 14);
+        container.addItem(0, 16);
+        container.layout();
+
+        Rectangle titleBounds = container.getItem(0).bounds;
+        Rectangle typeBounds = container.getItem(1).bounds;
+        Rectangle hpBarBounds = container.getItem(2).bounds;
+        Rectangle hpTextBounds = container.getItem(3).bounds;
+        
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 12));
-        g2.drawString("TARGET", x + 8, y + 18);
+        g2.setFont(new Font("Arial", Font.BOLD, 15));
+        g2.drawString("TARGET", titleBounds.x, titleBounds.y + g2.getFontMetrics().getAscent());
 
         var target = player.getSelectedTarget();
-        g2.setFont(new Font("Arial", Font.PLAIN, 10));
-        g2.drawString("Type: " + target.getClass().getSimpleName(), x + 8, y + 38);
+        g2.setFont(new Font("Arial", Font.BOLD, 12));
+        g2.drawString("Type: " + target.getClass().getSimpleName(), typeBounds.x, typeBounds.y + g2.getFontMetrics().getAscent());
 
         int hp = 100;
         int maxHp = 100;
@@ -47,12 +68,19 @@ public class TargetInfoRenderer {
         }
 
         g2.setColor(new Color(200, 50, 50));
-        g2.fillRect(x + 8, y + 48, width - 16, 8);
+        g2.fillRect(hpBarBounds.x, hpBarBounds.y, hpBarBounds.width, hpBarBounds.height);
         g2.setColor(new Color(50, 200, 50));
-        g2.fillRect(x + 8, y + 48, (int) ((double) hp / maxHp * (width - 16)), 8);
+        g2.fillRect(hpBarBounds.x, hpBarBounds.y, (int) ((double) hp / maxHp * hpBarBounds.width), hpBarBounds.height);
         
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.PLAIN, 9));
-        g2.drawString(hp + "/" + maxHp, x + 8, y + 66);
+        g2.setFont(new Font("Arial", Font.BOLD, 11));
+        g2.drawString(hp + "/" + maxHp, hpTextBounds.x, hpTextBounds.y + g2.getFontMetrics().getAscent());
+    }
+    
+    private void drawBorder(Graphics2D g2, int x, int y, int width, int height) {
+        g2.setColor(new Color(80, 80, 100));
+        g2.drawRect(x, y, width - 1, height - 1);
+        g2.setColor(new Color(40, 40, 60));
+        g2.drawRect(x + 1, y + 1, width - 3, height - 3);
     }
 }

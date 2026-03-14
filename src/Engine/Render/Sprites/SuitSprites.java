@@ -24,7 +24,7 @@ public class SuitSprites {
         sprites = new BufferedImage[4][FRAMES_PER_DIRECTION];
         
         try {
-            BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/MetroCity/Outfits/Suit.png"));
+            BufferedImage sheet = ImageIO.read(new File("src/Resource/Characters/Outfits/Suit.png"));
             
             // Extract sprites for each direction from the specified row
             extractDirectionFrames(sheet, suitRow, COL_SOUTH, 0);  // DOWN

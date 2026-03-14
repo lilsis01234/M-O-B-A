@@ -4,6 +4,7 @@ import Core.Entity.Player;
 import Core.Moba.World.Arena;
 import Core.Tile.TileMap;
 import Engine.Render.Camera;
+import Engine.Tile.Tile;
 
 import java.awt.*;
 
@@ -12,8 +13,8 @@ public class HUDRenderer {
     private final Player player;
     private final Arena arena;
     private final TileMap tileMap;
-    private final int screenWidth;
-    private final int screenHeight;
+    private int screenWidth;
+    private int screenHeight;
 
     private final MinimapRenderer minimap;
     private final CharacterPanelRenderer characterPanel;
@@ -26,40 +27,29 @@ public class HUDRenderer {
     private Camera camera;
     private java.util.function.Consumer<Point> moveTargetConsumer;
 
-    public HUDRenderer(Player player, Arena arena, TileMap tileMap, int screenWidth, int screenHeight) {
+    public HUDRenderer(Player player, Arena arena, TileMap tileMap, Tile[] tiles, int screenWidth, int screenHeight) {
         this.player = player;
         this.arena = arena;
         this.tileMap = tileMap;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
 
-        // Minimap - top right with small margin
         int minimapSize = 180;
-        this.minimap = new MinimapRenderer(player, arena, tileMap, 
-            screenWidth - minimapSize - 5, 5, minimapSize);
+        this.minimap = new MinimapRenderer(player, arena, tileMap, tiles, 0, 0, minimapSize);
         
-        // Scoreboard - top left
-        this.scoreboard = new ScoreboardRenderer(arena, player, 0, 0, 140, 50);
-        
-        // Gold - below minimap
-        this.goldDisplay = new GoldDisplayRenderer(player, screenWidth - 90, minimapSize + 10, 80, 18);
-        
-        // Character Panel - bottom left
-        this.characterPanel = new CharacterPanelRenderer(player, 0, screenHeight - 125, 200);
-        
-        // Ability Bar - bottom center, stuck to bottom edge
-        int abilityBarWidth = 300;
-        int abilityBarX = (screenWidth - abilityBarWidth) / 2;
-        this.abilityBar = new AbilityBarRenderer(player, abilityBarX, screenHeight - 54, abilityBarWidth, 54);
-        
-        // Item Bar - bottom right, stuck to bottom edge
-        int itemBarWidth = 210;
-        this.itemBar = new ItemBarRenderer(player, screenWidth - itemBarWidth, screenHeight - 55, itemBarWidth, 55);
-        
-        // Target Info - left side
-        this.targetInfo = new TargetInfoRenderer(player, 0, screenHeight - 260, 180, 90);
+        this.scoreboard = new ScoreboardRenderer(arena, player, 0, 0, 120, 50);
+        this.goldDisplay = new GoldDisplayRenderer(player, 0, 0, 80, 18);
+        this.characterPanel = new CharacterPanelRenderer(player, 0, 0, 200);
+        this.abilityBar = new AbilityBarRenderer(player, 0, 0, 300, 54);
+        this.itemBar = new ItemBarRenderer(player, 0, 0, 210, 55);
+        this.targetInfo = new TargetInfoRenderer(player, 0, 0, 180, 90);
         
         this.buffRenderer = null;
+    }
+
+    public void setScreenSize(int screenWidth, int screenHeight) {
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
     }
 
     public void setCamera(Camera camera) {
@@ -96,13 +86,34 @@ public class HUDRenderer {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+        int margin = 5;
+        int minimapSize = 180;
+        
+        minimap.setPosition(screenWidth - minimapSize - margin, margin);
         minimap.render(g2);
+        
+        if (camera != null) {
+            camera.setMinimapBounds(minimap.getX(), minimap.getY(), minimap.getSize());
+        }
+        
+        scoreboard.render(g2, margin, margin);
+        
+        goldDisplay.render(g2, screenWidth - 90, minimapSize + margin * 2);
+        
+        characterPanel.setPosition(margin, screenHeight - 125);
         characterPanel.render(g2);
+        
+        int abilityBarWidth = 300;
+        int abilityBarX = (screenWidth - abilityBarWidth) / 2;
+        abilityBar.setPosition(abilityBarX, screenHeight - 54);
         abilityBar.render(g2);
+        
+        int itemBarWidth = 210;
+        itemBar.setPosition(screenWidth - itemBarWidth, screenHeight - 55);
         itemBar.render(g2);
-        goldDisplay.render(g2);
-        scoreboard.render(g2);
-        targetInfo.render(g2);
+        
+        targetInfo.setPosition(margin, screenHeight - 260);
+        targetInfo.render(g2, 0, 0);
 
         drawRespawnOverlay(g2);
     }
