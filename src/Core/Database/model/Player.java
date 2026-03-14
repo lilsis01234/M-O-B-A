@@ -1,5 +1,8 @@
 package Core.Database.model;
-
+/**
+ * Classe de données du joueur 
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia
+ * */
 import java.time.LocalDateTime;
 
 public class Player {

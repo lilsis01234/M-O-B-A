@@ -1,5 +1,10 @@
 package Core.Tile;
 
+/**
+ * Cette classe représente la grille de tuiles qui compose la carte du jeu
+ * @author BOUKIRAT Thafat
+ * @version 1.0
+ */
 public class TileMap {
     private final int[][] tileNumbers;
     private final int columns;

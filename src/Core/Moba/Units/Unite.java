@@ -7,6 +7,11 @@ import Core.Moba.World.Vec2;
 
 import java.util.Objects;
 
+/**
+ * Cette classe abstraite représentant toute entité vivante et interactive sur la carte.
+ * @author RAHARIMANANA Tianantenaina ZEGHBIB Sonia BOUKIRAT Thafat
+ */
+
 public abstract class Unite {
     private final GameId id;
     private Vec2 position;
@@ -47,8 +52,12 @@ public abstract class Unite {
         return stats.isDead();
     }
 
+    /**
+     * Applique des dégâts 
+     * Cette méthode centralise la réception des attaques avant réduction éventuelle
+     * @param rawDamage dégâts reçus.
+     */
     public void subirDegats(int rawDamage) {
-        // Simple damage model; can be expanded later to use defense, damage types, etc.
         stats.takeDamage(Math.max(0, rawDamage));
     }
 }

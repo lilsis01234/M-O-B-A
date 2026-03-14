@@ -1,4 +1,7 @@
 package Core.Moba.Units;
+/**
+ * Gère le temps de réapparition (respawn)
+ **/
 
 public final class RespawnTimer {
     private double remainingSeconds;

@@ -2,6 +2,11 @@ package Core.Moba.World;
 
 import java.util.Objects;
 
+/**
+ * Cette classe représente les deux équipes
+ * @author RAHARIMANANA Tianantenaina
+ * @version 1.0
+ */
 public final class Equipe {
     private final String nom;
     private final TeamColor couleur;

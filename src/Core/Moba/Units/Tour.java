@@ -9,6 +9,10 @@ import Core.Moba.World.Voie;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Cette classe représente la Tour
+ */
+
 public class Tour extends Unite {
     private int tier;
     private Voie lane;
@@ -52,7 +56,9 @@ public class Tour extends Unite {
         this.width = w;
         this.height = h;
     }
-
+    /**
+     * Logique de Collision (AABB)
+    */
     public boolean collidesWith(double x, double y, double width, double height) {
         int tileSize = Config.getTileSize();
         double towerPixelX = position().x() * tileSize;

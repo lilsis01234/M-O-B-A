@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * Gère le pathfinding (recherche de chemin) et le suivi du chemin.
+ * @author RAHARIMANANA Tianantenaina ZEGHBIB Sonia BOUKIRAT Thafat
  */
 public class PathFollower {
 

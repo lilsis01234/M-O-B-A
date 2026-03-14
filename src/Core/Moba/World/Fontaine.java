@@ -1,6 +1,11 @@
 package Core.Moba.World;
 
 import Core.Moba.Combat.Stats;
+/**
+ * Cette classe représente la fontaine
+ * @author BOUKIRAT Thafat
+ * @version 1.0
+ */
 
 public final class Fontaine {
     private final Vec2 position;

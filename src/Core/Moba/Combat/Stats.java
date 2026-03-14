@@ -1,5 +1,8 @@
 package Core.Moba.Combat;
 
+/**
+ * Gère les stats d'une entité.
+ **/
 public final class Stats {
     private int maxHp;
     private int hp;
@@ -12,6 +15,7 @@ public final class Stats {
     public Stats(int maxHp, int maxMana, int attack, int defense, double moveSpeed) {
         if (maxHp <= 0) throw new IllegalArgumentException("maxHp must be > 0");
         if (maxMana < 0) throw new IllegalArgumentException("maxMana must be >= 0");
+        
         this.maxHp = maxHp;
         this.hp = maxHp;
         this.maxMana = maxMana;
@@ -29,21 +33,38 @@ public final class Stats {
     public int defense() { return defense; }
     public double moveSpeed() { return moveSpeed; }
 
+    /**
+     * Soigne l'entité sans dépasser le maximum autorisé
+     * @param amount Quantité de soins
+     */
     public void heal(int amount) {
         if (amount <= 0) return;
         hp = Math.min(maxHp, hp + amount);
     }
 
+    /**
+     * Restaure le mana sans dépasser le maximum autorisé
+     * @param amount Quantité de mana à restaurer
+     */
     public void restoreMana(int amount) {
         if (amount <= 0) return;
         mana = Math.min(maxMana, mana + amount);
     }
 
+    /**
+     * Réduit les points de vie
+     * @param rawDamage Dégâts reçus
+     */
     public void takeDamage(int rawDamage) {
         int dmg = Math.max(0, rawDamage);
         hp = Math.max(0, hp - dmg);
     }
 
+    /**
+     * consommer une quantité de mana.
+     * @param amount mana.
+     * @return true si le mana a été déduit, false si insuffisantes
+     */
     public boolean spendMana(int amount) {
         if (amount <= 0) return true;
         if (mana < amount) return false;
@@ -55,6 +76,11 @@ public final class Stats {
         return hp <= 0;
     }
 
+    /**
+     * Applique de façon permanente ou temporaire des bonus/malus de statistiques.
+     * Les HP et le Mana ne doivent pas dépasser les maximums.
+     * @param mod modificateurs à appliquer.
+     */
     public void applyModifier(StatsModifier mod) {
         if (mod == null) return;
         maxHp = Math.max(1, maxHp + mod.bonusMaxHp());
@@ -63,8 +89,8 @@ public final class Stats {
         defense = Math.max(0, defense + mod.bonusDefense());
         moveSpeed = Math.max(0, moveSpeed + mod.bonusMoveSpeed());
 
+        // Garde la santé/mana cohérente avec les nouveaux plafonds
         hp = Math.min(hp, maxHp);
         mana = Math.min(mana, maxMana);
     }
 }
-

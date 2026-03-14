@@ -3,6 +3,9 @@ package Core.Moba.Spells;
 import Core.Moba.Units.Unite;
 
 import java.util.Objects;
+/**
+ * Classe pour les sorts
+ */
 
 public class Sort {
     private final String nom;
@@ -54,8 +57,10 @@ public class Sort {
         cooldownRestant = Math.max(0, cooldownRestant - deltaSeconds);
     }
 
-    /**
-     * Core-only placeholder: applyEffect can be implemented later per spell type.
+  /**
+     * Pour le lancement du sort
+     * @param ctx Contexte du sort (qui le lance, vers quelle cible/point).
+     * @return true si le sort a été lancé avec succès, false sinon.
      */
     public boolean lancer(SortContext ctx) {
         Objects.requireNonNull(ctx, "ctx");
@@ -66,8 +71,13 @@ public class Sort {
         return true;
     }
 
+    /**
+     * Applique l'effet du sort.
+     * utilisée par des classes filles pour créer des sorts variés 
+     * @param ctx Contexte d'exécution.
+     */
     protected void applyEffect(SortContext ctx) {
-        // Default: basic nuke for demo purposes (scales with level).
+        // Effet par défaut : inflige des dégâts de base scalés sur le niveau
         Unite target = ctx.target();
         if (target != null) {
             int dmg = 20 + (niveau - 1) * 10;

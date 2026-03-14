@@ -2,6 +2,8 @@ package Core.Entity;
 
 /**
  * Classe de base pour toutes les entités du jeu.
+ * @author BOUKIRAT Thafat RAHARIMANANA Tianantenaina ZEGHBIB Sonia
+ * @version 3.0
  */
 public class Entity {
     

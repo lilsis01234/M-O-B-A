@@ -9,6 +9,12 @@ import Core.Moba.World.Vec2;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Système d'intelligence artificielle qui contrôle la Tour.
+ * Gère la détection des ennemis, la priorité de ciblage (Minions avant Héros),
+ * et l'augmentation progressive des dégâts lors d'attaques consécutives.
+ */
+
 public final class TowerAI {
     private final Tour tour;
     private Object cible;
@@ -30,6 +36,12 @@ public final class TowerAI {
     public Object cible() {
         return cible;
     }
+
+    /**
+     * Calcule les dégâts infligés
+     * Plus la tour tire sur la même cible, plus le multiplicateur augmente (+10% par coup)
+     * @return Dégâts finaux après hits consécutifs
+     */
 
     public int calculerDegats() {
         int baseDegats = tour.stats().attack();
@@ -115,6 +127,12 @@ public final class TowerAI {
         
         return false;
     }
+
+    /**
+     * Algorithme de recherche de cible avec priorités :
+     * 1. Minions ennemis les plus proches (pour protéger les héros)
+     * 2. Héros ennemis si aucun minion n'est présent
+     */
 
     private void chercherCible(List<Object> unites) {
         Object cibleCreep = null;

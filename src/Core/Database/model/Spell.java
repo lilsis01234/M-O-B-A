@@ -1,5 +1,8 @@
 package Core.Database.model;
-
+/**
+ * Classe de données des sorts 
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia
+ * */
 public class Spell {
     private int id;
     private int heroId;

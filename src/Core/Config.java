@@ -4,8 +4,9 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 /**
- * Gère la configuration globale et les constantes
- * @author BOUKIRAT Thafat
+ * Cette classe centralise toutes les constantes et les paramètres de configuration du jeu
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia
+ * @version 1.0
  */
 public class Config {
     

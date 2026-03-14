@@ -2,6 +2,7 @@ package Core.Entity;
 
 /**
  * Utilitaires mathématiques.
+ * @author RAHARIMANANA Tianantenaina ZEGHBIB Sonia BOUKIRAT Thafat
  */
 public class MathUtils {
 

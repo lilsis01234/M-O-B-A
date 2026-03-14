@@ -1,5 +1,10 @@
 package Core.Entity;
 
+/**
+ * Responsable de la détection des collisions entre les entités et l'environnement.
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia
+ * */
+
 import Core.Config;
 import Core.Moba.Units.Ancient;
 import Core.Moba.Units.Tour;
@@ -19,11 +24,23 @@ public class CollisionDetector {
         this.arena = arena;
     }
 
+    /**
+     * Vérifie si une collision existe à une position donnée pour une entité.
+     * @param topLeftX Coordonnée X du coin supérieur gauche.
+     * @param topLeftY Coordonnée Y du coin supérieur gauche.
+     * @return true si la position est occupée par un obstacle ou une structure.
+     */
     public boolean collidesAt(double topLeftX, double topLeftY) {
         return collidesWithTile(topLeftX, topLeftY) || 
                (arena != null && collidesWithStructures(topLeftX, topLeftY));
     }
 
+    /**
+     * Vérifie les collisions avec les tuiles de la carte en testant les coins et le centre de la hitbox.
+     * @param topLeftX Coordonnée X.
+     * @param topLeftY Coordonnée Y.
+     * @return true si un des points de contrôle touche un mur.
+     */
     private boolean collidesWithTile(double topLeftX, double topLeftY) {
         HitboxUtils.Hitbox collisionBox = HitboxUtils.createEntityCollisionBox(topLeftX, topLeftY);
         
@@ -34,6 +51,12 @@ public class CollisionDetector {
                isWallAt(collisionBox.getCenterX(), collisionBox.getCenterY());
     }
 
+    /**
+     * Détermine si un point précis est un mur
+     * @param pixelX Position X en pixels.
+     * @param pixelY Position Y en pixels.
+     * @return true si la tuile est solide ou hors des limites de la carte.
+     */
     private boolean isWallAt(double pixelX, double pixelY) {
         int tileSize = Config.getTileSize();
         int col = (int) Math.floor(pixelX / tileSize);
@@ -47,6 +70,12 @@ public class CollisionDetector {
         return collisionTable.hasCollision(tileId);
     }
 
+    /**
+     * Vérifie si l'entité entre en collision avec les Tours ou l'Ancien.
+     * @param topLeftX Coordonnée X.
+     * @param topLeftY Coordonnée Y.
+     * @return true si une collision est détectée avec une structure.
+     */
     private boolean collidesWithStructures(double topLeftX, double topLeftY) {
         HitboxUtils.Hitbox entityCollisionBox = HitboxUtils.createEntityCollisionBox(topLeftX, topLeftY);
 
@@ -69,6 +98,14 @@ public class CollisionDetector {
         return false;
     }
 
+    /**
+     * Vérifie si le chemin ne contient pas d'obstacle
+     * @param x1 Point de départ X.
+     * @param y1 Point de départ Y.
+     * @param x2 Point d'arrivée X.
+     * @param y2 Point d'arrivée Y.
+     * @return true si aucun obstacle n'est détecté sur le trajet.
+     */
     public boolean isPathClear(double x1, double y1, double x2, double y2) {
         double distance = MathUtils.distance(x1, y1, x2, y2);
         if (distance < 1) return true;
@@ -86,7 +123,9 @@ public class CollisionDetector {
         }
         return true;
     }
-
+    /**
+     * Vérifier le trajet.
+     */
     private boolean collidesAtPathCheck(double topLeftX, double topLeftY, double inset) {
         HitboxUtils.Hitbox collisionBox = HitboxUtils.createEntityCollisionBox(topLeftX, topLeftY);
         
@@ -98,6 +137,9 @@ public class CollisionDetector {
                (arena != null && collidesWithStructuresAt(topLeftX, topLeftY));
     }
 
+    /**
+     * Vérifie les structures lors du test de trajet.
+     */
     private boolean collidesWithStructuresAt(double topLeftX, double topLeftY) {
         HitboxUtils.Hitbox entityCollisionBox = HitboxUtils.createEntityCollisionBox(topLeftX, topLeftY);
 

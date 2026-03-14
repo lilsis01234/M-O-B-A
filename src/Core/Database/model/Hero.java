@@ -1,4 +1,8 @@
 package Core.Database.model;
+/**
+ * Classe de données de héros 
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia
+ * */
 
 import java.util.ArrayList;
 import java.util.List;

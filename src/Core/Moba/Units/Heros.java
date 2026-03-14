@@ -5,12 +5,14 @@ import Core.Moba.Items.Equipement;
 import Core.Moba.Spells.Sort;
 import Core.Moba.World.Equipe;
 import Core.Moba.World.Vec2;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Classe pour le héro contrôlé par un joueur (le Héros).
+ */
 public final class Heros extends Unite {
     private final String nom;
     private final Equipe equipe;
@@ -33,48 +35,33 @@ public final class Heros extends Unite {
         this.niveau = 1;
         this.xp = 0;
         this.gold = 0;
-        this.sorts = new ArrayList<>(3);
-        this.inventaire = new ArrayList<>(6);
-        this.recall = new RecallState(4.0);
+        this.sorts = new ArrayList<>(3);    
+        this.inventaire = new ArrayList<>(6); 
+        this.recall = new RecallState(4.0);  
         this.respawn = new RespawnTimer();
     }
 
-    public String nom() {
-        return nom;
+    public String nom() { return nom; }
+    public Equipe equipe() { return equipe; }
+    public int niveau() { return niveau; }
+    public int xp() { return xp; }
+    public int gold() { return gold; }
+ 
+    public List<Sort> sorts() { 
+        return Collections.unmodifiableList(sorts); 
     }
 
-    public Equipe equipe() {
-        return equipe;
+    public List<Equipement> inventaire() { 
+        return Collections.unmodifiableList(inventaire); 
     }
 
-    public int niveau() {
-        return niveau;
-    }
+    public RecallState recall() { return recall; }
+    public RespawnTimer respawn() { return respawn; }
 
-    public int xp() {
-        return xp;
-    }
-
-    public int gold() {
-        return gold;
-    }
-
-    public List<Sort> sorts() {
-        return Collections.unmodifiableList(sorts);
-    }
-
-    public List<Equipement> inventaire() {
-        return Collections.unmodifiableList(inventaire);
-    }
-
-    public RecallState recall() {
-        return recall;
-    }
-
-    public RespawnTimer respawn() {
-        return respawn;
-    }
-
+    /**
+     * Mise à jour Cooldowns, Recall, Respawn
+     * @param deltaSeconds Temps écoulé depuis la dernière frame
+     */
     public void update(double deltaSeconds) {
         for (Sort s : sorts) {
             s.update(deltaSeconds);
@@ -83,6 +70,7 @@ public final class Heros extends Unite {
         respawn.update(deltaSeconds);
     }
 
+    /** Ajoute un sort au héros */
     public boolean ajouterSort(Sort sort) {
         Objects.requireNonNull(sort, "sort");
         if (sorts.size() >= 3) return false;
@@ -93,6 +81,7 @@ public final class Heros extends Unite {
         gold += Math.max(0, amount);
     }
 
+    /** Ajoute de l'XP et gère la montée de niveau automatique. */
     public void gagnerXp(int amount) {
         xp += Math.max(0, amount);
         while (xp >= xpPourNiveauSuivant()) {
@@ -101,20 +90,26 @@ public final class Heros extends Unite {
         }
     }
 
+    /** @return L'XP requise pour atteindre le niveau suivant  */
     public int xpPourNiveauSuivant() {
         return 100 + (niveau - 1) * 50;
     }
+
 
     public boolean acheter(Equipement item) {
         Objects.requireNonNull(item, "item");
         if (inventaire.size() >= 6) return false;
         if (gold < item.prix()) return false;
+        
         gold -= item.prix();
         inventaire.add(item);
-        stats().applyModifier(item.bonus());
+        stats().applyModifier(item.bonus()); // Applique les bonus de l'équipement aux stats du héros
         return true;
     }
 
+    /**
+     * Fusionne deux objets possédés pour en créer un nouveau de Tier FINAL.
+     */
     public boolean fusionnerEquipements(String nomFinal, int prixFinal, Equipement a, Equipement b) {
         Objects.requireNonNull(a, "a");
         Objects.requireNonNull(b, "b");
@@ -128,21 +123,24 @@ public final class Heros extends Unite {
         return true;
     }
 
+    /** Déclenche la canalisation du rappel vers la base. */
     public void demarrerRecall() {
         recall.demarrerRecall();
     }
 
+    /** Téléporte le héros à la fontaine alliée si le rappel est terminé. */
     public void appliquerRecallSiTermine() {
         if (!recall.isRecalling()) return;
         if (!recall.estTermine()) return;
+        
         setPosition(equipe.fontaine().position());
         recall.annulerRecall();
     }
 
+    /** Déclenche le compte à rebours de réapparition. */
     public void mourir(double delaiReapparitionSecondes) {
         if (estMorte()) {
             respawn.start(delaiReapparitionSecondes);
         }
     }
 }
-

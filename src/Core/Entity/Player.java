@@ -13,6 +13,10 @@ import Core.Moba.World.Vec2;
 import Core.Tile.CollisionTable;
 import Core.Tile.TileMap;
 
+/**
+ * Classe fonctionnelle pour le Player
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia
+ */
 public class Player extends Entity {
     
     private final MoveInput moveInput;

@@ -1,5 +1,8 @@
 package Core.Database.model;
-
+/**
+ * Classe de données du héro du joueur 
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia
+ * */
 public class PlayerHero {
     private int id;
     private int playerId;

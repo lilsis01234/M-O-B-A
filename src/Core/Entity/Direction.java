@@ -2,6 +2,7 @@ package Core.Entity;
 
 /**
  * Directions cardinales du jeu.
+ * @author ZEGHBIB Sonia
  */
 public enum Direction {
     UP("up"),

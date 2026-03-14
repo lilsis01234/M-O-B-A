@@ -8,6 +8,12 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+/**
+ * Cette classe est responsable du scan de la carte pour placer les entités,
+ * de la définition des voies (Lanes) et du suivi du score global (Kills).
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia 
+ * @version 2.0
+ */
 
 public final class Arena {
     private final Map<Voie, List<Vec2>> lanesWaypoints;
@@ -32,6 +38,14 @@ public final class Arena {
         unites = new ArrayList<>();
     }
 
+    /**
+     * Analyse la TileMap pour détecter et instancier les éléments du MOBA.
+     * les IDs spécifiques (20-23) étant des marqueurs de structures,
+     * calcule leur taille (cluster) et les remplace par du sol visuel
+     * @param map La carte reçu par le fichier txt
+     * @param blueTeam Parties de l'équipe bleue.
+     * @param redTeam Parties de l'équipe rouge.
+     */
     public void initializeFromMap(TileMap map, Equipe blueTeam, Equipe redTeam) {
         tours.clear();
         ancients.clear();
@@ -99,6 +113,9 @@ public final class Arena {
         }
     }
 
+    /**
+     * Pour déterminer sur quelle voie (TOP, MID, BOT) se situe une coordonnée
+     */
     private Voie determineLane(Vec2 pos, boolean isBlue) {
         double x = pos.x();
         double y = pos.y();
@@ -114,6 +131,9 @@ public final class Arena {
         }
     }
 
+    /**
+     * Calcule le Tier d'une tour (T1, T2, T3) en fonction de sa distance avec sa base
+     */
     private int determineTier(Vec2 pos, Vec2 ancientPos) {
         if (ancientPos == null) return 3;
         double dist = pos.distanceTo(ancientPos);
@@ -161,6 +181,7 @@ public final class Arena {
         unites.remove(unite);
     }
     
+    // Gestion du Score
     public void recordKill(TeamColor teamColor) {
         if (teamColor == TeamColor.BLUE) {
             blueKills++;

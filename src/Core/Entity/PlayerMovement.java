@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * Gère toute la logique de mouvement du joueur.
  * C'est le chef d'orchestre qui décide : tu vas où ? Comment ? Par où ?
- * 
  * @see Player Le boss qui utilise cette classe
  * @see CollisionDetector Le buddy qui dit si on peut passer
  * @see PathFollower Le GPS intégré
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia
  */
 public class PlayerMovement {
 

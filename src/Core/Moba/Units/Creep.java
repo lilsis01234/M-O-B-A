@@ -2,7 +2,9 @@ package Core.Moba.Units;
 
 import Core.Moba.Combat.Stats;
 import Core.Moba.World.Vec2;
-
+/**
+ * Monstres neutres juste pour le farming
+ */
 public final class Creep extends Unite {
     private final int goldOnKill;
     private final int xpOnKill;

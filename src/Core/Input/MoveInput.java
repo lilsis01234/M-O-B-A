@@ -1,4 +1,7 @@
 package Core.Input;
+/**
+ * Interface définissant les entrées de mouvement directionnel.
+ **/
 
 public interface MoveInput {
     boolean isUpPressed();

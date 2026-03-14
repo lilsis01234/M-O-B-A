@@ -5,6 +5,10 @@ import Core.Entity.Player;
 import Core.Moba.Ids.GameId;
 import Core.Moba.World.Equipe;
 import Core.Moba.World.Vec2;
+/**
+ * Classe pour les projectiles tirés par une Tour.
+ * Ce projectile ajuste sa trajectoire en temps réel pour suivre sa cible
+ */
 
 public final class TowerProjectile {
     private final GameId id;
@@ -79,6 +83,11 @@ public final class TowerProjectile {
         return enExplosion;
     }
 
+    /**
+     * Met à jour la position du projectile.
+     * Si la cible bouge, le projectile corrige sa trajectoire (Homing)
+     * @param deltaSeconds Temps écoulé.
+     */
     public void mettreAJour(double deltaSeconds) {
         if (aFini) return;
 
@@ -115,6 +124,7 @@ public final class TowerProjectile {
         }
     }
 
+    /** @return true si le projectile est à moins de 16 pixels de sa cible*/
     private boolean estARrivee() {
         if (cible == null) return false;
         Vec2 posCible = getPosition(cible);
