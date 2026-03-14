@@ -4,7 +4,7 @@ A fully functional 2D MOBA game engine built with pure Java and Java2D Swing. Th
 
 **Developer**: Miantsa Fanirina  
 **License**: MIT  
-**Version**: 1.2.0
+**Version**: 1.1.0
 
 ---
 
@@ -26,15 +26,13 @@ A fully functional 2D MOBA game engine built with pure Java and Java2D Swing. Th
 ## Features
 
 ### Movement System
-- **Fluid keyboard movement**: WASD/ZQSD controls with smooth acceleration
-- **AZERTY support**: Automatic keyboard layout detection (WASD for QWERTY, ZQSD for AZERTY)
+- **Fluid keyboard movement**: WASD controls with smooth acceleration
 - **Mouse navigation**: Right-click to move to any point on the map
 - **A* Pathfinding**: Intelligent pathfinding with trajectory smoothing algorithm
 - **Advanced collision detection**: Multi-point verification (5-point AABB) against walls, towers, and buildings
 - **Slide system**: Smooth sliding along obstacles when direct movement is blocked
 - **Anti-stuck mechanism**: Automatic path recalculation when player is stuck for too long
 - **Direction-aware sprites**: Player sprite changes based on movement direction
-- **Camera follow**: Camera automatically follows player when using keyboard movement
 
 ### Camera System
 - **Edge scrolling**: Camera moves when mouse is near screen edges (80px threshold)
@@ -42,25 +40,15 @@ A fully functional 2D MOBA game engine built with pure Java and Java2D Swing. Th
 - **Dynamic zoom adaptation**: Camera automatically adjusts based on map size
 - **World bounds clamping**: Camera stays within map boundaries
 - **Smooth interpolation**: Camera movements are smooth and responsive
-- **Player follow mode**: Camera follows player when using WASD/ZQSD
-- **Quick recenter (R key)**: Instantly center camera on player position
-- **Respawn recenter**: Camera automatically centers on player after respawning
-- **Minimap edge exclusion**: Edge scrolling disabled when cursor is over minimap
 
 ### Graphics & Rendering
 - **Tile-based map**: 48x48 pixel tiles with support for image and color rendering
 - **Optimized rendering**: View frustum culling - only visible tiles are rendered
 - **Animated water tiles**: Multi-frame water animation for visual appeal
 - **Hero sprite composition**: Dynamic sprite layering from base character, hair, outfit, and suit
-- **Hair flip system**: Automatic horizontal flip for left-facing hair sprites
 - **Tower animations**: 21-frame animated towers with idle and attack states
 - **Visual effects**: Click ground ripple effects
 - **Health bars**: Above-unit health indicators
-
-### Window & Display
-- **True fullscreen mode**: Press F11 to toggle exclusive fullscreen
-- **Maximized window**: Default launch in maximized windowed mode
-- **Dynamic resize**: Game adapts to window resizing
 
 ### MOBA Gameplay
 - **Team system**: Blue (Radiant) and Red (Dire) teams
@@ -71,8 +59,6 @@ A fully functional 2D MOBA game engine built with pure Java and Java2D Swing. Th
 - **Base structures**: Ancients (Nexus) as main team bases
 - **Minions**: AI-controlled creep waves that spawn and move along lanes
 - **Fountain zones**: Regeneration areas near base
-- **Hero death & respawn**: Heroes die at 0 HP and respawn at fountain after timer
-- **Camera recenter on respawn**: Camera automatically centers on player after respawning
 
 ### Hero System
 - **48 unique heroes**: Loaded dynamically from JSON configuration
@@ -109,56 +95,14 @@ powershell -ExecutionPolicy Bypass -File run.ps1
 
 | Input | Action |
 |-------|--------|
-| W / Z | Move up (north) |
-| A / Q | Move left (west) |
+| W | Move up (north) |
+| A | Move left (west) |
 | S | Move down (south) |
 | D | Move right (east) |
 | Right click | Move to clicked world position |
 | Mouse wheel up | Zoom in |
 | Mouse wheel down | Zoom out |
 | Mouse at screen edge | Pan camera |
-| R | Center camera on player |
-| F11 | Toggle fullscreen mode |
-
-> **Note**: The game automatically detects keyboard layout (QWERTY/AZERTY) and uses WASD for QWERTY or ZQSD for AZERTY.
-
----
-
-## HUD System
-
-### Flexbox Layout
-- **FlexContainer**: Custom flexbox-like layout system for HUD elements
-  - `FlexDirection.ROW` and `FlexDirection.COLUMN`
-  - `JustifyContent`: START, CENTER, END, SPACE_BETWEEN
-  - `AlignItems`: START, CENTER, END, STRETCH
-  - `gap`: Spacing between elements
-  - `padding`: Internal spacing
-
-### HUD Components
-- **Minimap**: Real-time minimap showing actual tile images from the map
-  - Right-click to set movement target
-  - Cached background for performance
-  - Excludes from camera edge scrolling
-- **Scoreboard**: Team score display
-- **Gold Display**: Player gold counter
-- **Character Panel**: Hero portrait and stats
-- **Ability Bar**: Spell/ability icons
-- **Item Bar**: Inventory items
-- **Target Info**: Current target display
-
----
-
-## Camera System
-
-### Features
-- **Edge scrolling**: Camera moves when mouse is near screen edges (80px threshold)
-- **Mouse wheel zoom**: Adjustable zoom from 1.3x to 2.0x
-- **Dynamic zoom**: Automatically adjusts based on map size
-- **World bounds clamping**: Camera stays within map
-- **Player follow**: Camera follows player when using keyboard (WASD/ZQSD)
-- **Quick recenter**: Press R or Tab to center camera on player
-- **Respawn recenter**: Camera automatically centers on player after respawning
-- **Minimap exclusion**: Edge scrolling disabled when cursor is over minimap
 
 ---
 
@@ -252,18 +196,17 @@ java-2d-game-demo/
 │       ├── HeroSelectionPanel.java  # Hero selection UI
 │       │
 │       ├── Input/                  # Input handlers
-│       │   ├── KeyHandler.java      # Keyboard event listener with AZERTY support
-│       │   ├── KeyboardLayoutDetector.java  # Auto-detect QWERTY/AZERTY layout
+│       │   ├── KeyHandler.java      # Keyboard event listener
 │       │   ├── MouseHandler.java    # Mouse event listener
 │       │   ├── MoveInput.java       # Engine implementation of MoveInput
 │       │   └── TargetInput.java     # Engine implementation of TargetInput
 │       │
 │       ├── Render/                 # Graphics rendering
-│       │   ├── Camera.java              # View management (zoom, pan, culling, player follow)
+│       │   ├── Camera.java              # View management (zoom, pan, culling)
 │       │   ├── TileRenderer.java       # Tile rendering with view culling
 │       │   ├── PlayerRenderer.java     # Player sprite rendering
 │       │   ├── PlayerSprites.java      # Player sprite image loading
-│       │   ├── HeroSpriteCache.java   # Hero sprite composition cache with hair flip
+│       │   ├── HeroSpriteCache.java   # Hero sprite composition cache
 │       │   ├── HairSprites.java       # Hair sprite loading
 │       │   ├── OutfitSprites.java     # Outfit sprite loading
 │       │   ├── SuitSprites.java       # Suit (armor) sprite loading
@@ -276,19 +219,7 @@ java-2d-game-demo/
 │       │   ├── DebugRenderer.java     # Debug overlay rendering
 │       │   ├── UIRenderer.java        # UI overlay rendering
 │       │   ├── WorldRenderer.java    # World elements rendering
-│       │   ├── RenderingUtils.java   # Shared rendering utilities
-│       │   │
-│       │   └── HUD/                  # HUD rendering system
-│       │       ├── HUDRenderer.java          # Main HUD coordinator
-│       │       ├── FlexContainer.java        # Flexbox-like layout system
-│       │       ├── MinimapRenderer.java     # Minimap with tile images
-│       │       ├── ScoreboardRenderer.java   # Team score display
-│       │       ├── GoldDisplayRenderer.java  # Gold counter
-│       │       ├── CharacterPanelRenderer.java # Hero portrait/stats
-│       │       ├── AbilityBarRenderer.java   # Spell bar
-│       │       ├── ItemBarRenderer.java     # Inventory bar
-│       │       ├── TargetInfoRenderer.java   # Target display
-│       │       └── HUDBackgrounds.java       # HUD background images
+│       │   └── RenderingUtils.java   # Shared rendering utilities
 │       │
 │       └── Tile/                    # Tile resources
 │           ├── Tile.java           # Tile representation
@@ -384,24 +315,11 @@ Example: Player clicks on map
 
 ### Movement System
 
-The movement system handles four modes:
+The movement system handles three modes:
 
 1. **Direct Mode**: Path is clear, player moves straight to target
 2. **Pathfinding Mode**: Path is blocked, A* algorithm finds optimal route
 3. **Slide Mode**: Direct movement blocked, player slides along obstacles
-4. **Keyboard Mode**: WASD/ZQSD input with camera follow
-
-**Keyboard Detection**:
-```
-KeyHandler initialization
-  └─> KeyboardLayoutDetector.isAzerty()
-        ├─> Try to get system keyboard layout ID
-        └─> Fall back to locale detection (FR = AZERTY)
-        
-Result:
-  ├─> QWERTY: W/A/S/D for movement
-  └─> AZERTY: Z/Q/S/D for movement
-```
 
 **Flow**:
 ```
@@ -542,7 +460,6 @@ All game configuration is centralized in `Core.Config.java`:
 | `MIN_ZOOM` | 1.3 | Minimum zoom level |
 | `MAX_ZOOM` | 2.0 | Maximum zoom level |
 | `ZOOM_STEP` | 0.1 | Zoom change per wheel tick |
-| `RESPAWN_TIME` | 10 seconds | Time before hero respawns |
 
 ---
 
@@ -672,19 +589,7 @@ Enable debug rendering by calling `DebugRenderer` in game loop to see:
 
 ## Recent Changes
 
-### v1.2.0 (Current)
-- **Keyboard layout auto-detection**: Game automatically detects QWERTY/AZERTY and adapts controls
-- **Camera follow mode**: Camera follows player when using WASD/ZQSD movement
-- **Quick recenter (R key)**: Press R to instantly center camera on player
-- **Respawn camera recenter**: Camera automatically centers on player after respawning
-- **Fullscreen mode**: Press F11 for true exclusive fullscreen
-- **HUD flexbox layout**: Complete HUD system with FlexContainer layout
-- **Minimap with tile images**: Minimap renders actual tile images from the map
-- **Minimap interaction**: Right-click on minimap sets movement target
-- **Minimap edge exclusion**: Edge scrolling disabled when cursor is over minimap
-- **Hair sprite flip**: Automatic horizontal flip for left-facing hair sprites
-
-### v1.1.0
+### v1.1.0 (Current)
 - **48 unique heroes** with distinct stats and spells
 - **Hero sprite differentiation**: Fixed cache key to use characterRow/hairRow/outfitFile
 - **Zero external dependencies**: Custom JSON parser replaces Gson

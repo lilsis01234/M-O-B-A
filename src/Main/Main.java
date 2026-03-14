@@ -32,7 +32,6 @@ public class Main {
         gamePanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                System.out.println("Key pressed: " + e.getKeyCode());
                 if (e.getKeyCode() == KeyEvent.VK_F11) {
                     e.consume();
                     toggleFullscreen();
