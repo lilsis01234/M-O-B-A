@@ -336,4 +336,36 @@ public class Player extends Entity {
     public Hero getHero() {
         return hero;
     }
+
+    private int gold = 0;
+    
+    public int getGold() {
+        return gold;
+    }
+    
+    public void addGold(int amount) {
+        gold += amount;
+    }
+    
+    public boolean spendGold(int amount) {
+        if (gold >= amount) {
+            gold -= amount;
+            return true;
+        }
+        return false;
+    }
+
+    private Object selectedTarget;
+    
+    public boolean hasSelectedTarget() {
+        return selectedTarget != null;
+    }
+    
+    public Object getSelectedTarget() {
+        return selectedTarget;
+    }
+    
+    public void setSelectedTarget(Object target) {
+        this.selectedTarget = target;
+    }
 }

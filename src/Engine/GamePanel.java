@@ -48,6 +48,7 @@ public class GamePanel extends JPanel {
     private PlayerRenderer playerRenderer;
     private TowerRenderer towerRenderer;
     private ProjectileRenderer projectileRenderer;
+    private HUDRenderer hudRenderer;
     private final Camera camera;
     private Arena arena;
     private GameEngine gameEngine;
@@ -180,6 +181,9 @@ public class GamePanel extends JPanel {
             playerRenderer = new PlayerRenderer(player);
             towerRenderer = createTowerRenderer(tiles);
             projectileRenderer = new ProjectileRenderer();
+            
+            // Create HUD renderer
+            hudRenderer = new HUDRenderer(player, arena, tileMap, getWidth(), getHeight());
             
             // Initialize game engine
             gameEngine = new GameEngine(player, camera, mouseHandler, arena);
@@ -344,23 +348,8 @@ public class GamePanel extends JPanel {
     }
 
     private void drawUI(Graphics2D g2) {
-        g2.setColor(Color.white);
-        g2.drawString("FPS: " + (int) (1_000_000_000.0 / Config.getNanosecondsPerFrame()), 10, 20);
-        
-        if (!player.isAlive()) {
-            double timeLeft = player.getRespawnTimeRemaining();
-            g2.setColor(Color.RED);
-            g2.drawString(String.format("Respawn in: %.1f s", timeLeft), 10, 40);
-        }
-        
-        if (player.isInFountain()) {
-            g2.setColor(Color.CYAN);
-            g2.drawString("In Fountain - Healing/Mana Regen", 10, 80);
-        }
-        
-        if (player.isOnEnemyWood()) {
-            g2.setColor(Color.RED);
-            g2.drawString("ENEMY TERRITORY - Taking Damage!", 10, 100);
+        if (hudRenderer != null) {
+            hudRenderer.render(g2);
         }
     }
 }

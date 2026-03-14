@@ -17,6 +17,9 @@ public final class Arena {
     private final List<Object> unites;
     private Vec2 blueAncientPos;
     private Vec2 redAncientPos;
+    
+    private int blueKills = 0;
+    private int redKills = 0;
 
     public Arena() {
         lanesWaypoints = new EnumMap<>(Voie.class);
@@ -156,6 +159,22 @@ public final class Arena {
 
     public void retirerUnite(Object unite) {
         unites.remove(unite);
+    }
+    
+    public void recordKill(TeamColor teamColor) {
+        if (teamColor == TeamColor.BLUE) {
+            blueKills++;
+        } else {
+            redKills++;
+        }
+    }
+    
+    public int getBlueKills() {
+        return blueKills;
+    }
+    
+    public int getRedKills() {
+        return redKills;
     }
 }
 
