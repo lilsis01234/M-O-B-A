@@ -6,7 +6,6 @@ package Core.Entity;
  * */
 
 import Core.Config;
-import Core.Moba.Units.Ancient;
 import Core.Moba.Units.CoreBase;
 import Core.Moba.Units.Tour;
 import Core.Moba.World.Arena;
