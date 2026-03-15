@@ -82,6 +82,18 @@ public class HUDRenderer {
     public boolean handleRightClick(int clickX, int clickY) {
         return minimap.handleRightClick(clickX, clickY);
     }
+    
+    public void handleMouseMove(int mouseX, int mouseY) {
+        pauseButton.updateHover(mouseX, mouseY);
+    }
+    
+    public void resetPauseButtonHover() {
+        pauseButton.resetHover();
+    }
+    
+    public boolean shouldShowPointerCursor() {
+        return pauseButton.isHovered();
+    }
 
     public int getMinimapX() {
         return minimap.getX();

@@ -70,6 +70,10 @@ public class PauseButtonRenderer {
         this.hovered = mouseX >= x && mouseX <= x + width &&
                        mouseY >= y && mouseY <= y + height;
     }
+    
+    public void resetHover() {
+        this.hovered = false;
+    }
 
     public int getX() {
         return x;

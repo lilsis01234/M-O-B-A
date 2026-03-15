@@ -4,7 +4,7 @@ A fully functional 2D MOBA game engine built with pure Java and Java2D Swing. Th
 
 **Developer**: Miantsa Fanirina  
 **License**: MIT  
-**Version**: 1.1.0
+**Version**: 1.2.1
 
 ---
 
@@ -589,9 +589,16 @@ Enable debug rendering by calling `DebugRenderer` in game loop to see:
 
 ## Recent Changes
 
-### v1.1.0 (Current)
+### v1.2.1 (Current)
+- **Fixed HeroSelectionPanel click handling**: Ensures layout bounds are calculated before click detection to prevent click events from being missed
+- **Fixed PauseMenu visibility issues**: Improved show/hide methods with proper positioning at mouse cursor location
+- **Enhanced cursor management**: Dynamic cursor changes between default and hand cursor based on hover states in HUD and PauseMenu
+- **Unified mouse handling**: Centralized mouse callbacks in GamePanel that route to appropriate handlers based on current game state (MAIN_MENU, HERO_SELECTION, PLAYING, PAUSED)
+- **Fixed StackOverflowError**: Removed recursive setVisible() call in PauseMenu
+
+### v1.1.0
 - **48 unique heroes** with distinct stats and spells
-- **Hero sprite differentiation**: Fixed cache key to use characterRow/hairRow/outfitFile
+- **Hero sprite differentiation**: Fixed cache key to use characterRow/hairRow_outfitFile
 - **Zero external dependencies**: Custom JSON parser replaces Gson
 - **Simplified architecture**: Removed SQLite, direct JSON loading
 - **Improved sprite caching**: Each hero has unique visual appearance

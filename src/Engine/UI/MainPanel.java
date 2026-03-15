@@ -33,7 +33,7 @@ public class MainPanel extends JPanel {
     private final Font VERSION_FONT = new Font("Monospaced", Font.PLAIN, 12);
 
     private String gameTitle = "MOBA";
-    private String version = "v1.0.0";
+    private String version = "v0.0.1";
     private String[] menuItems = {"START GAME", "SETTINGS", "EXIT"};
 
     private Rectangle titleBounds;
@@ -66,25 +66,24 @@ public class MainPanel extends JPanel {
                 }
             }
         });
-
-        MouseAdapter mouseHandler = new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                handleClick(e.getX(), e.getY());
-            }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                updateHover(e.getX(), e.getY());
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                repaint();
-            }
-        };
-        addMouseListener(mouseHandler);
-        addMouseMotionListener(mouseHandler);
+    }
+    
+    public void handleMouseClick(int x, int y) {
+        handleClick(x, y);
+    }
+    
+    public void handleMouseMove(int x, int y, java.awt.Component comp) {
+        updateHover(x, y);
+        if (isAnyButtonHovered()) {
+            comp.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        } else {
+            comp.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
+    }
+    
+    public void handleMouseExit(java.awt.Component comp) {
+        comp.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        repaint();
     }
 
     private void navigateSelection(int direction) {
@@ -126,6 +125,13 @@ public class MainPanel extends JPanel {
 
     public void setMenuListener(MainMenuListener listener) {
         this.listener = listener;
+    }
+    
+    public boolean isAnyButtonHovered() {
+        for (MenuButton btn : buttons) {
+            if (btn.hovered) return true;
+        }
+        return false;
     }
 
     @Override
@@ -205,33 +211,32 @@ public class MainPanel extends JPanel {
     private void drawMenuButtons(Graphics2D g2) {
         for (int i = 0; i < buttons.size(); i++) {
             MenuButton btn = buttons.get(i);
-            boolean isSelected = (i == selectedIndex);
             boolean isHovered = btn.hovered;
 
-            drawPixelButton(g2, btn.bounds, btn.text, isSelected, isHovered);
+            drawPixelButton(g2, btn.bounds, btn.text, isHovered);
         }
     }
 
-    private void drawPixelButton(Graphics2D g2, Rectangle bounds, String text, boolean selected, boolean hovered) {
+    private void drawPixelButton(Graphics2D g2, Rectangle bounds, String text, boolean hovered) {
         int x = bounds.x;
         int y = bounds.y;
         int w = bounds.width;
         int h = bounds.height;
 
-        if (selected || hovered) {
+        if (hovered) {
             g2.setColor(new Color(0, 0, 0, 80));
             g2.fillRect(x + 4, y + 4, w, h);
         }
 
-        Color bgColor = selected ? new Color(70, 60, 90) : (hovered ? BUTTON_HOVER : BUTTON_BG);
+        Color bgColor = hovered ? BUTTON_HOVER : BUTTON_BG;
         g2.setColor(bgColor);
         g2.fillRect(x, y, w, h);
 
-        g2.setColor(selected ? ACCENT_BRIGHT : (hovered ? ACCENT : BUTTON_BORDER));
-        g2.setStroke(new BasicStroke(selected ? 3 : 2));
+        g2.setColor(hovered ? ACCENT : BUTTON_BORDER);
+        g2.setStroke(new BasicStroke(2));
         g2.drawRect(x, y, w - 1, h - 1);
 
-        g2.setColor(selected ? TEXT_MAIN : (hovered ? TEXT_MAIN : TEXT_DIM));
+        g2.setColor(hovered ? TEXT_MAIN : TEXT_DIM);
         g2.setFont(BUTTON_FONT);
         FontMetrics fm = g2.getFontMetrics();
         int textX = x + (w - fm.stringWidth(text)) / 2;

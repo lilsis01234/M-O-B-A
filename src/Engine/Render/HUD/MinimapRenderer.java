@@ -49,24 +49,6 @@ public class MinimapRenderer {
 
     public boolean handleClick(int clickX, int clickY) {
         if (clickX >= x && clickX <= x + size && clickY >= y && clickY <= y + size) {
-            if (camera != null) {
-                float mapWidth = tileMap.getColumns() * Config.getTileSize();
-                float mapHeight = tileMap.getRows() * Config.getTileSize();
-                float scaleX = size / mapWidth;
-                float scaleY = size / mapHeight;
-                
-                float worldX = (clickX - x) / scaleX;
-                float worldY = (clickY - y) / scaleY;
-                
-                camera.setPosition(worldX, worldY);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public boolean handleRightClick(int clickX, int clickY) {
-        if (clickX >= x && clickX <= x + size && clickY >= y && clickY <= y + size) {
             float mapWidth = tileMap.getColumns() * Config.getTileSize();
             float mapHeight = tileMap.getRows() * Config.getTileSize();
             float scaleX = size / mapWidth;
@@ -77,6 +59,27 @@ public class MinimapRenderer {
             
             if (onClickCallback != null) {
                 onClickCallback.accept(new Point((int) worldX, (int) worldY));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean handleRightClick(int clickX, int clickY) {
+        if (clickX >= x && clickX <= x + size && clickY >= y && clickY <= y + size) {
+            if (camera != null) {
+                float mapWidth = tileMap.getColumns() * Config.getTileSize();
+                float mapHeight = tileMap.getRows() * Config.getTileSize();
+                float scaleX = size / mapWidth;
+                float scaleY = size / mapHeight;
+                
+                float worldX = (clickX - x) / scaleX;
+                float worldY = (clickY - y) / scaleY;
+                
+                worldX -= camera.getViewportWidth() / 2f;
+                worldY -= camera.getViewportHeight() / 2f;
+                
+                camera.setPosition(worldX, worldY);
             }
             return true;
         }
@@ -181,7 +184,7 @@ public class MinimapRenderer {
 
         g2.setColor(new Color(150, 150, 170));
         g2.setFont(new Font("Arial", Font.PLAIN, 9));
-        g2.drawString("RMB: Move", x + 5, y + size - 8);
+        g2.drawString("LMB: Move", x + 5, y + size - 8);
     }
 
     private void drawLanes(Graphics2D g2, float scaleX, float scaleY) {

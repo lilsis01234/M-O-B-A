@@ -38,12 +38,13 @@ public class PauseMenu extends JPanel {
 
     private Rectangle menuContainerBounds;
     private Rectangle titleBounds;
+    private int lastMouseX = 0;
+    private int lastMouseY = 0;
 
     public PauseMenu() {
         setOpaque(false);
         setFocusable(false);
         setLayout(null);
-        setIgnoreRepaint(true);
         setVisible(true);  // Keep Swing visibility true to be in container, but won't draw
         isMenuVisible = false;
 
@@ -67,44 +68,60 @@ public class PauseMenu extends JPanel {
                 }
             }
         });
-
-        MouseAdapter mouseHandler = new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (isMenuVisible) {
-                    handleClick(e.getX(), e.getY());
-                }
-            }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                if (isMenuVisible) {
-                    updateHover(e.getX(), e.getY());
-                }
-            }
-        };
-        addMouseListener(mouseHandler);
-        addMouseMotionListener(mouseHandler);
+    }
+    
+    public void handleMouseClick(int x, int y) {
+        if (isMenuVisible) {
+            handleClick(x, y);
+        }
+    }
+    
+    public void handleMouseMove(int x, int y) {
+        lastMouseX = x;
+        lastMouseY = y;
+        if (isMenuVisible) {
+            updateHover(x, y);
+        }
     }
 
     public void setPauseMenuListener(PauseMenuListener listener) {
         this.listener = listener;
     }
 
-    public void show() {
+    public void show(int screenWidth, int screenHeight) {
         isMenuVisible = true;
         selectedIndex = 0;
-        calculateLayout();
+        calculateLayout(screenWidth, screenHeight);
+        requestFocusInWindow();
+        repaint();
+    }
+    
+    public void showAt(int mouseX, int mouseY, int screenWidth, int screenHeight) {
+        isMenuVisible = true;
+        selectedIndex = 0;
+        calculateLayout(screenWidth, screenHeight);
+        updateHover(mouseX, mouseY);
+        requestFocusInWindow();
         repaint();
     }
 
     public void hide() {
         isMenuVisible = false;
+        for (MenuButton btn : buttons) {
+            btn.hovered = false;
+        }
         repaint();
     }
 
     public boolean isPauseMenuVisible() {
         return isMenuVisible;
+    }
+    
+    public boolean isAnyButtonHovered() {
+        for (MenuButton btn : buttons) {
+            if (btn.hovered) return true;
+        }
+        return false;
     }
 
     @Override
@@ -130,11 +147,11 @@ public class PauseMenu extends JPanel {
         switch (selectedIndex) {
             case 0 -> resume();
             case 1 -> {
-                hide();
+                resume();
                 listener.onSettings();
             }
             case 2 -> {
-                hide();
+                resume();
                 listener.onReturnToMain();
             }
         }
@@ -167,17 +184,27 @@ public class PauseMenu extends JPanel {
         if (changed) repaint();
     }
 
+    public int getLastMouseX() {
+        return lastMouseX;
+    }
+    
+    public int getLastMouseY() {
+        return lastMouseY;
+    }
+
     @Override
     public void doLayout() {
         super.doLayout();
         if (isMenuVisible) {
-            calculateLayout();
+            calculateLayout(getWidth(), getHeight());
         }
     }
 
-    private void calculateLayout() {
-        int w = getWidth();
-        int h = getHeight();
+    private void calculateLayout(int w, int h) {
+        if (w <= 0 || h <= 0) {
+            w = getWidth();
+            h = getHeight();
+        }
 
         int menuWidth = 300;
         int menuHeight = 250;
@@ -276,20 +303,20 @@ public class PauseMenu extends JPanel {
         int w = bounds.width;
         int h = bounds.height;
 
-        if (selected || hovered) {
-            g2.setColor(new Color(0, 0, 0, 60));
-            g2.fillRect(x + 3, y + 3, w, h);
+        if (hovered) {
+            g2.setColor(new Color(0, 0, 0, 80));
+            g2.fillRect(x + 4, y + 4, w, h);
         }
 
-        Color bgColor = selected ? new Color(70, 60, 90) : (hovered ? BUTTON_HOVER : BUTTON_BG);
+        Color bgColor = hovered ? BUTTON_HOVER : BUTTON_BG;
         g2.setColor(bgColor);
         g2.fillRect(x, y, w, h);
 
-        g2.setColor(selected ? ACCENT_BRIGHT : (hovered ? ACCENT : BUTTON_BORDER));
-        g2.setStroke(new BasicStroke(selected ? 2 : 1));
+        g2.setColor(hovered ? ACCENT : BUTTON_BORDER);
+        g2.setStroke(new BasicStroke(2));
         g2.drawRect(x, y, w - 1, h - 1);
 
-        g2.setColor(selected ? TEXT_MAIN : (hovered ? TEXT_MAIN : TEXT_DIM));
+        g2.setColor(hovered ? TEXT_MAIN : TEXT_DIM);
         g2.setFont(BUTTON_FONT);
         FontMetrics fm = g2.getFontMetrics();
         int textX = x + (w - fm.stringWidth(text)) / 2;

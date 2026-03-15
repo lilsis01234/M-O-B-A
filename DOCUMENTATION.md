@@ -1,6 +1,6 @@
 # Complete Technical Documentation
 
-**Version**: 1.2.0
+**Version**: 1.2.1
 
 ## Table of Contents
 
@@ -31,6 +31,10 @@ This project is a production-ready 2D MOBA game engine written entirely in Java 
 - **HUD system** with flexbox layout
 - **Auto-detect keyboard layout** (QWERTY/AZERTY)
 - **True fullscreen** mode (F11)
+- **Enhanced UI state management** - unified mouse handling across all game states
+- **Dynamic cursor management** - cursor changes based on hover states (hand cursor for interactive elements)
+- **Improved PauseMenu** - proper positioning at mouse location with correct visibility handling
+- **Fixed HeroSelectionPanel** - ensures layout bounds are calculated before click detection
 
 ---
 
@@ -304,6 +308,27 @@ HUD rendering system with flexbox layout.
 #### `Engine.Tile`
 
 Tile loading and parsing.
+
+#### `Engine.UI`
+
+User interface panels and menus.
+
+| Class | Description |
+|-------|-------------|
+| `MainPanel` | Main menu UI with buttons for Play, Options, Quit |
+| `PauseMenu` | In-game pause menu with Resume, Options, Quit to Main Menu |
+
+---
+
+## Recent Changes
+
+### v1.2.1
+
+- **Fixed HeroSelectionPanel click handling**: Ensures layout bounds are calculated before click detection to prevent click events from being missed
+- **Fixed PauseMenu visibility issues**: Improved show/hide methods with proper positioning at mouse cursor location
+- **Enhanced cursor management**: Dynamic cursor changes between default and hand cursor based on hover states in HUD and PauseMenu
+- **Unified mouse handling**: Centralized mouse callbacks in GamePanel that route to appropriate handlers based on current game state (MAIN_MENU, HERO_SELECTION, PLAYING, PAUSED)
+- **Removed recursive setVisible() calls**: Fixed StackOverflowError in PauseMenu by removing recursive setVisible() call
 
 | Class | Description |
 |-------|-------------|

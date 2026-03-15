@@ -173,10 +173,6 @@ public class GamePanel extends JPanel {
             gameEngine.stop();
             gameEngine = null;
         }
-        // Remove game mouse listeners
-        removeMouseListener(mouseHandler);
-        removeMouseMotionListener(mouseHandler);
-        removeMouseWheelListener(mouseHandler);
         
         if (heroSelectionPanel != null) {
             heroSelectionPanel.setVisible(false);
@@ -186,6 +182,7 @@ public class GamePanel extends JPanel {
             mainPanel.setVisible(true);
         }
         currentState = GameState.MAIN_MENU;
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         revalidate();
         repaint();
         if (mainPanel != null) {
@@ -204,7 +201,10 @@ public class GamePanel extends JPanel {
                 gameEngine.pause();
             }
             pauseMenu.setSize(getWidth(), getHeight());
-            pauseMenu.show();
+            pauseMenu.showAt(mouseHandler.getCurrentX(), mouseHandler.getCurrentY(), getWidth(), getHeight());
+            pauseMenu.requestFocusInWindow();
+            setComponentZOrder(pauseMenu, 0);
+            updateCursor();
             repaint();
         }
     }
@@ -216,7 +216,28 @@ public class GamePanel extends JPanel {
                 gameEngine.resume();
             }
             pauseMenu.hide();
+            hudRenderer.resetPauseButtonHover();
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             repaint();
+        }
+    }
+    
+    private void updateCursor() {
+        boolean showPointer = false;
+        if (currentState == GameState.PLAYING) {
+            showPointer = hudRenderer.shouldShowPointerCursor();
+        } else if (currentState == GameState.PAUSED) {
+            showPointer = pauseMenu.isAnyButtonHovered();
+        }
+        
+        if (showPointer) {
+            if (getCursor().getType() != Cursor.HAND_CURSOR) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+        } else {
+            if (getCursor().getType() != Cursor.DEFAULT_CURSOR) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
         }
     }
 
@@ -274,8 +295,78 @@ public class GamePanel extends JPanel {
 
     private void setupInputListeners() {
         addKeyListener(keyHandler);
-        // mouseHandler is added dynamically in startGame() when needed for game play
-        // For menu screens, the child panels handle mouse events directly
+        addMouseListener(mouseHandler);
+        addMouseMotionListener(mouseHandler);
+        addMouseWheelListener(mouseHandler);
+        
+        mouseHandler.setLeftClickCallback(point -> {
+            if (currentState == GameState.MAIN_MENU) {
+                mainPanel.handleMouseClick(point.x, point.y);
+            } else if (currentState == GameState.PAUSED && pauseMenu.isPauseMenuVisible()) {
+                pauseMenu.handleMouseClick(point.x, point.y);
+            } else if (currentState == GameState.HERO_SELECTION) {
+                heroSelectionPanel.handleMouseClick(point.x, point.y, java.awt.event.MouseEvent.BUTTON1);
+            } else if (currentState == GameState.PLAYING) {
+                if (!hudRenderer.handleMouseClick(point.x, point.y)) {
+                    mouseHandler.setTargetFromScreen(point.x, point.y);
+                }
+            }
+        });
+        
+        mouseHandler.setRightClickCallback(point -> {
+            if (currentState == GameState.MAIN_MENU) {
+                return false;
+            }
+            if (currentState == GameState.PAUSED && pauseMenu.isPauseMenuVisible()) {
+                return false;
+            }
+            if (currentState == GameState.HERO_SELECTION) {
+                heroSelectionPanel.handleMouseClick(point.x, point.y, java.awt.event.MouseEvent.BUTTON3);
+                return true;
+            }
+            if (currentState == GameState.PLAYING) {
+                return hudRenderer.handleRightClick(point.x, point.y);
+            }
+            return false;
+        });
+        
+        mouseHandler.setMouseMoveCallback(point -> {
+            switch (currentState) {
+                case MAIN_MENU -> {
+                    mainPanel.handleMouseMove(point.x, point.y, this);
+                }
+                case HERO_SELECTION -> {
+                    heroSelectionPanel.handleMouseMove(point.x, point.y, this);
+                }
+                case PLAYING -> {
+                    hudRenderer.handleMouseMove(point.x, point.y);
+                    boolean showPointer = hudRenderer.shouldShowPointerCursor();
+                    if (showPointer) {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    } else {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                }
+                case PAUSED -> {
+                    if (pauseMenu.isPauseMenuVisible()) {
+                        pauseMenu.handleMouseMove(point.x, point.y);
+                    }
+                    boolean showPointer = pauseMenu.isAnyButtonHovered();
+                    if (showPointer) {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    } else {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                }
+            }
+        });
+        
+        mouseHandler.setMouseWheelCallback(rotation -> {
+            if (currentState == GameState.HERO_SELECTION) {
+                heroSelectionPanel.handleMouseWheel(rotation);
+            }
+        });
+        
         setFocusable(true);
     }
 
@@ -338,19 +429,6 @@ public class GamePanel extends JPanel {
                 }
             });
             
-            mouseHandler.setLeftClickCallback(point -> {
-                if (hudRenderer.handleMouseClick(point.x, point.y)) {
-                    // Left click on minimap sets camera
-                }
-            });
-
-            mouseHandler.setRightClickCallback(point -> {
-                if (hudRenderer.handleRightClick(point.x, point.y)) {
-                    return true;
-                }
-                return false;
-            });
-            
             // Initialize game engine
             gameEngine = new GameEngine(player, camera, mouseHandler, arena);
             
@@ -367,11 +445,6 @@ public class GamePanel extends JPanel {
                     resumeGame();
                 }
             });
-            
-            // Add mouse listeners for game play
-            addMouseListener(mouseHandler);
-            addMouseMotionListener(mouseHandler);
-            addMouseWheelListener(mouseHandler);
             
             // Remove hero selection panel and change state
             remove(heroSelectionPanel);
@@ -434,6 +507,7 @@ public class GamePanel extends JPanel {
     
     private void renderLoop() {
         while (true) {
+            updateCursor();
             repaint();
             try {
                 Thread.sleep(16);
@@ -451,6 +525,11 @@ public class GamePanel extends JPanel {
             Graphics2D g2 = (Graphics2D) g;
             drawGameWorld(g2);
             drawUI(g2);
+            
+            if (currentState == GameState.PAUSED && pauseMenu != null && pauseMenu.isPauseMenuVisible()) {
+                pauseMenu.paint(g);
+            }
+            
             g2.dispose();
         }
     }

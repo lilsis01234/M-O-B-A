@@ -109,6 +109,29 @@ public interface SelectionListener {
         }
     }
     
+    public void handleMouseClick(int x, int y, int button) {
+        handleClick(x, y, button);
+    }
+    
+    public void handleMouseMove(int x, int y, java.awt.Component comp) {
+        updateCursor(x, y);
+        repaint();
+    }
+    
+    public void handleMouseWheel(int rotation) {
+        if (contentBounds == null) return;
+        
+        int maxScroll = calculateMaxScroll();
+        scrollY += rotation * SCROLL_SPEED;
+        if (scrollY < 0) scrollY = 0;
+        if (maxScroll > 0 && scrollY > maxScroll) scrollY = maxScroll;
+        repaint();
+    }
+    
+    public void handleMouseExit(java.awt.Component comp) {
+        comp.setCursor(Cursor.getDefaultCursor());
+    }
+    
     private void filterHeroes() {
         filteredHeroes = new ArrayList<>();
         for (Hero hero : allHeroes) {
@@ -132,29 +155,6 @@ public interface SelectionListener {
     }
     
     private void setupListeners() {
-        MouseInputAdapter mouseAdapter = new MouseInputAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                handleClick(e.getX(), e.getY(), e.getButton());
-            }
-            
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                updateCursor(e.getX(), e.getY());
-                repaint();
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e) {
-                setCursor(Cursor.getDefaultCursor());
-            }
-        };
-        
-        // Add listeners directly to this component
-        addMouseListener(mouseAdapter);
-        addMouseMotionListener(mouseAdapter);
-        addMouseWheelListener(this);
-        
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
