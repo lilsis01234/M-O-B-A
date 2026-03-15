@@ -56,7 +56,6 @@ public class HUDRenderer {
         this.camera = camera;
         this.minimap.setCamera(camera);
     }
- //Dé
  // definit le callback a exécuter lorsqu’un clic est effectue sur la minimap.
     public void setMoveTargetConsumer(java.util.function.Consumer<Point> consumer) {
         this.moveTargetConsumer = consumer;
