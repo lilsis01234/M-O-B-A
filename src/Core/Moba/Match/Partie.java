@@ -21,25 +21,32 @@ public final class Partie {
         this.equipe2 = Objects.requireNonNull(equipe2, "equipe2");
     }
 
-    public GameId id() { return id; }
-    public double dureeSecondes() { return dureeSecondes; }
-    public boolean estTerminee() { return terminee; }
-    public Equipe equipe1() { return equipe1; }
-    public Equipe equipe2() { return equipe2; }
+    public GameId id() {
+        return id;
+    }
 
-    /**
-     * Met à jour l'état de la partie à chaque itération de la boucle de jeu
-     * Incrémente le chronomètre et vérifie si une base a été détruite
-     * @param deltaSeconds Temps écoulé depuis la dernière mise à jour
-     */
+    public double dureeSecondes() {
+        return dureeSecondes;
+    }
+
+    public boolean estTerminee() {
+        return terminee;
+    }
+
+    public Equipe equipe1() {
+        return equipe1;
+    }
+
+    public Equipe equipe2() {
+        return equipe2;
+    }
+
     public void update(double deltaSeconds) {
         if (terminee) return;
         if (deltaSeconds <= 0) return;
 
-        // Mise à jour du temps de jeu total
         dureeSecondes += deltaSeconds;
 
-        // Vérification de la condition de fin de jeu (destruction de l'Ancien/Base)
         if (equipe1.base().estDetruite() || equipe2.base().estDetruite()) {
             terminee = true;
         }

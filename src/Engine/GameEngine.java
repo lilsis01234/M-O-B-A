@@ -28,6 +28,7 @@ public class GameEngine {
 
     private Thread gameThread;
     private boolean running = false;
+    private boolean paused = false;
 
     public GameEngine(Player player, Camera camera, MouseHandler mouseHandler, Arena arena) {
         this.player = player;
@@ -49,43 +50,63 @@ public class GameEngine {
         gameThread = null;
     }
 
-    private void gameLoop() { //boucle principal 
-        long lastTime = System.nanoTime(); // pour stocker le temps de la derniere frame
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        paused = false;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    private void gameLoop() {
+        long lastTime = System.nanoTime();
 
         while (running) {
-            long currentTime = System.nanoTime();// recupere le temp actuel
-            long elapsedTime = currentTime - lastTime;// calcul du temps ecoulé 
+            long currentTime = System.nanoTime();
+            long elapsedTime = currentTime - lastTime;
 
-            if (elapsedTime >= Config.getNanosecondsPerFrame()) { // verifi si accez de temps est passé pour faire une nouvelle frame
+            if (elapsedTime >= Config.getNanosecondsPerFrame()) {
                 lastTime = currentTime;
-                update();
+                if (!paused) {
+                    update();
+                }
+            }
+            
+            if (paused) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    break;
+                }
             }
         }
     }
-//mise a jour general
-    private void update() {
-        double deltaSeconds = 1.0 / 60.0; // temps entre chaque frame 
-        
-        if (player.justRespawned()) { // vérifie si le joueur vient de respawn (aprés la mort)
 
-            camera.centerOn((float) player.getX(), (float) player.getY()); // centrer la cam sur le joueur 
-            player.clearJustRespawned(); // desactiver le signe (reset) de respawn
+    private void update() {
+        double deltaSeconds = 1.0 / 60.0;
+        
+        if (player.justRespawned()) {
+            camera.centerOn((float) player.getX(), (float) player.getY());
+            player.clearJustRespawned();
         }
-        //mise a jour de : 
-        camera.updatePlayerPosition((float) player.getX(), (float) player.getY());// La position du player envers la cam
-        updateCamera();// de la camera 
-        updateClickEffects();//des effets en cliquant 
-        updateTowers(deltaSeconds);// les tours
-        player.update();// joueur (ses mouvements ainsi que actions)
+        
+        camera.updatePlayerPosition((float) player.getX(), (float) player.getY());
+        updateCamera();
+        updateClickEffects();
+        updateTowers(deltaSeconds);
+        player.update();
     }
 
-    private void updateTowers(double deltaSeconds) {// met à jour toutes les tours et leurs attaques
-
+    private void updateTowers(double deltaSeconds) {
         List<Object> unites = arena.unites();
-     
+        
         for (Tour tour : arena.tours()) {
-            tour.ai().mettreAJour(deltaSeconds, unites);// met à jour  l IA de la tour
-            // Si la tour doit attaquer alors calculer les degats  et recup la cible 
+            tour.ai().mettreAJour(deltaSeconds, unites);
+            
             if (tour.ai().doitAttaquer(deltaSeconds)) {
                 int degats = tour.ai().calculerDegats();
                 Object cible = tour.ai().cible();
@@ -146,4 +167,3 @@ public class GameEngine {
         camera.centerOn((float) player.getX(), (float) player.getY());
     }
 }
-

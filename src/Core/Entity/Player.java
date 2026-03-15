@@ -160,22 +160,22 @@ public class Player extends Entity {
         if (!hasValidTeamOrArena()) return false;
         if (!isOnWoodTile()) return false;
         
-        Vec2 myAncient = getMyAncientPosition();
-        Vec2 enemyAncient = getEnemyAncientPosition();
-        if (myAncient == null || enemyAncient == null) return false;
+        Vec2 myCoreBase = getMyCoreBasePosition();
+        Vec2 enemyCoreBase = getEnemyCoreBasePosition();
+        if (myCoreBase == null || enemyCoreBase == null) return false;
         
-        return isCloserToAncient(myAncient, enemyAncient);
+        return isCloserToCoreBase(myCoreBase, enemyCoreBase);
     }
     
     public boolean isOnEnemyWood() {
         if (!hasValidTeamOrArena()) return false;
         if (!isOnWoodTile()) return false;
         
-        Vec2 myAncient = getMyAncientPosition();
-        Vec2 enemyAncient = getEnemyAncientPosition();
-        if (myAncient == null || enemyAncient == null) return false;
+        Vec2 myCoreBase = getMyCoreBasePosition();
+        Vec2 enemyCoreBase = getEnemyCoreBasePosition();
+        if (myCoreBase == null || enemyCoreBase == null) return false;
         
-        return isCloserToAncient(enemyAncient, myAncient);
+        return isCloserToCoreBase(enemyCoreBase, myCoreBase);
     }
 
     private boolean hasValidTeamOrArena() {
@@ -198,19 +198,19 @@ public class Player extends Entity {
             && tileX >= 0 && tileX < tileMap.getColumns();
     }
 
-    private Vec2 getMyAncientPosition() {
+    private Vec2 getMyCoreBasePosition() {
         return team.couleur() == TeamColor.BLUE 
-            ? arena.getBlueAncient() 
-            : arena.getRedAncient();
+            ? arena.getBlueCoreBase() 
+            : arena.getRedCoreBase();
     }
 
-    private Vec2 getEnemyAncientPosition() {
+    private Vec2 getEnemyCoreBasePosition() {
         return team.couleur() == TeamColor.BLUE 
-            ? arena.getRedAncient() 
-            : arena.getBlueAncient();
+            ? arena.getRedCoreBase() 
+            : arena.getBlueCoreBase();
     }
 
-    private boolean isCloserToAncient(Vec2 closer, Vec2 farther) {
+    private boolean isCloserToCoreBase(Vec2 closer, Vec2 farther) {
         int tileX = getTileCoordinate(getX());
         int tileY = getTileCoordinate(getY());
         double distToCloser = Math.hypot(tileX - closer.x(), tileY - closer.y());
@@ -314,14 +314,14 @@ public class Player extends Entity {
     private void updateFountainEffects() {
         if (!isOnWoodTile()) return;
         
-        Vec2 myAncient = getMyAncientPosition();
-        Vec2 enemyAncient = getEnemyAncientPosition();
-        if (myAncient == null || enemyAncient == null) return;
+        Vec2 myCoreBase = getMyCoreBasePosition();
+        Vec2 enemyCoreBase = getEnemyCoreBasePosition();
+        if (myCoreBase == null || enemyCoreBase == null) return;
 
         int tileX = getTileCoordinate(getX());
         int tileY = getTileCoordinate(getY());
-        double distToOwn = Math.hypot(tileX - myAncient.x(), tileY - myAncient.y());
-        double distToEnemy = Math.hypot(tileX - enemyAncient.x(), tileY - enemyAncient.y());
+        double distToOwn = Math.hypot(tileX - myCoreBase.x(), tileY - myCoreBase.y());
+        double distToEnemy = Math.hypot(tileX - enemyCoreBase.x(), tileY - enemyCoreBase.y());
         
         if (distToOwn < distToEnemy - 2.0) {
             applyFountainHealing();

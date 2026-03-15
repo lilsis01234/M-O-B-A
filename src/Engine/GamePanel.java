@@ -4,7 +4,7 @@ import Core.Config;
 import Core.Database.model.Hero;
 import Core.Entity.Player;
 import Core.Moba.Units.Tour;
-import Core.Moba.Units.Ancient;
+import Core.Moba.Units.CoreBase;
 import Core.Moba.World.*;
 import Core.Tile.CollisionTable;
 import Core.Tile.TileMap;
@@ -18,19 +18,20 @@ import Engine.Render.World.*;
 import Engine.Tile.MapParser;
 import Engine.Tile.Tile;
 import Engine.Tile.TileLoader;
+import Engine.UI.MainPanel;
+import Engine.UI.PauseMenu;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 
 /**
  * Panel principal du jeu.
@@ -39,11 +40,13 @@ import java.awt.geom.AffineTransform;
 public class GamePanel extends JPanel {
     
     private enum GameState {
+        MAIN_MENU,
         HERO_SELECTION,
-        PLAYING
+        PLAYING,
+        PAUSED
     }
     
-    private GameState currentState = GameState.HERO_SELECTION;
+    private GameState currentState = GameState.MAIN_MENU;
     
     private final KeyHandler keyHandler;
     private final MouseHandler mouseHandler;
@@ -51,6 +54,7 @@ public class GamePanel extends JPanel {
     private TileRenderer tileRenderer;
     private PlayerRenderer playerRenderer;
     private TowerRenderer towerRenderer;
+    private CoreBaseRenderer coreBaseRenderer;
     private ProjectileRenderer projectileRenderer;
     private HUDRenderer hudRenderer;
     private final Camera camera;
@@ -58,6 +62,8 @@ public class GamePanel extends JPanel {
     private GameEngine gameEngine;
     
     private HeroSelectionPanel heroSelectionPanel;
+    private MainPanel mainPanel;
+    private PauseMenu pauseMenu;
     private Hero selectedHero;
     
     public GamePanel() {
@@ -75,18 +81,164 @@ public class GamePanel extends JPanel {
         setupInputListeners();
         setupResizeListener();
         
-        // Initialiser le panneau de sélection du héros comme un composant Swing approprié
+        mainPanel = new MainPanel(new Dimension(Config.getScreenWidth(), Config.getScreenHeight()));
+        mainPanel.setBounds(0, 0, Config.getScreenWidth(), Config.getScreenHeight());
+        mainPanel.setVisible(true);
+        mainPanel.setMenuListener(new MainPanel.MainMenuListener() {
+            @Override
+            public void onStartGame() {
+                showHeroSelection();
+            }
+
+            @Override
+            public void onSettings() {
+                System.out.println("Settings clicked");
+            }
+
+            @Override
+            public void onExit() {
+                System.exit(0);
+            }
+        });
+        add(mainPanel);
+        
+        pauseMenu = new PauseMenu();
+        pauseMenu.setBounds(0, 0, Config.getScreenWidth(), Config.getScreenHeight());
+        pauseMenu.setPauseMenuListener(new PauseMenu.PauseMenuListener() {
+            @Override
+            public void onResume() {
+                resumeGame();
+            }
+
+            @Override
+            public void onReturnToMain() {
+                returnToMainMenu();
+            }
+
+            @Override
+            public void onSettings() {
+                System.out.println("Settings from pause menu");
+            }
+        });
+        add(pauseMenu);
+        
         heroSelectionPanel = new HeroSelectionPanel(new Dimension(Config.getScreenWidth(), Config.getScreenHeight()));
         heroSelectionPanel.setBounds(0, 0, Config.getScreenWidth(), Config.getScreenHeight());
-        heroSelectionPanel.setVisible(true);
-        heroSelectionPanel.setSelectionListener(hero -> {
-            selectedHero = hero;
-            startGame();
+        heroSelectionPanel.setVisible(true);  // Keep visible but will be hidden initially
+        heroSelectionPanel.setSelectionListener(new HeroSelectionPanel.SelectionListener() {
+            @Override
+            public void onHeroSelected(Hero hero) {
+                selectedHero = hero;
+                startGame();
+            }
+
+            @Override
+            public void onGoBack() {
+                showMainMenu();
+            }
         });
-        add(heroSelectionPanel);
+        // Don't add heroSelectionPanel here - we'll add it when needed
+        // add(heroSelectionPanel);
         
-// Masquer initialement les composants du jeu
+        currentState = GameState.MAIN_MENU;
+        // Initially hide heroSelectionPanel and mainPanel is visible
+        heroSelectionPanel.setVisible(false);
+    }
+
+    private void showHeroSelection() {
+        if (mainPanel != null) {
+            mainPanel.setVisible(false);
+        }
+        // Hide pause menu if visible
+        if (pauseMenu != null) {
+            pauseMenu.hide();
+        }
+        // Remove the GamePanel's mouse handler from heroSelectionPanel if it was added
+        heroSelectionPanel.removeMouseListener(mouseHandler);
+        heroSelectionPanel.removeMouseMotionListener(mouseHandler);
+        
+        if (getComponentZOrder(heroSelectionPanel) < 0) {
+            add(heroSelectionPanel);
+        }
+        heroSelectionPanel.setSize(getWidth(), getHeight());
+        heroSelectionPanel.setVisible(true);
         currentState = GameState.HERO_SELECTION;
+        revalidate();
+        repaint();
+        heroSelectionPanel.requestFocusInWindow();
+    }
+
+    private void showMainMenu() {
+        if (gameEngine != null) {
+            gameEngine.stop();
+            gameEngine = null;
+        }
+        
+        if (heroSelectionPanel != null) {
+            heroSelectionPanel.setVisible(false);
+        }
+        if (mainPanel != null) {
+            mainPanel.setSize(getWidth(), getHeight());
+            mainPanel.setVisible(true);
+        }
+        currentState = GameState.MAIN_MENU;
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        revalidate();
+        repaint();
+        if (mainPanel != null) {
+            mainPanel.requestFocusInWindow();
+        }
+    }
+
+    private void returnToMainMenu() {
+        showMainMenu();
+    }
+
+    private void pauseGame() {
+        if (currentState == GameState.PLAYING) {
+            currentState = GameState.PAUSED;
+            if (gameEngine != null) {
+                gameEngine.pause();
+            }
+            pauseMenu.setSize(getWidth(), getHeight());
+            pauseMenu.showAt(mouseHandler.getCurrentX(), mouseHandler.getCurrentY(), getWidth(), getHeight());
+            pauseMenu.requestFocusInWindow();
+            setComponentZOrder(pauseMenu, 0);
+            updateCursor();
+            repaint();
+        }
+    }
+
+    private void resumeGame() {
+        if (currentState == GameState.PAUSED) {
+            currentState = GameState.PLAYING;
+            if (gameEngine != null) {
+                gameEngine.resume();
+            }
+            pauseMenu.hide();
+            hudRenderer.resetPauseButtonHover();
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            repaint();
+        }
+    }
+    
+    private void updateCursor() {
+        boolean showPointer = false;
+        if (currentState == GameState.PLAYING) {
+            showPointer = hudRenderer.shouldShowPointerCursor();
+        } else if (currentState == GameState.PAUSED) {
+            showPointer = pauseMenu.isAnyButtonHovered();
+        }
+        
+        if (showPointer) {
+            if (getCursor().getType() != Cursor.HAND_CURSOR) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+        } else {
+            if (getCursor().getType() != Cursor.DEFAULT_CURSOR) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+        }
     }
 
     private TileMap loadTileMap() {
@@ -146,6 +298,75 @@ public class GamePanel extends JPanel {
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
         addMouseWheelListener(mouseHandler);
+        
+        mouseHandler.setLeftClickCallback(point -> {
+            if (currentState == GameState.MAIN_MENU) {
+                mainPanel.handleMouseClick(point.x, point.y);
+            } else if (currentState == GameState.PAUSED && pauseMenu.isPauseMenuVisible()) {
+                pauseMenu.handleMouseClick(point.x, point.y);
+            } else if (currentState == GameState.HERO_SELECTION) {
+                heroSelectionPanel.handleMouseClick(point.x, point.y, java.awt.event.MouseEvent.BUTTON1);
+            } else if (currentState == GameState.PLAYING) {
+                if (!hudRenderer.handleMouseClick(point.x, point.y)) {
+                    mouseHandler.setTargetFromScreen(point.x, point.y);
+                }
+            }
+        });
+        
+        mouseHandler.setRightClickCallback(point -> {
+            if (currentState == GameState.MAIN_MENU) {
+                return false;
+            }
+            if (currentState == GameState.PAUSED && pauseMenu.isPauseMenuVisible()) {
+                return false;
+            }
+            if (currentState == GameState.HERO_SELECTION) {
+                heroSelectionPanel.handleMouseClick(point.x, point.y, java.awt.event.MouseEvent.BUTTON3);
+                return true;
+            }
+            if (currentState == GameState.PLAYING) {
+                return hudRenderer.handleRightClick(point.x, point.y);
+            }
+            return false;
+        });
+        
+        mouseHandler.setMouseMoveCallback(point -> {
+            switch (currentState) {
+                case MAIN_MENU -> {
+                    mainPanel.handleMouseMove(point.x, point.y, this);
+                }
+                case HERO_SELECTION -> {
+                    heroSelectionPanel.handleMouseMove(point.x, point.y, this);
+                }
+                case PLAYING -> {
+                    hudRenderer.handleMouseMove(point.x, point.y);
+                    boolean showPointer = hudRenderer.shouldShowPointerCursor();
+                    if (showPointer) {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    } else {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                }
+                case PAUSED -> {
+                    if (pauseMenu.isPauseMenuVisible()) {
+                        pauseMenu.handleMouseMove(point.x, point.y);
+                    }
+                    boolean showPointer = pauseMenu.isAnyButtonHovered();
+                    if (showPointer) {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    } else {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                }
+            }
+        });
+        
+        mouseHandler.setMouseWheelCallback(rotation -> {
+            if (currentState == GameState.HERO_SELECTION) {
+                heroSelectionPanel.handleMouseWheel(rotation);
+            }
+        });
+        
         setFocusable(true);
     }
 
@@ -180,13 +401,15 @@ public class GamePanel extends JPanel {
             tileRenderer = new TileRenderer(tileMap, tiles);
             arena = createArena(tileMap);
             
-            // Creation du player avec hero selectionner 
+            // Create player with selected hero
             player = createPlayerWithHero(tileMap, collisionTable, arena, selectedHero);
             playerRenderer = new PlayerRenderer(player);
             towerRenderer = createTowerRenderer(tiles);
+            coreBaseRenderer = new CoreBaseRenderer();
+            coreBaseRenderer.setTiles(tiles);
             projectileRenderer = new ProjectileRenderer();
             
-            // creer hud 
+            // Create HUD renderer
             hudRenderer = new HUDRenderer(player, arena, tileMap, tiles, getWidth(), getHeight());
             hudRenderer.setCamera(camera);
             camera.setMinimapBounds(
@@ -198,28 +421,32 @@ public class GamePanel extends JPanel {
                 mouseHandler.setTarget(target.x, target.y);
             });
             
-            mouseHandler.setLeftClickCallback(point -> {
-                if (hudRenderer.handleMouseClick(point.x, point.y)) {
-                    // clique gauche dans la minimap pour la cam
+            hudRenderer.setPauseCallback(v -> {
+                if (currentState == GameState.PLAYING) {
+                    pauseGame();
+                } else if (currentState == GameState.PAUSED) {
+                    resumeGame();
                 }
-            });
-
-            mouseHandler.setRightClickCallback(point -> {
-                if (hudRenderer.handleRightClick(point.x, point.y)) {
-                    return true;
-                }
-                return false;
             });
             
-            // init game engine
+            // Initialize game engine
             gameEngine = new GameEngine(player, camera, mouseHandler, arena);
             
-            // tab jey pour centrer la cam en le joueur 
+            // Tab key to center camera on player
             keyHandler.setTabCallback(v -> {
                 gameEngine.centerCameraOnPlayer();
             });
             
-            //  Supprimer le panneau de sélection du héros et changer l’état
+            // ESC key to toggle pause
+            keyHandler.setEscapeCallback(v -> {
+                if (currentState == GameState.PLAYING) {
+                    pauseGame();
+                } else if (currentState == GameState.PAUSED) {
+                    resumeGame();
+                }
+            });
+            
+            // Remove hero selection panel and change state
             remove(heroSelectionPanel);
             currentState = GameState.PLAYING;
             revalidate();
@@ -250,10 +477,22 @@ public class GamePanel extends JPanel {
             hudRenderer.setScreenSize(width, height);
         }
         
+        // Update main panel size if visible
+        if (mainPanel != null && currentState == GameState.MAIN_MENU) {
+            mainPanel.setSize(width, height);
+            mainPanel.revalidate();
+        }
+        
         // Update hero selection panel size if it's still visible
         if (currentState == GameState.HERO_SELECTION) {
             heroSelectionPanel.setSize(width, height);
             heroSelectionPanel.revalidate();
+        }
+        
+        // Update pause menu size if visible
+        if (pauseMenu != null && pauseMenu.isPauseMenuVisible()) {
+            pauseMenu.setSize(width, height);
+            pauseMenu.revalidate();
         }
         
         repaint();
@@ -268,6 +507,7 @@ public class GamePanel extends JPanel {
     
     private void renderLoop() {
         while (true) {
+            updateCursor();
             repaint();
             try {
                 Thread.sleep(16);
@@ -281,13 +521,17 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        if (currentState == GameState.PLAYING) {
+        if (currentState == GameState.PLAYING || currentState == GameState.PAUSED) {
             Graphics2D g2 = (Graphics2D) g;
             drawGameWorld(g2);
             drawUI(g2);
+            
+            if (currentState == GameState.PAUSED && pauseMenu != null && pauseMenu.isPauseMenuVisible()) {
+                pauseMenu.paint(g);
+            }
+            
             g2.dispose();
         }
-      // Le panneau de sélection du héros gère sa propre peinture lorsqu’il est visible
     }
 
     private void drawGameWorld(Graphics2D g2) {
@@ -324,33 +568,33 @@ public class GamePanel extends JPanel {
             entities.add(new RenderableEntity(towerBaseY, RenderableEntity.Type.TOWER, tour));
         }
         
-        // ajout des ancients
-        for (Ancient ancient : arena.ancients()) {
-            double ancientBaseY = (ancient.position().y() + ancient.height()) * tileSize;
-            entities.add(new RenderableEntity(ancientBaseY, RenderableEntity.Type.ANCIENT, ancient));
+        // Add core bases
+        for (CoreBase coreBase : arena.coreBases()) {
+            double coreBaseBaseY = (coreBase.position().y() + coreBase.height()) * tileSize;
+            entities.add(new RenderableEntity(coreBaseBaseY, RenderableEntity.Type.CORE_BASE, coreBase));
         }
         
-        // jout des joueurs
+        // Add player
         if (player.isAlive()) {
             double playerBaseY = player.getY() + tileSize;
             entities.add(new RenderableEntity(playerBaseY, RenderableEntity.Type.PLAYER, player));
         }
         
-        // Trier par position Y (Y plus faible derrière, Y plus élevé devant)
+        // Sort by Y position (lower Y = behind, higher Y = in front)
         entities.sort(java.util.Comparator.comparingDouble(e -> e.renderY));
         
-        //Dessiner dans l’ordre trié
+        // Draw in sorted order
         for (RenderableEntity entity : entities) {
             switch (entity.type) {
                 case TOWER -> towerRenderer.draw(g2, (Tour) entity.entity, camera);
-                case ANCIENT -> towerRenderer.drawAncient(g2, (Ancient) entity.entity, camera);
+                case CORE_BASE -> coreBaseRenderer.draw(g2, (CoreBase) entity.entity, camera);
                 case PLAYER -> playerRenderer.draw(g2, player);
             }
         }
     }
     
     private static class RenderableEntity {
-        enum Type { TOWER, ANCIENT, PLAYER }
+        enum Type { TOWER, CORE_BASE, PLAYER }
         final double renderY;
         final Type type;
         final Object entity;
@@ -368,9 +612,9 @@ public class GamePanel extends JPanel {
         }
     }
 
-    private void drawAncients(Graphics2D g2) {
-        for (Ancient ancient : arena.ancients()) {
-            towerRenderer.drawAncient(g2, ancient, camera);
+    private void drawCoreBases(Graphics2D g2) {
+        for (CoreBase coreBase : arena.coreBases()) {
+            coreBaseRenderer.draw(g2, coreBase, camera);
         }
     }
 

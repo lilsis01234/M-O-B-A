@@ -141,7 +141,7 @@ public final class TowerAI {
         double distMinHeros = Double.MAX_VALUE;
 
         for (Object unite : unites) {
-            if (unite == tour || unite instanceof Ancient) continue;
+            if (unite == tour) continue;
             
             Equipe equipe = getEquipe(unite);
             if (equipe == null) continue;

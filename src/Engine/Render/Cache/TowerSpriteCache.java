@@ -19,8 +19,8 @@ public class TowerSpriteCache {
         Tile tile = (tileId >= 0 && tileId < tiles.length) ? tiles[tileId] : null;
         return getFrameFromTile(tile, frameIndex);
     }
-// Retourne l'image de l'Ancien selon la couleur de l'équipe
-    public BufferedImage getAncientFrame(TeamColor teamColor) {
+
+    public BufferedImage getCoreBaseFrame(TeamColor teamColor) {
         int tileId = teamColor == TeamColor.RED ? 23 : 22;
         Tile tile = (tileId >= 0 && tileId < tiles.length) ? tiles[tileId] : null;
         return tile != null ? tile.getImage() : null;

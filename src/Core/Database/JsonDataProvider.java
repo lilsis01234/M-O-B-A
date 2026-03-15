@@ -34,7 +34,6 @@ public class JsonDataProvider {
         categories.add(new Category("Force"));
         categories.add(new Category("Agilité"));
         categories.add(new Category("Intelligence"));
-
         heroes = new ArrayList<>();
         heroSpells = new HashMap<>();
         

@@ -23,10 +23,12 @@ public class HUDRenderer {
     private final GoldDisplayRenderer goldDisplay;
     private final ScoreboardRenderer scoreboard;
     private final TargetInfoRenderer targetInfo;
+    private final PauseButtonRenderer pauseButton;
     private BuffRenderer buffRenderer;
     private Camera camera;
     private java.util.function.Consumer<Point> moveTargetConsumer;
-//contructeur
+    private java.util.function.Consumer<Void> pauseCallback;
+
     public HUDRenderer(Player player, Arena arena, TileMap tileMap, Tile[] tiles, int screenWidth, int screenHeight) {
         this.player = player;
         this.arena = arena;
@@ -43,6 +45,7 @@ public class HUDRenderer {
         this.abilityBar = new AbilityBarRenderer(player, 0, 0, 300, 54);
         this.itemBar = new ItemBarRenderer(player, 0, 0, 210, 55);
         this.targetInfo = new TargetInfoRenderer(player, 0, 0, 180, 90);
+        this.pauseButton = new PauseButtonRenderer();
         
         this.buffRenderer = null;
     }
@@ -61,13 +64,35 @@ public class HUDRenderer {
         this.moveTargetConsumer = consumer;
         this.minimap.setOnClickCallback(consumer);
     }
-//gestion clic
+
+    public void setPauseCallback(java.util.function.Consumer<Void> callback) {
+        this.pauseCallback = callback;
+    }
+
     public boolean handleMouseClick(int clickX, int clickY) {
+        if (pauseButton.handleClick(clickX, clickY)) {
+            if (pauseCallback != null) {
+                pauseCallback.accept(null);
+            }
+            return true;
+        }
         return minimap.handleClick(clickX, clickY);
     }
 
     public boolean handleRightClick(int clickX, int clickY) {
         return minimap.handleRightClick(clickX, clickY);
+    }
+    
+    public void handleMouseMove(int mouseX, int mouseY) {
+        pauseButton.updateHover(mouseX, mouseY);
+    }
+    
+    public void resetPauseButtonHover() {
+        pauseButton.resetHover();
+    }
+    
+    public boolean shouldShowPointerCursor() {
+        return pauseButton.isHovered();
     }
 
     public int getMinimapX() {
@@ -95,6 +120,10 @@ public class HUDRenderer {
         if (camera != null) {
             camera.setMinimapBounds(minimap.getX(), minimap.getY(), minimap.getSize());
         }
+        
+        int scoreboardHeight = 70;
+        pauseButton.setPosition(margin, margin + scoreboardHeight + 8);
+        pauseButton.render(g2);
         
         scoreboard.render(g2, margin, margin);
         

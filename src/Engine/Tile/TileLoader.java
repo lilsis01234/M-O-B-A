@@ -36,12 +36,12 @@ public class TileLoader {
                         if (tile.getId() == 5) {
                             loadExtraWaterTextures(tile);
                         }
-                        // Load ancient textures
+                        // Load core base textures - use houses.png for modular house system
                         if (tile.getId() == 22) {
-                            loadAncientBlueTextures(tile);
+                            loadCoreBaseBlueTextures(tile);
                         }
                         if (tile.getId() == 23) {
-                            loadAncientRedTextures(tile);
+                            loadCoreBaseRedTextures(tile);
                         }
                         // Load tower textures from spritesheet
                         if (tile.getId() == 20) {
@@ -72,28 +72,14 @@ public class TileLoader {
         }
     }
 
-    private void loadAncientBlueTextures(Tile tile) {
-        String[] extras = {"src/Resource/Tiles/Ancient_Blue.png"};
-        for (String path : extras) {
-            try {
-                BufferedImage img = ImageIO.read(new File(path));
-                tile.addImage(img);
-            } catch (IOException e) {
-                System.err.println("Could not load ancient blue texture: " + path);
-            }
-        }
+    private void loadCoreBaseBlueTextures(Tile tile) {
+        // CoreBase now uses decos.png (long stone) - no additional texture loading needed
+        // The CoreBaseSpriteCache will handle the rendering
     }
 
-    private void loadAncientRedTextures(Tile tile) {
-        String[] extras = {"src/Resource/Tiles/Ancient_Red.png"};
-        for (String path : extras) {
-            try {
-                BufferedImage img = ImageIO.read(new File(path));
-                tile.addImage(img);
-            } catch (IOException e) {
-                System.err.println("Could not load ancient red texture: " + path);
-            }
-        }
+    private void loadCoreBaseRedTextures(Tile tile) {
+        // CoreBase now uses decos.png (long stone) - no additional texture loading needed
+        // The CoreBaseSpriteCache will handle the rendering
     }
 
     private void loadTowerBlueTextures(Tile tile) {

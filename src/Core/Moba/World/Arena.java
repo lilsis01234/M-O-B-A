@@ -1,7 +1,7 @@
 package Core.Moba.World;
 
 import Core.Moba.Units.Tour;
-import Core.Moba.Units.Ancient;
+import Core.Moba.Units.CoreBase;
 import Core.Moba.Units.Unite;
 import Core.Tile.TileMap;
 import java.util.ArrayList;
@@ -19,10 +19,10 @@ public final class Arena {
     private final Map<Voie, List<Vec2>> lanesWaypoints;
     private final List<Vec2> jungleCampPositions;
     private final List<Tour> tours;
-    private final List<Ancient> ancients;
+    private final List<CoreBase> coreBases;
     private final List<Object> unites;
-    private Vec2 blueAncientPos;
-    private Vec2 redAncientPos;
+    private Vec2 blueCoreBasePos;
+    private Vec2 redCoreBasePos;
     
     private int blueKills = 0;
     private int redKills = 0;
@@ -34,21 +34,13 @@ public final class Arena {
         }
         jungleCampPositions = new ArrayList<>();
         tours = new ArrayList<>();
-        ancients = new ArrayList<>();
+        coreBases = new ArrayList<>();
         unites = new ArrayList<>();
     }
 
-    /**
-     * Analyse la TileMap pour détecter et instancier les éléments du MOBA.
-     * les IDs spécifiques (20-23) étant des marqueurs de structures,
-     * calcule leur taille (cluster) et les remplace par du sol visuel
-     * @param map La carte reçu par le fichier txt
-     * @param blueTeam Parties de l'équipe bleue.
-     * @param redTeam Parties de l'équipe rouge.
-     */
     public void initializeFromMap(TileMap map, Equipe blueTeam, Equipe redTeam) {
         tours.clear();
-        ancients.clear();
+        coreBases.clear();
         boolean[][] visited = new boolean[map.getRows()][map.getColumns()];
 
         // Scan map for markers
@@ -70,12 +62,12 @@ public final class Arena {
                 }
 
                 // Mark cluster as visited and REPLACE markers with ground tiles in map
-                int groundId = 18; // Default Grass
-                if (tileId == 22 || tileId == 23) {
-                    groundId = 1; // Wood for Ancients
-                } else {
-                    groundId = 3; // Sand for Towers
-                }
+                 int groundId = 18; // Default Grass
+                 if (tileId == 22 || tileId == 23) {
+                     groundId = 18; // Grass for CoreBases (no wood floor)
+                 } else {
+                     groundId = 3; // Sand for Towers
+                 }
 
                 for (int r = row; r < row + h; r++) {
                     for (int c = col; c < col + w; c++) {
@@ -92,13 +84,13 @@ public final class Arena {
                          case 21 -> { // Red Tower
                              addTour(new Tour(redTeam, pos, 1000, 50, 20, 450, 3, determineLane(pos, false), w, h));
                          }
-                    case 22 -> { // Blue Ancient
-                        blueAncientPos = pos;
-                        ancients.add(new Ancient(blueTeam, pos, 5000, 100, w, h));
+                    case 22 -> { // Blue CoreBase
+                        blueCoreBasePos = pos;
+                        coreBases.add(new CoreBase(blueTeam, pos, 5000, 100, w, h));
                     }
-                    case 23 -> { // Red Ancient
-                        redAncientPos = pos;
-                        ancients.add(new Ancient(redTeam, pos, 5000, 100, w, h));
+                    case 23 -> { // Red CoreBase
+                        redCoreBasePos = pos;
+                        coreBases.add(new CoreBase(redTeam, pos, 5000, 100, w, h));
                     }
                 }
             }
@@ -106,9 +98,9 @@ public final class Arena {
         
         // After all towers are added, we can assign Tiers properly
         for (Tour t : tours) {
-            Vec2 ancient = (t.equipe().couleur() == TeamColor.BLUE) ? blueAncientPos : redAncientPos;
-            if (ancient != null) {
-                t.setTier(determineTier(t.position(), ancient));
+            Vec2 coreBasePos = (t.equipe().couleur() == TeamColor.BLUE) ? blueCoreBasePos : redCoreBasePos;
+            if (coreBasePos != null) {
+                t.setTier(determineTier(t.position(), coreBasePos));
             }
         }
     }
@@ -131,12 +123,9 @@ public final class Arena {
         }
     }
 
-    /**
-     * Calcule le Tier d'une tour (T1, T2, T3) en fonction de sa distance avec sa base
-     */
-    private int determineTier(Vec2 pos, Vec2 ancientPos) {
-        if (ancientPos == null) return 3;
-        double dist = pos.distanceTo(ancientPos);
+    private int determineTier(Vec2 pos, Vec2 coreBasePos) {
+        if (coreBasePos == null) return 3;
+        double dist = pos.distanceTo(coreBasePos);
         if (dist < 20) return 1; // Base towers
         if (dist < 50) return 2; // Mid lane towers
         return 3; // Outer towers
@@ -146,8 +135,8 @@ public final class Arena {
         // This method is now legacy or can be used for hardcoded fallbacks
     }
 
-    public Vec2 getBlueAncient() { return blueAncientPos; }
-    public Vec2 getRedAncient() { return redAncientPos; }
+    public Vec2 getBlueCoreBase() { return blueCoreBasePos; }
+    public Vec2 getRedCoreBase() { return redCoreBasePos; }
 
     public List<Vec2> voieWaypoints(Voie voie) {
         return lanesWaypoints.get(voie);
@@ -161,8 +150,8 @@ public final class Arena {
         return tours;
     }
 
-    public List<Ancient> ancients() {
-        return ancients;
+    public List<CoreBase> coreBases() {
+        return coreBases;
     }
 
     public void addTour(Tour tour) {
@@ -198,4 +187,3 @@ public final class Arena {
         return redKills;
     }
 }
-

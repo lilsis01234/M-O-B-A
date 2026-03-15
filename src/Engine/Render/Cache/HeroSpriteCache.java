@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
  // Cache pour stocker les sprites déjà composés des héros pour un accès rapide
+
 public class HeroSpriteCache {
     private final java.util.Map<String, BufferedImage> cache = new java.util.HashMap<>();
 

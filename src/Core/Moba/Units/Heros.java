@@ -35,33 +35,48 @@ public final class Heros extends Unite {
         this.niveau = 1;
         this.xp = 0;
         this.gold = 0;
-        this.sorts = new ArrayList<>(3);    
-        this.inventaire = new ArrayList<>(6); 
-        this.recall = new RecallState(4.0);  
+        this.sorts = new ArrayList<>(3);
+        this.inventaire = new ArrayList<>(6);
+        this.recall = new RecallState(4.0);
         this.respawn = new RespawnTimer();
     }
 
-    public String nom() { return nom; }
-    public Equipe equipe() { return equipe; }
-    public int niveau() { return niveau; }
-    public int xp() { return xp; }
-    public int gold() { return gold; }
- 
-    public List<Sort> sorts() { 
-        return Collections.unmodifiableList(sorts); 
+    public String nom() {
+        return nom;
     }
 
-    public List<Equipement> inventaire() { 
-        return Collections.unmodifiableList(inventaire); 
+    public Equipe equipe() {
+        return equipe;
     }
 
-    public RecallState recall() { return recall; }
-    public RespawnTimer respawn() { return respawn; }
+    public int niveau() {
+        return niveau;
+    }
 
-    /**
-     * Mise à jour Cooldowns, Recall, Respawn
-     * @param deltaSeconds Temps écoulé depuis la dernière frame
-     */
+    public int xp() {
+        return xp;
+    }
+
+    public int gold() {
+        return gold;
+    }
+
+    public List<Sort> sorts() {
+        return Collections.unmodifiableList(sorts);
+    }
+
+    public List<Equipement> inventaire() {
+        return Collections.unmodifiableList(inventaire);
+    }
+
+    public RecallState recall() {
+        return recall;
+    }
+
+    public RespawnTimer respawn() {
+        return respawn;
+    }
+
     public void update(double deltaSeconds) {
         for (Sort s : sorts) {
             s.update(deltaSeconds);
@@ -95,21 +110,16 @@ public final class Heros extends Unite {
         return 100 + (niveau - 1) * 50;
     }
 
-
     public boolean acheter(Equipement item) {
         Objects.requireNonNull(item, "item");
         if (inventaire.size() >= 6) return false;
         if (gold < item.prix()) return false;
-        
         gold -= item.prix();
         inventaire.add(item);
-        stats().applyModifier(item.bonus()); // Applique les bonus de l'équipement aux stats du héros
+        stats().applyModifier(item.bonus());
         return true;
     }
 
-    /**
-     * Fusionne deux objets possédés pour en créer un nouveau de Tier FINAL.
-     */
     public boolean fusionnerEquipements(String nomFinal, int prixFinal, Equipement a, Equipement b) {
         Objects.requireNonNull(a, "a");
         Objects.requireNonNull(b, "b");
@@ -128,11 +138,9 @@ public final class Heros extends Unite {
         recall.demarrerRecall();
     }
 
-    /** Téléporte le héros à la fontaine alliée si le rappel est terminé. */
     public void appliquerRecallSiTermine() {
         if (!recall.isRecalling()) return;
         if (!recall.estTermine()) return;
-        
         setPosition(equipe.fontaine().position());
         recall.annulerRecall();
     }

@@ -60,4 +60,3 @@ public class KeyboardLayoutDetector {
         return getCurrentLayout() == LayoutType.AZERTY;
     }
 }
-

@@ -13,16 +13,21 @@ public class KeyHandler implements KeyListener, MoveInput {
     private boolean leftPressed;
     private boolean rightPressed;
     private Consumer<Void> tabCallback;
+    private Consumer<Void> escapeCallback;
     private final boolean isAzerty;
     
     public KeyHandler() {
-        this.isAzerty = KeyboardLayoutDetector.isAzerty();// Détection du type de clavier
+        this.isAzerty = KeyboardLayoutDetector.isAzerty();
     }
     
     public void setTabCallback(Consumer<Void> callback) {
         this.tabCallback = callback;
     }
- // Accesseurs pour savoir quelles touches sont pressées
+    
+    public void setEscapeCallback(Consumer<Void> callback) {
+        this.escapeCallback = callback;
+    }
+    
     public boolean isUpPressed() {
         return upPressed;
     }
@@ -68,6 +73,13 @@ public class KeyHandler implements KeyListener, MoveInput {
                 tabCallback.accept(null);
             }
         }
+        
+        if (keyCode == KeyEvent.VK_ESCAPE) {
+            e.consume();
+            if (escapeCallback != null) {
+                escapeCallback.accept(null);
+            }
+        }
     }
     
     @Override
@@ -83,11 +95,10 @@ public class KeyHandler implements KeyListener, MoveInput {
             isUp = (keyCode == KeyEvent.VK_Z);
             isLeft = (keyCode == KeyEvent.VK_Q);
         }
-     
+        
         if (isUp) upPressed = false;
         if (isDown) downPressed = false;
         if (isLeft) leftPressed = false;
         if (isRight) rightPressed = false;
     }
 }
-

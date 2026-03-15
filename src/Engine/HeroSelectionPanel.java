@@ -17,9 +17,10 @@ import java.util.List;
 
 public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     
-    public interface SelectionListener {
-        void onHeroSelected(Hero hero);
-    }
+public interface SelectionListener {
+    void onHeroSelected(Hero hero);
+    void onGoBack();
+}
     
     private SelectionListener listener;
     private List<Hero> allHeroes;
@@ -88,6 +89,8 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         setPreferredSize(screenSize);
         setBackground(BACKGROUND);
         setFocusable(true);
+        setOpaque(true);
+        setVisible(true);
         
         spriteCache = new HeroSpriteCache();
         loadHeroes();
@@ -99,10 +102,34 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         try {
             JsonDataProvider dataProvider = JsonDataProviderFactory.create();
             allHeroes = dataProvider.getAllHeroes();
+            System.out.println("DEBUG: Loaded " + allHeroes.size() + " heroes");
         } catch (IOException e) {
             e.printStackTrace();
             allHeroes = new ArrayList<>();
         }
+    }
+    
+    public void handleMouseClick(int x, int y, int button) {
+        handleClick(x, y, button);
+    }
+    
+    public void handleMouseMove(int x, int y, java.awt.Component comp) {
+        updateCursor(x, y);
+        repaint();
+    }
+    
+    public void handleMouseWheel(int rotation) {
+        if (contentBounds == null) return;
+        
+        int maxScroll = calculateMaxScroll();
+        scrollY += rotation * SCROLL_SPEED;
+        if (scrollY < 0) scrollY = 0;
+        if (maxScroll > 0 && scrollY > maxScroll) scrollY = maxScroll;
+        repaint();
+    }
+    
+    public void handleMouseExit(java.awt.Component comp) {
+        comp.setCursor(Cursor.getDefaultCursor());
     }
     
     private void filterHeroes() {
@@ -128,27 +155,6 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     }
     
     private void setupListeners() {
-        MouseInputAdapter mouseAdapter = new MouseInputAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                handleClick(e.getX(), e.getY(), e.getButton());
-            }
-            
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                updateCursor(e.getX(), e.getY());
-                repaint();
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e) {
-                setCursor(Cursor.getDefaultCursor());
-            }
-        };
-        addMouseListener(mouseAdapter);
-        addMouseMotionListener(mouseAdapter);
-        addMouseWheelListener(this);
-        
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -169,7 +175,22 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     }
     
     private void updateCursor(int x, int y) {
-    	// Vérifie les onglets de l’en-tête – uniquement si à l’intérieur des limites de l’en-tête
+        if (headerBounds == null || footerBounds == null || contentBounds == null) {
+            calculateLayoutBounds();
+        }
+        
+        int backBtnW = 130;
+        int backBtnH = 36;
+        int backBtnX = 30;
+        int backBtnY = footerBounds.y + (footerBounds.height - backBtnH) / 2;
+        
+        if (footerBounds != null && footerBounds.contains(x, y) && 
+            x >= backBtnX && x <= backBtnX + backBtnW && y >= backBtnY && y <= backBtnY + backBtnH) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            return;
+        }
+        
+        // Check header tabs - only if inside header bounds
         if (headerBounds != null && headerBounds.contains(x, y)) {
             if (y >= headerBounds.height - TAB_Y_OFFSET && y <= headerBounds.height - TAB_Y_OFFSET + TAB_HEIGHT) {
                 int totalTabWidth = categories.length * TAB_WIDTH + (categories.length - 1) * TAB_SPACING;
@@ -233,7 +254,48 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     private void handleClick(int x, int y, int button) {
         if (button != MouseEvent.BUTTON1) return;
         
-     // Vérifie les onglets (dans les limites de l’en-tête)
+        // Ensure layout bounds are calculated (they're calculated in paintComponent)
+        if (headerBounds == null || footerBounds == null || contentBounds == null) {
+            calculateLayoutBounds();
+        }
+        
+        // Check back button (in footer bounds)
+        if (footerBounds != null) {
+            String backText = "◀ RETOUR AU MENU";
+            Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 14);
+            FontMetrics fm = getFontMetrics(btnFont);
+            int backBtnW = fm.stringWidth(backText) + 40;
+            int backBtnH = 36;
+            int backBtnX = 30;
+            int backBtnY = footerBounds.y + (footerBounds.height - backBtnH) / 2;
+            
+            if (x >= backBtnX && x <= backBtnX + backBtnW && y >= backBtnY && y <= backBtnY + backBtnH) {
+                if (listener != null) {
+                    listener.onGoBack();
+                }
+                return;
+            }
+        }
+        
+        // Check tabs (in header bounds)
+        if (headerBounds != null && headerBounds.contains(x, y)) {
+            String backText = "◀ RETOUR AU MENU";
+            Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 14);
+            FontMetrics fm = getFontMetrics(btnFont);
+            int backBtnW = fm.stringWidth(backText) + 40;
+            int backBtnH = 36;
+            int backBtnX = 30;
+            int backBtnY = footerBounds.y + (footerBounds.height - backBtnH) / 2;
+            
+            if (x >= backBtnX && x <= backBtnX + backBtnW && y >= backBtnY && y <= backBtnY + backBtnH) {
+                if (listener != null) {
+                    listener.onGoBack();
+                }
+                return;
+            }
+        }
+        
+        // Check tabs (in header bounds)
         if (headerBounds != null && headerBounds.contains(x, y)) {
             if (y >= headerBounds.height - TAB_Y_OFFSET && y <= headerBounds.height - TAB_Y_OFFSET + TAB_HEIGHT) {
                 int totalTabWidth = categories.length * TAB_WIDTH + (categories.length - 1) * TAB_SPACING;
@@ -258,7 +320,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             String btnText = "▶ START GAME WITH " + selectedHero.getName().toUpperCase();
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 16);
             FontMetrics fm = getFontMetrics(btnFont);
-            int btnW = Math.min(getWidth() - 60, fm.stringWidth(btnText) + 50);
+            int btnW = Math.min(getWidth() - 60 - 170, fm.stringWidth(btnText) + 50);
             int btnH = 44;
             int btnX = (getWidth() - btnW) / 2;
             int btnY = footerBounds.y + (footerBounds.height - btnH) / 2;
@@ -311,13 +373,13 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
                     repaint();
                 }
                 break;
-            case KeyEvent.VK_DOWN://BAS
-                if (selectedIndex + cols < filteredHeroes.size()) {
-                    selectedIndex += cols;
-                    selectedHero = filteredHeroes.get(selectedIndex);
-                    ensureVisible(selectedIndex);
-                    repaint();
-                }
+                case KeyEvent.VK_DOWN://BAS
+                    if (selectedIndex + cols < filteredHeroes.size()) {
+                        selectedIndex += cols;
+                        selectedHero = filteredHeroes.get(selectedIndex);
+                        ensureVisible(selectedIndex);
+                        repaint();
+                    }
                 break;
             case KeyEvent.VK_LEFT://gauche
                 if (selectedIndex > 0) {
@@ -505,10 +567,11 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     private void drawHeroGrid(Graphics2D g2) {
         if (contentBounds == null || filteredHeroes.isEmpty()) return;
         
-        
+        // Save original clip
         Shape originalClip = g2.getClip();
         
-     // Définit le clipping sur les limites du contenu (empêche de dessiner en dehors de cette zone)
+        // Set clipping to content bounds (prevents drawing outside this area)
+        g2.setClip(contentBounds);
         
         int cols = calculateColumns();
         int totalWidth = cols * cardWidth + (cols - 1) * cardSpacing;
@@ -565,14 +628,15 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     }
     
     private void drawCard(Graphics2D g2, Hero hero, int x, int y, boolean selected) {
-    	// Ombre de la carte  
+        // Card shadow
+        g2.setColor(new Color(0, 0, 0, 50));
         g2.fillRoundRect(x + 4, y + 4, cardWidth, cardHeight, 12, 12);
         
-        // arrier plan carte
+        // Card background
         g2.setColor(selected ? CARD_SELECTED : CARD_BG);
         g2.fillRoundRect(x, y, cardWidth, cardHeight, 12, 12);
         
-        // border de la carte
+        // Card border
         g2.setColor(selected ? SELECTED_BORDER : CARD_BORDER);
         g2.setStroke(selected ? new BasicStroke(2) : new BasicStroke(1));
         g2.drawRoundRect(x, y, cardWidth, cardHeight, 12, 12);
@@ -669,16 +733,42 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         g2.setPaint(footerGradient);
         g2.fillRect(footerBounds.x, footerBounds.y, footerBounds.width, footerBounds.height);
         
-        // Séparateur supérieur du pied de page
+        // Footer top separator
         g2.setColor(new Color(100, 100, 140));
         g2.drawLine(footerBounds.x, footerBounds.y, footerBounds.x + footerBounds.width, footerBounds.y);
         
-        // bouton start
+        // Back button (always visible, left side)
+        String backText = "◀ RETOUR AU MENU";
+        Font backFont = FONT_TAB.deriveFont(Font.BOLD, 14);
+        FontMetrics fmBack = getFontMetrics(backFont);
+        int backBtnW = fmBack.stringWidth(backText) + 40;
+        int backBtnH = 36;
+        int backBtnX = 30;
+        int backBtnY = footerBounds.y + (footerBounds.height - backBtnH) / 2;
+        
+        g2.setColor(new Color(0, 0, 0, 100));
+        g2.fillRoundRect(backBtnX + 3, backBtnY + 3, backBtnW, backBtnH, 10, 10);
+        
+        g2.setColor(new Color(150, 100, 100));
+        g2.fillRoundRect(backBtnX, backBtnY, backBtnW, backBtnH, 10, 10);
+        
+        g2.setColor(new Color(200, 140, 140));
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(backBtnX, backBtnY, backBtnW, backBtnH, 10, 10);
+        
+        g2.setColor(new Color(255, 230, 230));
+        g2.setFont(backFont);
+        fmBack = getFontMetrics(backFont);
+        int textX = backBtnX + (backBtnW - fmBack.stringWidth(backText)) / 2;
+        int textY = backBtnY + (backBtnH + fmBack.getAscent()) / 2 - 2;
+        g2.drawString(backText, textX, textY);
+        
+        // Start button
         if (selectedHero != null) {
-            String btnText = "▶ START GAME WITH " + selectedHero.getName().toUpperCase();
+            String btnText = "▶ COMMENCER LE JEU AVEC " + selectedHero.getName().toUpperCase();
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 16);
             FontMetrics fm = getFontMetrics(btnFont);
-            int btnW = Math.min(getWidth() - 60, fm.stringWidth(btnText) + 50);
+            int btnW = Math.min(getWidth() - 60 - backBtnW - 60, fm.stringWidth(btnText) + 50);
             int btnH = 44;
             int btnX = (getWidth() - btnW) / 2;
             int btnY = footerBounds.y + (footerBounds.height - btnH) / 2;
@@ -698,13 +788,12 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             g2.setStroke(new BasicStroke(2));
             g2.drawRoundRect(btnX, btnY, btnW, btnH, 12, 12);
             
-            // Text
             g2.setColor(new Color(255, 255, 220));
             g2.setFont(btnFont);
-            fm = g2.getFontMetrics();
-            int textX = btnX + (btnW - fm.stringWidth(btnText)) / 2;
-            int textY = btnY + (btnH + fm.getAscent()) / 2 - 2;
-            g2.drawString(btnText, textX, textY);
+            fm = getFontMetrics(btnFont);
+            int textX2 = btnX + (btnW - fm.stringWidth(btnText)) / 2;
+            int textY2 = btnY + (btnH + fm.getAscent()) / 2 - 2;
+            g2.drawString(btnText, textX2, textY2);
         }
     }
     

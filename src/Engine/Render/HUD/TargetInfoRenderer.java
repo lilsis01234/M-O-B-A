@@ -62,10 +62,10 @@ public class TargetInfoRenderer {
             var tour = (Core.Moba.Units.Tour) target;
             hp = tour.stats().hp();
             maxHp = tour.stats().maxHp();
-        } else if (target instanceof Core.Moba.Units.Ancient) {
-            var ancient = (Core.Moba.Units.Ancient) target;
-            hp = ancient.stats().hp();
-            maxHp = ancient.stats().maxHp();
+        } else if (target instanceof Core.Moba.Units.CoreBase) {
+            var coreBase = (Core.Moba.Units.CoreBase) target;
+            hp = coreBase.stats().hp();
+            maxHp = coreBase.stats().maxHp();
         }
 
         g2.setColor(new Color(200, 50, 50));

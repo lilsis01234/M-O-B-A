@@ -2,26 +2,18 @@ package Core.Entity;
 
 import Core.Config;
 
-/**
- * Utilitaires pour la manipulation et la création de collision 
- * 
- */
 public class HitboxUtils {
 
-    /** Ratio de la hauteur totale utilisé pour la collision au sol des entités (pieds). */
     public static final double COLLISION_BOX_BOTTOM_RATIO = 0.15;
-    /** Marge intérieure par défaut pour éviter que les hitboxes ne collent trop aux murs. */
     public static final double HITBOX_INSET = 2.0;
-    /** Largeur relative des tours pour la collision. */
     public static final double TOWER_COLLISION_WIDTH_RATIO = 0.35;
-    /** Hauteur relative de la base des tours pour la collision au sol. */
     public static final double TOWER_COLLISION_HEIGHT_RATIO = 0.25;
-    /** Hauteur relative totale de la tour pour recevoir des dégâts. */
     public static final double TOWER_HITBOX_HEIGHT_RATIO = 0.75;
+    
+    public static final double CORE_BASE_COLLISION_WIDTH_RATIO = 1.0;
+    public static final double CORE_BASE_COLLISION_HEIGHT_RATIO = 1.0;
+    public static final double CORE_BASE_HITBOX_HEIGHT_RATIO = 1.0;
 
-    /**
-     * Classe interne de collision rectangulaire simple
-     */
     public static class Hitbox {
         private double x, y, width, height;
 
@@ -202,14 +194,46 @@ public class HitboxUtils {
         );
     }
 
-    /** Boîte de collision au sol pour l'Ancien (Base). */
-    public static Hitbox createAncientCollisionBox(double ancientX, double ancientY, int width, int height) {
-        return createTowerCollisionBox(ancientX, ancientY, width, height);
+    public static Hitbox createCoreBaseCollisionBox(double coreBaseX, double coreBaseY, int width, int height) {
+        int tileSize = Config.getTileSize();
+        double pixelX = coreBaseX * tileSize;
+        double pixelY = coreBaseY * tileSize;
+        
+        double spriteWidth = width * tileSize;
+        double spriteHeight = height * tileSize;
+        
+        double collisionWidth = spriteWidth * CORE_BASE_COLLISION_WIDTH_RATIO;
+        double collisionHeight = spriteHeight * CORE_BASE_COLLISION_HEIGHT_RATIO;
+        
+        double offsetX = (spriteWidth - collisionWidth) / 2;
+        
+        return new Hitbox(
+            pixelX + offsetX,
+            pixelY + spriteHeight - collisionHeight,
+            collisionWidth,
+            collisionHeight
+        );
     }
 
-    /** Boîte de réception de dégâts pour l'Ancien (Base). */
-    public static Hitbox createAncientHitbox(double ancientX, double ancientY, int width, int height) {
-        return createTowerHitbox(ancientX, ancientY, width, height);
+    public static Hitbox createCoreBaseHitbox(double coreBaseX, double coreBaseY, int width, int height) {
+        int tileSize = Config.getTileSize();
+        double pixelX = coreBaseX * tileSize;
+        double pixelY = coreBaseY * tileSize;
+        
+        double spriteWidth = width * tileSize;
+        double spriteHeight = height * tileSize;
+        
+        double hitboxWidth = spriteWidth * CORE_BASE_COLLISION_WIDTH_RATIO;
+        double hitboxHeight = spriteHeight * CORE_BASE_HITBOX_HEIGHT_RATIO;
+        
+        double offsetX = (spriteWidth - hitboxWidth) / 2;
+        
+        return new Hitbox(
+            pixelX + offsetX,
+            pixelY + spriteHeight - hitboxHeight,
+            hitboxWidth,
+            hitboxHeight
+        );
     }
 
     private HitboxUtils() {}

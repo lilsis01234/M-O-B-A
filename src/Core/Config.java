@@ -47,7 +47,8 @@ public class Config {
     public static int getTileSize() {
         return TILE_SIZE;
     }
-   public static double getNanosecondsPerFrame() {
+    
+    public static double getNanosecondsPerFrame() {
         return NANOSECONDS_PER_FRAME;
     }
     
@@ -58,24 +59,31 @@ public class Config {
     public static int getPlayerDefaultX() {
         return PLAYER_DEFAULT_X;
     }
+    
     public static int getPlayerDefaultY() {
         return PLAYER_DEFAULT_Y;
     }
+    
     public static int getSpriteAnimationSpeed() {
         return SPRITE_ANIMATION_SPEED;
     }
+    
     public static int getCameraEdgeThreshold() {
         return CAMERA_EDGE_THRESHOLD;
     }
+    
     public static int getCameraSpeed() {
         return CAMERA_SPEED;
     }
+    
     public static float getMinZoom() {
         return MIN_ZOOM;
     }
+    
     public static float getMaxZoom() {
         return MAX_ZOOM;
     }
+    
     public static float getZoomStep() {
         return ZOOM_STEP;
     }

@@ -46,27 +46,8 @@ public class MinimapRenderer {
     public void setOnClickCallback(java.util.function.Consumer<Point> callback) {
         this.onClickCallback = callback;
     }
-// clic gauche -> déplacer caméra
-    public boolean handleClick(int clickX, int clickY) {
-        if (clickX >= x && clickX <= x + size && clickY >= y && clickY <= y + size) {
-            if (camera != null) {
-                float mapWidth = tileMap.getColumns() * Config.getTileSize();
-                float mapHeight = tileMap.getRows() * Config.getTileSize();
-                float scaleX = size / mapWidth;
-                float scaleY = size / mapHeight;
-                
-                float worldX = (clickX - x) / scaleX;
-                float worldY = (clickY - y) / scaleY;
-                
-                camera.setPosition(worldX, worldY);
-            }
-            return true;
-        }
-        return false;
-    }
-      // clic droit -> appeler callback
 
-    public boolean handleRightClick(int clickX, int clickY) {
+    public boolean handleClick(int clickX, int clickY) {
         if (clickX >= x && clickX <= x + size && clickY >= y && clickY <= y + size) {
             float mapWidth = tileMap.getColumns() * Config.getTileSize();
             float mapHeight = tileMap.getRows() * Config.getTileSize();
@@ -78,6 +59,27 @@ public class MinimapRenderer {
             
             if (onClickCallback != null) {
                 onClickCallback.accept(new Point((int) worldX, (int) worldY));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean handleRightClick(int clickX, int clickY) {
+        if (clickX >= x && clickX <= x + size && clickY >= y && clickY <= y + size) {
+            if (camera != null) {
+                float mapWidth = tileMap.getColumns() * Config.getTileSize();
+                float mapHeight = tileMap.getRows() * Config.getTileSize();
+                float scaleX = size / mapWidth;
+                float scaleY = size / mapHeight;
+                
+                float worldX = (clickX - x) / scaleX;
+                float worldY = (clickY - y) / scaleY;
+                
+                worldX -= camera.getViewportWidth() / 2f;
+                worldY -= camera.getViewportHeight() / 2f;
+                
+                camera.setPosition(worldX, worldY);
             }
             return true;
         }
@@ -115,11 +117,11 @@ public class MinimapRenderer {
         float scaleY = size / mapHeight;
 
         drawLanes(g2, scaleX, scaleY);
-    // ancients (bases)
-        for (var ancient : arena.ancients()) {
-            int px = x + (int) (ancient.position().x() * Config.getTileSize() * scaleX);
-            int py = y + (int) (ancient.position().y() * Config.getTileSize() * scaleY);
-            boolean isAlly = ancient.equipe().couleur() == playerTeam;
+
+        for (var coreBase : arena.coreBases()) {
+            int px = x + (int) (coreBase.position().x() * Config.getTileSize() * scaleX);
+            int py = y + (int) (coreBase.position().y() * Config.getTileSize() * scaleY);
+            boolean isAlly = coreBase.equipe().couleur() == playerTeam;
             g2.setColor(isAlly ? new Color(60, 100, 255) : new Color(200, 60, 60));
             g2.fillRect(px - 6, py - 6, 12, 12);
             g2.setColor(Color.WHITE);

@@ -89,8 +89,8 @@ public final class Stats {
         defense = Math.max(0, defense + mod.bonusDefense());
         moveSpeed = Math.max(0, moveSpeed + mod.bonusMoveSpeed());
 
-        // Garde la santé/mana cohérente avec les nouveaux plafonds
         hp = Math.min(hp, maxHp);
         mana = Math.min(mana, maxMana);
     }
 }
+

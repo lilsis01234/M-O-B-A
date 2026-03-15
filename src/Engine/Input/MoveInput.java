@@ -10,4 +10,3 @@ public interface MoveInput {
         return isUpPressed() || isDownPressed() || isLeftPressed() || isRightPressed();
     }
 }
-

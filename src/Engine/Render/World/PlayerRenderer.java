@@ -61,7 +61,6 @@ public class PlayerRenderer {
         int x = (int) player.getX() + 2;
         int y = (int) player.getY() - 20;
         g2.setColor(java.awt.Color.YELLOW);
-
         java.awt.Font originalFont = g2.getFont();
         g2.setFont(originalFont.deriveFont(java.awt.Font.BOLD, 14));
         g2.drawString("Lv " + player.level(), x, y);
