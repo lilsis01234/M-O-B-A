@@ -6,6 +6,10 @@ import Engine.Render.Camera;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+/**
+ * Cette classe est responsable de la détection des mouvements de la souris sur la carte
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia
+ * */
 
 public class MouseHandler extends MouseAdapter implements TargetInput {
     

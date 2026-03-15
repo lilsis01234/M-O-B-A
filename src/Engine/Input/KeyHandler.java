@@ -5,6 +5,10 @@ import Core.Input.MoveInput;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.function.Consumer;
+/**
+ * Cette classe est responsable de la gestion des touches de clavier
+ * @author RAHARIMANANA Tianantenaina BOUKIRAT Thafat ZEGHBIB Sonia
+ * */
 
 public class KeyHandler implements KeyListener, MoveInput {
     

@@ -5,6 +5,9 @@ import Core.Moba.World.TeamColor;
 import Engine.Tile.Tile;
 
 import java.awt.image.BufferedImage;
+/*
+**Cette classe sert à stocker en mémoire les visuels (sprites) des tours 
+*/
 
 public class TowerSpriteCache {
 

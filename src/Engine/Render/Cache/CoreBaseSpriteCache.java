@@ -6,6 +6,9 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+**Cette classe sert à générer et à stocker en mémoire les visuels (sprites) des bases principales (Nexus/Ancient) de chaque équipe pour éviter de les recalculer à chaque image affichée
+*/
 public class CoreBaseSpriteCache {
     private final Map<String, BufferedImage> cache = new HashMap<>();
 

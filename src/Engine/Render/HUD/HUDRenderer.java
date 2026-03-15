@@ -8,6 +8,10 @@ import Engine.Tile.Tile;
 
 import java.awt.*;
 
+/**
+*Cette classe HUDRenderer est le chef d'orchestre de l'interface utilisateur (HUD - Heads-Up Display). Elle centralise et positionne tous les éléments visuels que le joueur voit en superposition du jeu.
+*/
+
 public class HUDRenderer {
 
     private final Player player;
