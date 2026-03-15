@@ -33,12 +33,12 @@ public class WorldRenderer {
     private final GameEngineRef gameEngineRef;
     private int panelWidth;
     private int panelHeight;
-// Interface pour accEDER aux projectiles depuis le moteur
+
     public interface GameEngineRef {
         List<TowerProjectile> getProjectiles();
         List<ClickEffect> getClickEffects();
     }
-// Constructeur principal
+
     public WorldRenderer(TileMap tileMap, Tile[] tiles, Player player, 
                         Arena arena, Camera camera, GameEngineRef gameEngineRef) {
         this.player = player;
@@ -98,7 +98,7 @@ public class WorldRenderer {
         List<RenderableEntity> entities = new ArrayList<>();
 
         int tileSize = Config.getTileSize();
-  // Ajout des tours
+
         for (Tour tower : arena.tours()) {
             double towerPixelY = tower.position().y() * tileSize;
             double towerBaseY = towerPixelY + (tower.height() * tileSize);
@@ -140,7 +140,7 @@ public class WorldRenderer {
             this.entity = entity;
         }
     }
- // Rendu des projectiles
+
     private void renderProjectiles(Graphics2D g2) {
         if (gameEngineRef != null) {
             for (TowerProjectile projectile : gameEngineRef.getProjectiles()) {
@@ -148,7 +148,7 @@ public class WorldRenderer {
             }
         }
     }
- // Rendu des effets de clic
+
     private void renderClickEffects(Graphics2D g2) {
         if (gameEngineRef != null) {
             for (ClickEffect effect : gameEngineRef.getClickEffects()) {

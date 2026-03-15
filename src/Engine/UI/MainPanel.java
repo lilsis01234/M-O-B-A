@@ -34,7 +34,7 @@ public class MainPanel extends JPanel {
 
     private String gameTitle = "MOBA";
     private String version = "v0.0.1";
-    private String[] menuItems = {"START GAME", "SETTINGS", "EXIT"};
+    private String[] menuItems = {"COMMENCER LE JEU", "PARAMETRES", "QUITTER"};
 
     private Rectangle titleBounds;
     private Rectangle menuBounds;

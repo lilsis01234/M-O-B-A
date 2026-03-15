@@ -28,11 +28,11 @@ public interface SelectionListener {
     private Hero selectedHero;
     private int selectedIndex = -1;
     
- // Filtrage par catégorie
+    // Category filtering
     private String[] categories = {"All", "Force", "Agilité", "Intelligence"};
     private String selectedCategory = "All";
     
-    // couleurs 
+    // Colors
     private final Color BACKGROUND = new Color(25, 25, 40);
     private final Color HEADER_BG = new Color(35, 35, 55, 230);
     private final Color CARD_BG = new Color(50, 50, 75);
@@ -49,41 +49,41 @@ public interface SelectionListener {
     private final Color SCROLLBAR_BG = new Color(80, 80, 110, 200);
     private final Color SCROLLBAR_THUMB = new Color(150, 150, 190);
     
-     // Zones de disposition (flexibles avec marge/padding)
+    // Layout zones (flexible with padding)
     private final int HEADER_HEIGHT = 140;
     private final int FOOTER_HEIGHT = 100;
     private final int VERTICAL_PADDING = 20;
     private final int HORIZONTAL_PADDING = 30;
     
-    // Onglets de catégorie
+    // Category tabs
     private final int TAB_HEIGHT = 30;
     private final int TAB_WIDTH = 120;
     private final int TAB_SPACING = 8;
     private final int TAB_Y_OFFSET = 60;
     
-    //dimensions de la carte 
+    // Card dimensions
     private int cardWidth = 200;
     private int cardHeight = 170;
     private int cardSpacing = 20;
     private final int SPRITE_SIZE = 56;
     
- // Polices
+    // Fonts
     private final Font FONT_TITLE = new Font("SansSerif", Font.BOLD, 28);
     private final Font FONT_CARD_NAME = new Font("SansSerif", Font.BOLD, 13);
     private final Font FONT_STAT = new Font("Monospaced", Font.BOLD, 11);
     private final Font FONT_DESC = new Font("SansSerif", Font.PLAIN, 10);
     private final Font FONT_TAB = new Font("SansSerif", Font.BOLD, 12);
     
- // Défilement
+    // Scrolling
     private int scrollY = 0;
     private final int SCROLL_SPEED = 60;
     
- // Limites de disposition (calculées)
+    // Layout bounds (computed)
+    private Rectangle headerBounds;
     private Rectangle contentBounds;
     private Rectangle footerBounds;
     
     private HeroSpriteCache spriteCache;
-    private Rectangle headerBounds;
     
     public HeroSelectionPanel(Dimension screenSize) {
         setPreferredSize(screenSize);
@@ -207,12 +207,12 @@ public interface SelectionListener {
             }
         }
         
-        // verfier le bouton de confirmation (SSI FOOTER )
+        // Check confirm button (only if in footer bounds)
         if (footerBounds != null && footerBounds.contains(x, y) && selectedHero != null) {
             String btnText = "▶ COMMENCER LE JEU AVEC " + selectedHero.getName().toUpperCase();
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 16);
             FontMetrics fm = getFontMetrics(btnFont);
-            int btnW = Math.min(getWidth() - 60, fm.stringWidth(btnText) + 50);
+            int btnW = Math.min(getWidth() - 60 - 170, fm.stringWidth(btnText) + 50);
             int btnH = 44;
             int btnX = (getWidth() - btnW) / 2;
             int btnY = footerBounds.y + (footerBounds.height - btnH) / 2;
@@ -223,7 +223,7 @@ public interface SelectionListener {
             }
         }
         
-     // Vérifie les cartes de héros uniquement dans les limites du contenu
+        // Check hero cards only in content bounds
         if (contentBounds != null && contentBounds.contains(x, y) && !filteredHeroes.isEmpty()) {
             int cols = calculateColumns();
             int totalWidth = cols * cardWidth + (cols - 1) * cardSpacing;
@@ -261,7 +261,7 @@ public interface SelectionListener {
         
         // Check back button (in footer bounds)
         if (footerBounds != null) {
-            String backText = "◀ RETOUR AU MENU";
+            String backText = "◀ RETOUR A L'ACCUEIL";
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 14);
             FontMetrics fm = getFontMetrics(btnFont);
             int backBtnW = fm.stringWidth(backText) + 40;
@@ -279,7 +279,7 @@ public interface SelectionListener {
         
         // Check tabs (in header bounds)
         if (headerBounds != null && headerBounds.contains(x, y)) {
-            String backText = "◀ RETOUR AU MENU";
+            String backText = "◀ RETOUR A L'ACCUEIL";
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 14);
             FontMetrics fm = getFontMetrics(btnFont);
             int backBtnW = fm.stringWidth(backText) + 40;
@@ -315,9 +315,9 @@ public interface SelectionListener {
             }
         }
         
-        // verifier confirmation (ssi footer )
+        // Check confirm button (in footer bounds)
         if (footerBounds != null && footerBounds.contains(x, y) && selectedHero != null) {
-            String btnText = "▶ START GAME WITH " + selectedHero.getName().toUpperCase();
+            String btnText = "▶ COMMENCER LE JEU AVEC " + selectedHero.getName().toUpperCase();
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 16);
             FontMetrics fm = getFontMetrics(btnFont);
             int btnW = Math.min(getWidth() - 60 - 170, fm.stringWidth(btnText) + 50);
@@ -333,7 +333,7 @@ public interface SelectionListener {
             }
         }
         
-        // verifier carte hero 
+        // Check hero cards (only in content bounds)
         if (contentBounds == null || filteredHeroes.isEmpty()) return;
         
         if (!contentBounds.contains(x, y)) return;
@@ -360,12 +360,12 @@ public interface SelectionListener {
         }
     }
     
-    private void handleKeyNav(int keyCode) {// Navigation clavier dans la grille des héros
+    private void handleKeyNav(int keyCode) {
         if (filteredHeroes.isEmpty()) return;
         
         int cols = calculateColumns();
         switch (keyCode) {
-            case KeyEvent.VK_UP:// HAUT
+            case KeyEvent.VK_UP:
                 if (selectedIndex - cols >= 0) {
                     selectedIndex -= cols;
                     selectedHero = filteredHeroes.get(selectedIndex);
@@ -373,15 +373,15 @@ public interface SelectionListener {
                     repaint();
                 }
                 break;
-                case KeyEvent.VK_DOWN://BAS
-                    if (selectedIndex + cols < filteredHeroes.size()) {
-                        selectedIndex += cols;
-                        selectedHero = filteredHeroes.get(selectedIndex);
-                        ensureVisible(selectedIndex);
-                        repaint();
-                    }
+            case KeyEvent.VK_DOWN:
+                if (selectedIndex + cols < filteredHeroes.size()) {
+                    selectedIndex += cols;
+                    selectedHero = filteredHeroes.get(selectedIndex);
+                    ensureVisible(selectedIndex);
+                    repaint();
+                }
                 break;
-            case KeyEvent.VK_LEFT://gauche
+            case KeyEvent.VK_LEFT:
                 if (selectedIndex > 0) {
                     selectedIndex--;
                     selectedHero = filteredHeroes.get(selectedIndex);
@@ -389,7 +389,7 @@ public interface SelectionListener {
                     repaint();
                 }
                 break;
-            case KeyEvent.VK_RIGHT://DROITE
+            case KeyEvent.VK_RIGHT:
                 if (selectedIndex < filteredHeroes.size() - 1) {
                     selectedIndex++;
                     selectedHero = filteredHeroes.get(selectedIndex);
@@ -404,7 +404,7 @@ public interface SelectionListener {
                 break;
         }
     }
- //  carte de héros   visible dans la zone de contenu
+    
     private void ensureVisible(int index) {
         if (contentBounds == null) return;
         
@@ -431,10 +431,10 @@ public interface SelectionListener {
         int w = getWidth();
         int h = getHeight();
         
-     // En-tête : largeur complète en haut
+        // Header: full width at top
         headerBounds = new Rectangle(0, 0, w, HEADER_HEIGHT);
         
-        // footer : largeur complète en haut
+        // Footer: full width at bottom
         footerBounds = new Rectangle(0, h - FOOTER_HEIGHT, w, FOOTER_HEIGHT);
         
         // Content: between header and footer with padding
@@ -442,7 +442,7 @@ public interface SelectionListener {
         int contentHeight = h - HEADER_HEIGHT - FOOTER_HEIGHT - VERTICAL_PADDING * 2;
         contentBounds = new Rectangle(HORIZONTAL_PADDING, contentY, w - HORIZONTAL_PADDING * 2, contentHeight);
     }
- // Calcule le nombre de colonnes de cartes visibles dans la zone de contenu
+    
     private int calculateColumns() {
         if (contentBounds == null) return 1;
         int availableWidth = contentBounds.width - 40; // Extra margin
@@ -465,23 +465,23 @@ public interface SelectionListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-     // Calcule les limites de disposition
+        // Calculate layout bounds
         calculateLayoutBounds();
         
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         
-        // dessine le background
+        // Draw background
         drawBackground(g2);
         
-     // Dessine la zone de l’en-tête avec découpage (clipping)
+        // Draw header area with clipping
         drawHeader(g2);
         
-     // Dessine la zone avec découpage (clipping)
+        // Draw content area with clipping
         drawHeroGrid(g2);
         
-        // dessine l area du footer 
+        // Draw footer area
         drawFooter(g2);
     }
     
@@ -494,13 +494,13 @@ public interface SelectionListener {
     private void drawHeader(Graphics2D g2) {
         if (headerBounds == null) return;
         
-         // Sauvegarde le clip original
+        // Save original clip
         Shape originalClip = g2.getClip();
         
-     // Définit le clipping sur les limites de l’en-tête
+        // Set clipping to header bounds
         g2.setClip(headerBounds);
         
-     // Fond de l’en-tête avec dégradé
+        // Header background with gradient
         GradientPaint headerGradient = new GradientPaint(
             0, headerBounds.y, HEADER_BG,
             0, headerBounds.y + headerBounds.height, new Color(25, 25, 40, 200)
@@ -508,24 +508,24 @@ public interface SelectionListener {
         g2.setPaint(headerGradient);
         g2.fillRect(headerBounds.x, headerBounds.y, headerBounds.width, headerBounds.height);
         
-     // Séparateur en bas de l’en-tête
+        // Header bottom separator
         g2.setColor(new Color(100, 100, 140));
         g2.drawLine(headerBounds.x, headerBounds.y + headerBounds.height - 1, 
                    headerBounds.x + headerBounds.width, headerBounds.y + headerBounds.height - 1);
         
-     // Titre – centré dans l’en-tête
+        // Title - centered in header
         g2.setColor(TEXT_MAIN);
         g2.setFont(FONT_TITLE);
         FontMetrics fm = g2.getFontMetrics();
-        String title = "SELECT YOUR HERO";
+        String title = "SELECTIONNEZ VOTRE HERO";
         int titleX = headerBounds.x + (headerBounds.width - fm.stringWidth(title)) / 2;
         int titleY = headerBounds.y + 40;
         g2.drawString(title, titleX, titleY);
         
-     // Dessine les onglets
+        // Draw tabs
         drawCategoryTabs(g2);
         
-     // Restaure le clip original
+        // Restore original clip
         g2.setClip(originalClip);
     }
     
@@ -582,7 +582,7 @@ public interface SelectionListener {
         int gridHeight = rows * cardTotalHeight - cardSpacing;
         boolean scrolling = gridHeight > contentBounds.height;
         
-     // Dessine la barre de défilement si nécessaire (en dehors de la zone de clipping puisqu’elle est sur le bord)
+        // Draw scrollbar if needed (outside clipping region since it's on the edge)
         if (scrolling) {
             int scrollbarX = contentBounds.x + contentBounds.width - 12;
             int scrollbarY = contentBounds.y;
@@ -600,12 +600,12 @@ public interface SelectionListener {
             }
         }
         
-     // Détermine la plage visible en utilisant la formule appropriée
+        // Determine visible range using proper formula
         int firstRow = scrolling ? (int)Math.floor((double)scrollY / cardTotalHeight) : 0;
         int visibleRows = contentBounds.height / cardTotalHeight + 1;
         int lastRow = Math.min(rows, firstRow + visibleRows);
         
-     // Dessine les cartes
+        // Draw cards
         for (int row = firstRow; row < lastRow; row++) {
             for (int col = 0; col < cols; col++) {
                 int index = row * cols + col;
@@ -614,7 +614,7 @@ public interface SelectionListener {
                 int x = startX + col * (cardWidth + cardSpacing);
                 int y = contentBounds.y + row * cardTotalHeight - scrollY;
                 
-             // Ignorer si hors de la zone visible (vérification supplémentaire)
+                // Skip if not in visible area (extra check)
                 if (y + cardHeight < contentBounds.y || y > contentBounds.y + contentBounds.height) {
                     continue;
                 }
@@ -623,7 +623,7 @@ public interface SelectionListener {
             }
         }
         
-     // Restaure le clip original
+        // Restore original clip
         g2.setClip(originalClip);
     }
     
@@ -650,7 +650,7 @@ public interface SelectionListener {
             g2.drawImage(sprite, spriteX, spriteY, spriteSize, spriteSize, null);
         }
         
-        //  nom de lhero
+        // Hero name
         g2.setColor(TEXT_MAIN);
         g2.setFont(FONT_CARD_NAME);
         FontMetrics fm = g2.getFontMetrics();
@@ -659,7 +659,7 @@ public interface SelectionListener {
         int nameY = y + 72;
         g2.drawString(name, nameX, nameY);
         
-        // Stats lignes
+        // Stats row
         g2.setFont(FONT_STAT);
         fm = g2.getFontMetrics();
         int statsY = nameY + 22;
@@ -738,7 +738,7 @@ public interface SelectionListener {
         g2.drawLine(footerBounds.x, footerBounds.y, footerBounds.x + footerBounds.width, footerBounds.y);
         
         // Back button (always visible, left side)
-        String backText = "◀ RETOUR AU MENU";
+        String backText = "◀ RETOUR A L'ACCUEIL";
         Font backFont = FONT_TAB.deriveFont(Font.BOLD, 14);
         FontMetrics fmBack = getFontMetrics(backFont);
         int backBtnW = fmBack.stringWidth(backText) + 40;
@@ -773,17 +773,14 @@ public interface SelectionListener {
             int btnX = (getWidth() - btnW) / 2;
             int btnY = footerBounds.y + (footerBounds.height - btnH) / 2;
             
-         // Ombre
             g2.setColor(new Color(0, 0, 0, 100));
             g2.fillRoundRect(btnX + 4, btnY + 4, btnW, btnH, 12, 12);
             
-            // degradé
             GradientPaint btnGrad = new GradientPaint(btnX, btnY, new Color(60, 180, 60),
                     btnX, btnY + btnH, new Color(40, 120, 40));
             g2.setPaint(btnGrad);
             g2.fillRoundRect(btnX, btnY, btnW, btnH, 12, 12);
             
-            // Bords
             g2.setColor(new Color(120, 255, 120));
             g2.setStroke(new BasicStroke(2));
             g2.drawRoundRect(btnX, btnY, btnW, btnH, 12, 12);

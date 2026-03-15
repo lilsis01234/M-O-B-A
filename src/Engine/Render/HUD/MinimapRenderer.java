@@ -97,20 +97,20 @@ public class MinimapRenderer {
     public int getSize() {
         return size;
     }
-// rendu complet du minimap
+
     public void render(Graphics2D g2) {
         g2.setColor(new Color(10, 10, 15, 240));
         g2.fillRoundRect(x - 3, y - 3, size + 6, size + 6, 12, 12);
         
         g2.setColor(new Color(30, 30, 40));
         g2.fillRoundRect(x, y, size, size, 8, 8);
-         // création d'une image minimap statique
+        
         if (cachedMinimap == null) {
             cachedMinimap = createMinimapBackground();
         }
         
         g2.drawImage(cachedMinimap, x, y, null);
- // échelle entre monde et minimap
+
         float mapWidth = tileMap.getColumns() * Config.getTileSize();
         float mapHeight = tileMap.getRows() * Config.getTileSize();
         float scaleX = size / mapWidth;
@@ -128,7 +128,7 @@ public class MinimapRenderer {
             g2.setStroke(new BasicStroke(1));
             g2.drawRect(px - 6, py - 6, 12, 12);
         }
-//TOURS
+
         for (var tour : arena.tours()) {
             int px = x + (int) (tour.position().x() * Config.getTileSize() * scaleX);
             int py = y + (int) (tour.position().y() * Config.getTileSize() * scaleY);
@@ -144,7 +144,7 @@ public class MinimapRenderer {
         }
 
         drawFountains(g2, scaleX, scaleY);
-//joueurs
+
         int playerX = x + (int) (player.getX() * scaleX);
         int playerY = y + (int) (player.getY() * scaleY);
         g2.setColor(new Color(100, 255, 100));
@@ -152,7 +152,7 @@ public class MinimapRenderer {
         g2.setColor(Color.WHITE);
         g2.setStroke(new BasicStroke(1.5f));
         g2.drawOval(playerX - 5, playerY - 5, 10, 10);
-//subrillance si bleu
+
         if (playerTeam == TeamColor.BLUE) {
             for (var ally : arena.tours()) {
                 if (ally.equipe().couleur() == playerTeam) {
@@ -163,7 +163,7 @@ public class MinimapRenderer {
                 }
             }
         }
-  // rectangle de la camera visible
+
         if (camera != null) {
             int camX = x + (int) (camera.getX() * scaleX);
             int camY = y + (int) (camera.getY() * scaleY);
@@ -184,9 +184,9 @@ public class MinimapRenderer {
 
         g2.setColor(new Color(150, 150, 170));
         g2.setFont(new Font("Arial", Font.PLAIN, 9));
-        g2.drawString("RMB: Move", x + 5, y + size - 8);
+        g2.drawString("LMB: Move", x + 5, y + size - 8);
     }
-  // dessine les voies principales
+
     private void drawLanes(Graphics2D g2, float scaleX, float scaleY) {
         g2.setColor(new Color(90, 80, 60, 60));
         
@@ -199,7 +199,7 @@ public class MinimapRenderer {
         int midRowY = y + (int)(midY * Config.getTileSize() * scaleY);
         g2.fillRect(x, midRowY - 2, size, 4);
     }
- // dessine les fontaines
+
     private void drawFountains(Graphics2D g2, float scaleX, float scaleY) {
         for (var tour : arena.tours()) {
             if (tour.tier() == 1) {
@@ -234,7 +234,7 @@ public class MinimapRenderer {
         
         return tile.getImage();
     }
-//creation img stats minimap
+
     private BufferedImage createMinimapBackground() {
         BufferedImage background = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = background.createGraphics();

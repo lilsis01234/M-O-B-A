@@ -33,8 +33,8 @@ public class PauseMenu extends JPanel {
     private final Font TITLE_FONT = new Font("Serif", Font.BOLD, 32);
     private final Font BUTTON_FONT = new Font("SansSerif", Font.BOLD, 18);
 
-    private String title = "PAUSED";
-    private String[] menuItems = {"RESUME", "SETTINGS", "RETURN TO MAIN"};
+    private String title = "PAUSE";
+    private String[] menuItems = {"CONTINUER", "PARAMETRE", "RETOUR A L'ACCUEIL"};
 
     private Rectangle menuContainerBounds;
     private Rectangle titleBounds;

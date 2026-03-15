@@ -391,7 +391,7 @@ public class GamePanel extends JPanel {
     
     private void startGame() {
         try {
-            // Charger les composants du jeu avec le héros sélectionné
+            // Load the game components with the selected hero
             TileMap tileMap = loadTileMap();
             setupCamera(tileMap);
             
@@ -452,10 +452,10 @@ public class GamePanel extends JPanel {
             revalidate();
             repaint();
             
-            // Demander le focus pour la saisie au clavier
+            // Request focus for keyboard input
             requestFocusInWindow();
             
-            // Démarrer le thread du jeu
+            // Start the game thread
             startGameThread();
         } catch (Exception e) {
             e.printStackTrace();
@@ -472,7 +472,7 @@ public class GamePanel extends JPanel {
         Config.updateScreenSize(cols * Config.getTileSize(), rows * Config.getTileSize());
         camera.setViewportSize(width, height);
         
-        // Mettre à jour le rendu du HUD avec la nouvelle taille de l’écran
+        // Update HUD renderer with new screen size
         if (hudRenderer != null) {
             hudRenderer.setScreenSize(width, height);
         }
@@ -543,12 +543,12 @@ public class GamePanel extends JPanel {
         // Dessin du monde
         tileRenderer.draw(g2, camera, getWidth(), getHeight());
         
-        // mise  a jrs  tower animations
+        // Update tower animations
         for (Tour tour : arena.tours()) {
             tour.updateAnimation();
         }
         
-        // Rendu trié par profondeur Y
+        // Depth-sorted rendering: draw entities based on Y position
         drawDepthSorted(g2);
         
         drawProjectiles(g2);
@@ -562,7 +562,7 @@ public class GamePanel extends JPanel {
         
         int tileSize = Config.getTileSize();
         
-        // ajout des tours
+        // Add towers
         for (Tour tour : arena.tours()) {
             double towerBaseY = (tour.position().y() + tour.height()) * tileSize;
             entities.add(new RenderableEntity(towerBaseY, RenderableEntity.Type.TOWER, tour));

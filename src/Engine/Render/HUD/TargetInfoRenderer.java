@@ -6,9 +6,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class TargetInfoRenderer {
-    private final Player player;///joueur selectionne la cible
-    private final int width, height;//dmension du panneau 
-    private BufferedImage background;//img fond
+    private final Player player;
+    private final int width, height;
+    private BufferedImage background;
 
     public TargetInfoRenderer(Player player, int x, int y, int width, int height) {
         this.player = player;
@@ -21,7 +21,6 @@ public class TargetInfoRenderer {
     }
 
     public void render(Graphics2D g2, int x, int y) {
-        //position generer dans render
         if (!player.hasSelectedTarget()) return;
 
         if (background == null) {
@@ -30,7 +29,7 @@ public class TargetInfoRenderer {
         
         g2.drawImage(background, x, y, null);
         drawBorder(g2, x, y, width, height);
-  // container vertical pour organiser titres type et barre hp
+
         FlexContainer container = new FlexContainer()
             .setBounds(x, y, width, height)
             .padding(8)
@@ -77,7 +76,7 @@ public class TargetInfoRenderer {
         g2.setFont(new Font("Arial", Font.BOLD, 11));
         g2.drawString(hp + "/" + maxHp, hpTextBounds.x, hpTextBounds.y + g2.getFontMetrics().getAscent());
     }
-    //bordure 3d du panneau
+    
     private void drawBorder(Graphics2D g2, int x, int y, int width, int height) {
         g2.setColor(new Color(80, 80, 100));
         g2.drawRect(x, y, width - 1, height - 1);
