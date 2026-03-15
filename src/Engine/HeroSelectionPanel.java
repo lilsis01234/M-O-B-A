@@ -245,8 +245,13 @@ public interface SelectionListener {
     private void handleClick(int x, int y, int button) {
         if (button != MouseEvent.BUTTON1) return;
         
-        // Check back button first
-        if (footerBounds != null && footerBounds.contains(x, y)) {
+        // Ensure layout bounds are calculated (they're calculated in paintComponent)
+        if (headerBounds == null || footerBounds == null) {
+            calculateLayoutBounds();
+        }
+        
+        // Check back button (in footer bounds)
+        if (footerBounds != null) {
             String backText = "◀ BACK TO MENU";
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 14);
             FontMetrics fm = getFontMetrics(btnFont);
