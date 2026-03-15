@@ -17,7 +17,7 @@ public class PauseMenu extends JPanel {
     private PauseMenuListener listener;
     private List<MenuButton> buttons = new ArrayList<>();
     private int selectedIndex = 0;
-    private boolean visible = false;
+    private boolean isMenuVisible = false;  // Use different name to avoid confusion with Swing's visibility
 
     private final Color OVERLAY_BG = new Color(0, 0, 0, 180);
     private final Color MENU_BG = new Color(25, 25, 35);
@@ -43,13 +43,14 @@ public class PauseMenu extends JPanel {
         setOpaque(false);
         setFocusable(false);
         setLayout(null);
-        setIgnoreRepaint(true);  // Prevent repaint loops
-        setVisible(false);
+        setIgnoreRepaint(true);
+        setVisible(true);  // Keep Swing visibility true to be in container, but won't draw
+        isMenuVisible = false;
 
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (!isVisible()) return;
+                if (!isMenuVisible) return;
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_UP:
                         navigateSelection(-1);
@@ -70,12 +71,16 @@ public class PauseMenu extends JPanel {
         MouseAdapter mouseHandler = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                handleClick(e.getX(), e.getY());
+                if (isMenuVisible) {
+                    handleClick(e.getX(), e.getY());
+                }
             }
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                updateHover(e.getX(), e.getY());
+                if (isMenuVisible) {
+                    updateHover(e.getX(), e.getY());
+                }
             }
         };
         addMouseListener(mouseHandler);
@@ -87,21 +92,29 @@ public class PauseMenu extends JPanel {
     }
 
     public void show() {
-        visible = true;
-        setVisible(true);
+        isMenuVisible = true;
         selectedIndex = 0;
         calculateLayout();
         repaint();
     }
 
     public void hide() {
-        visible = false;
-        // Don't call setVisible(false) - causes recursion
+        isMenuVisible = false;
         repaint();
     }
 
     public boolean isPauseMenuVisible() {
-        return visible;
+        return isMenuVisible;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return isMenuVisible;
+    }
+
+    @Override
+    public boolean contains(int x, int y) {
+        return isMenuVisible && super.contains(x, y);
     }
 
     private void navigateSelection(int direction) {
@@ -157,7 +170,7 @@ public class PauseMenu extends JPanel {
     @Override
     public void doLayout() {
         super.doLayout();
-        if (visible) {
+        if (isMenuVisible) {
             calculateLayout();
         }
     }
@@ -190,11 +203,11 @@ public class PauseMenu extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        if (!visible) {
-            super.paintComponent(g);
+        super.paintComponent(g);
+
+        if (!isMenuVisible) {
             return;
         }
-        super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);

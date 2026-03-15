@@ -89,6 +89,8 @@ public interface SelectionListener {
         setPreferredSize(screenSize);
         setBackground(BACKGROUND);
         setFocusable(true);
+        setOpaque(true);
+        setVisible(true);
         
         spriteCache = new HeroSpriteCache();
         loadHeroes();
@@ -100,6 +102,7 @@ public interface SelectionListener {
         try {
             JsonDataProvider dataProvider = JsonDataProviderFactory.create();
             allHeroes = dataProvider.getAllHeroes();
+            System.out.println("DEBUG: Loaded " + allHeroes.size() + " heroes");
         } catch (IOException e) {
             e.printStackTrace();
             allHeroes = new ArrayList<>();
@@ -172,8 +175,7 @@ public interface SelectionListener {
     }
     
     private void updateCursor(int x, int y) {
-        // Ensure layout bounds are calculated
-        if (headerBounds == null || footerBounds == null) {
+        if (headerBounds == null || footerBounds == null || contentBounds == null) {
             calculateLayoutBounds();
         }
         
@@ -253,12 +255,30 @@ public interface SelectionListener {
         if (button != MouseEvent.BUTTON1) return;
         
         // Ensure layout bounds are calculated (they're calculated in paintComponent)
-        if (headerBounds == null || footerBounds == null) {
+        if (headerBounds == null || footerBounds == null || contentBounds == null) {
             calculateLayoutBounds();
         }
         
         // Check back button (in footer bounds)
         if (footerBounds != null) {
+            String backText = "◀ BACK TO MENU";
+            Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 14);
+            FontMetrics fm = getFontMetrics(btnFont);
+            int backBtnW = fm.stringWidth(backText) + 40;
+            int backBtnH = 36;
+            int backBtnX = 30;
+            int backBtnY = footerBounds.y + (footerBounds.height - backBtnH) / 2;
+            
+            if (x >= backBtnX && x <= backBtnX + backBtnW && y >= backBtnY && y <= backBtnY + backBtnH) {
+                if (listener != null) {
+                    listener.onGoBack();
+                }
+                return;
+            }
+        }
+        
+        // Check tabs (in header bounds)
+        if (headerBounds != null && headerBounds.contains(x, y)) {
             String backText = "◀ BACK TO MENU";
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 14);
             FontMetrics fm = getFontMetrics(btnFont);

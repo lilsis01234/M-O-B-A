@@ -25,14 +25,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 
 /**
  * Panel principal du jeu.
@@ -125,7 +124,7 @@ public class GamePanel extends JPanel {
         
         heroSelectionPanel = new HeroSelectionPanel(new Dimension(Config.getScreenWidth(), Config.getScreenHeight()));
         heroSelectionPanel.setBounds(0, 0, Config.getScreenWidth(), Config.getScreenHeight());
-        heroSelectionPanel.setVisible(false);  // Start hidden, main menu is first
+        heroSelectionPanel.setVisible(true);  // Keep visible but will be hidden initially
         heroSelectionPanel.setSelectionListener(new HeroSelectionPanel.SelectionListener() {
             @Override
             public void onHeroSelected(Hero hero) {
@@ -142,12 +141,22 @@ public class GamePanel extends JPanel {
         // add(heroSelectionPanel);
         
         currentState = GameState.MAIN_MENU;
+        // Initially hide heroSelectionPanel and mainPanel is visible
+        heroSelectionPanel.setVisible(false);
     }
 
     private void showHeroSelection() {
-        if (mainPanel != null && mainPanel.isVisible()) {
+        if (mainPanel != null) {
             mainPanel.setVisible(false);
         }
+        // Hide pause menu if visible
+        if (pauseMenu != null) {
+            pauseMenu.hide();
+        }
+        // Remove the GamePanel's mouse handler from heroSelectionPanel if it was added
+        heroSelectionPanel.removeMouseListener(mouseHandler);
+        heroSelectionPanel.removeMouseMotionListener(mouseHandler);
+        
         if (getComponentZOrder(heroSelectionPanel) < 0) {
             add(heroSelectionPanel);
         }
@@ -164,6 +173,11 @@ public class GamePanel extends JPanel {
             gameEngine.stop();
             gameEngine = null;
         }
+        // Remove game mouse listeners
+        removeMouseListener(mouseHandler);
+        removeMouseMotionListener(mouseHandler);
+        removeMouseWheelListener(mouseHandler);
+        
         if (heroSelectionPanel != null) {
             heroSelectionPanel.setVisible(false);
         }
@@ -260,9 +274,8 @@ public class GamePanel extends JPanel {
 
     private void setupInputListeners() {
         addKeyListener(keyHandler);
-        addMouseListener(mouseHandler);
-        addMouseMotionListener(mouseHandler);
-        addMouseWheelListener(mouseHandler);
+        // mouseHandler is added dynamically in startGame() when needed for game play
+        // For menu screens, the child panels handle mouse events directly
         setFocusable(true);
     }
 
@@ -354,6 +367,11 @@ public class GamePanel extends JPanel {
                     resumeGame();
                 }
             });
+            
+            // Add mouse listeners for game play
+            addMouseListener(mouseHandler);
+            addMouseMotionListener(mouseHandler);
+            addMouseWheelListener(mouseHandler);
             
             // Remove hero selection panel and change state
             remove(heroSelectionPanel);
