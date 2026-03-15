@@ -17,9 +17,10 @@ import java.util.List;
 
 public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     
-    public interface SelectionListener {
-        void onHeroSelected(Hero hero);
-    }
+public interface SelectionListener {
+    void onHeroSelected(Hero hero);
+    void onGoBack();
+}
     
     private SelectionListener listener;
     private List<Hero> allHeroes;
@@ -169,6 +170,17 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     }
     
     private void updateCursor(int x, int y) {
+        int backBtnW = 130;
+        int backBtnH = 36;
+        int backBtnX = 30;
+        int backBtnY = footerBounds.y + (footerBounds.height - backBtnH) / 2;
+        
+        if (footerBounds != null && footerBounds.contains(x, y) && 
+            x >= backBtnX && x <= backBtnX + backBtnW && y >= backBtnY && y <= backBtnY + backBtnH) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            return;
+        }
+        
         // Check header tabs - only if inside header bounds
         if (headerBounds != null && headerBounds.contains(x, y)) {
             if (y >= headerBounds.height - TAB_Y_OFFSET && y <= headerBounds.height - TAB_Y_OFFSET + TAB_HEIGHT) {
@@ -191,7 +203,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             String btnText = "▶ START GAME WITH " + selectedHero.getName().toUpperCase();
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 16);
             FontMetrics fm = getFontMetrics(btnFont);
-            int btnW = Math.min(getWidth() - 60, fm.stringWidth(btnText) + 50);
+            int btnW = Math.min(getWidth() - 60 - 170, fm.stringWidth(btnText) + 50);
             int btnH = 44;
             int btnX = (getWidth() - btnW) / 2;
             int btnY = footerBounds.y + (footerBounds.height - btnH) / 2;
@@ -233,6 +245,24 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
     private void handleClick(int x, int y, int button) {
         if (button != MouseEvent.BUTTON1) return;
         
+        // Check back button first
+        if (footerBounds != null && footerBounds.contains(x, y)) {
+            String backText = "◀ BACK TO MENU";
+            Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 14);
+            FontMetrics fm = getFontMetrics(btnFont);
+            int backBtnW = fm.stringWidth(backText) + 40;
+            int backBtnH = 36;
+            int backBtnX = 30;
+            int backBtnY = footerBounds.y + (footerBounds.height - backBtnH) / 2;
+            
+            if (x >= backBtnX && x <= backBtnX + backBtnW && y >= backBtnY && y <= backBtnY + backBtnH) {
+                if (listener != null) {
+                    listener.onGoBack();
+                }
+                return;
+            }
+        }
+        
         // Check tabs (in header bounds)
         if (headerBounds != null && headerBounds.contains(x, y)) {
             if (y >= headerBounds.height - TAB_Y_OFFSET && y <= headerBounds.height - TAB_Y_OFFSET + TAB_HEIGHT) {
@@ -258,7 +288,7 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
             String btnText = "▶ START GAME WITH " + selectedHero.getName().toUpperCase();
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 16);
             FontMetrics fm = getFontMetrics(btnFont);
-            int btnW = Math.min(getWidth() - 60, fm.stringWidth(btnText) + 50);
+            int btnW = Math.min(getWidth() - 60 - 170, fm.stringWidth(btnText) + 50);
             int btnH = 44;
             int btnX = (getWidth() - btnW) / 2;
             int btnY = footerBounds.y + (footerBounds.height - btnH) / 2;
@@ -675,38 +705,60 @@ public class HeroSelectionPanel extends JPanel implements MouseWheelListener {
         g2.setColor(new Color(100, 100, 140));
         g2.drawLine(footerBounds.x, footerBounds.y, footerBounds.x + footerBounds.width, footerBounds.y);
         
+        // Back button (always visible, left side)
+        String backText = "◀ BACK TO MENU";
+        Font backFont = FONT_TAB.deriveFont(Font.BOLD, 14);
+        FontMetrics fmBack = getFontMetrics(backFont);
+        int backBtnW = fmBack.stringWidth(backText) + 40;
+        int backBtnH = 36;
+        int backBtnX = 30;
+        int backBtnY = footerBounds.y + (footerBounds.height - backBtnH) / 2;
+        
+        g2.setColor(new Color(0, 0, 0, 100));
+        g2.fillRoundRect(backBtnX + 3, backBtnY + 3, backBtnW, backBtnH, 10, 10);
+        
+        g2.setColor(new Color(150, 100, 100));
+        g2.fillRoundRect(backBtnX, backBtnY, backBtnW, backBtnH, 10, 10);
+        
+        g2.setColor(new Color(200, 140, 140));
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(backBtnX, backBtnY, backBtnW, backBtnH, 10, 10);
+        
+        g2.setColor(new Color(255, 230, 230));
+        g2.setFont(backFont);
+        fmBack = getFontMetrics(backFont);
+        int textX = backBtnX + (backBtnW - fmBack.stringWidth(backText)) / 2;
+        int textY = backBtnY + (backBtnH + fmBack.getAscent()) / 2 - 2;
+        g2.drawString(backText, textX, textY);
+        
         // Start button
         if (selectedHero != null) {
             String btnText = "▶ START GAME WITH " + selectedHero.getName().toUpperCase();
             Font btnFont = FONT_TAB.deriveFont(Font.BOLD, 16);
             FontMetrics fm = getFontMetrics(btnFont);
-            int btnW = Math.min(getWidth() - 60, fm.stringWidth(btnText) + 50);
+            int btnW = Math.min(getWidth() - 60 - backBtnW - 60, fm.stringWidth(btnText) + 50);
             int btnH = 44;
             int btnX = (getWidth() - btnW) / 2;
             int btnY = footerBounds.y + (footerBounds.height - btnH) / 2;
             
-            // Shadow
             g2.setColor(new Color(0, 0, 0, 100));
             g2.fillRoundRect(btnX + 4, btnY + 4, btnW, btnH, 12, 12);
             
-            // Gradient
             GradientPaint btnGrad = new GradientPaint(btnX, btnY, new Color(60, 180, 60),
                     btnX, btnY + btnH, new Color(40, 120, 40));
             g2.setPaint(btnGrad);
             g2.fillRoundRect(btnX, btnY, btnW, btnH, 12, 12);
             
-            // Border
             g2.setColor(new Color(120, 255, 120));
             g2.setStroke(new BasicStroke(2));
             g2.drawRoundRect(btnX, btnY, btnW, btnH, 12, 12);
             
-            // Text
             g2.setColor(new Color(255, 255, 220));
             g2.setFont(btnFont);
-            fm = g2.getFontMetrics();
-            int textX = btnX + (btnW - fm.stringWidth(btnText)) / 2;
-            int textY = btnY + (btnH + fm.getAscent()) / 2 - 2;
-            g2.drawString(btnText, textX, textY);
+            fm = getFontMetrics(btnFont);
+            int textX2 = btnX + (btnW - fm.stringWidth(btnText)) / 2;
+            int textY2 = btnY + (btnH + fm.getAscent()) / 2 - 2;
+            g2.drawString(btnText, textX2, textY2);
         }
     }
     

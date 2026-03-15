@@ -126,9 +126,17 @@ public class GamePanel extends JPanel {
         heroSelectionPanel = new HeroSelectionPanel(new Dimension(Config.getScreenWidth(), Config.getScreenHeight()));
         heroSelectionPanel.setBounds(0, 0, Config.getScreenWidth(), Config.getScreenHeight());
         heroSelectionPanel.setVisible(true);
-        heroSelectionPanel.setSelectionListener(hero -> {
-            selectedHero = hero;
-            startGame();
+        heroSelectionPanel.setSelectionListener(new HeroSelectionPanel.SelectionListener() {
+            @Override
+            public void onHeroSelected(Hero hero) {
+                selectedHero = hero;
+                startGame();
+            }
+
+            @Override
+            public void onGoBack() {
+                showMainMenu();
+            }
         });
         add(heroSelectionPanel);
         
@@ -138,6 +146,7 @@ public class GamePanel extends JPanel {
     private void showHeroSelection() {
         remove(mainPanel);
         heroSelectionPanel.setSize(getWidth(), getHeight());
+        heroSelectionPanel.setVisible(true);
         heroSelectionPanel.setVisible(true);
         currentState = GameState.HERO_SELECTION;
         revalidate();
@@ -379,7 +388,7 @@ public class GamePanel extends JPanel {
         }
         
         // Update pause menu size if visible
-        if (pauseMenu != null && (currentState == GameState.PAUSED || pauseMenu.isPauseMenuVisible())) {
+        if (pauseMenu != null && pauseMenu.isPauseMenuVisible()) {
             pauseMenu.setSize(width, height);
             pauseMenu.revalidate();
         }
